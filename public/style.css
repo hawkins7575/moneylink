@@ -1020,12 +1020,13 @@ h1, h2, h3, .card-title, .modal-header h2 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 6, 102, 0.1);
-    backdrop-filter: blur(12px) saturate(180%);
+    background: rgba(0, 8, 48, 0.25); /* Deep subtle blue overlay */
+    backdrop-filter: blur(12px) saturate(160%);
     z-index: 10000;
     align-items: center;
     justify-content: center;
     padding: 1.5rem;
+    transition: opacity 0.3s ease;
 }
 
 .modal.active {
@@ -1239,19 +1240,26 @@ h1, h2, h3, .card-title, .modal-header h2 {
 /* Premium Modal Styling */
 .modal-content {
     background: #ffffff;
-    border-radius: 20px; /* Reduced from 28px */
-    padding: 2rem; /* Reduced from 3rem */
+    border-radius: 24px;
+    padding: 2.5rem;
     width: 100%;
-    max-width: 480px; /* Slimmed down */
-    box-shadow: 0 25px 80px -20px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    box-shadow: 0 40px 100px -20px rgba(0, 8, 48, 0.2), 0 0 1px rgba(0,0,0,0.1);
     position: relative;
-    border: 1px solid rgba(0,0,0,0.05);
-    animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(255,255,255,0.8);
+    animation: premiumModalEntry 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-font-smoothing: antialiased;
 }
 
-@keyframes modalSlideUp {
-    from { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(10px); }
-    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+@keyframes premiumModalEntry {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.96); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
 }
 
 /* Specific Modal Sizes & Variants */
@@ -1276,17 +1284,30 @@ h1, h2, h3, .card-title, .modal-header h2 {
 
 /* Modal Header Refinement */
 .modal-header {
-    margin-bottom: 1.5rem; /* Reduced spacing */
+    margin-bottom: 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    padding-bottom: 1.25rem;
 }
 
 .modal-header h2 {
-    font-size: 1.25rem; /* Reduced from 1.6rem */
+    font-size: 1.5rem;
     font-weight: 800;
-    letter-spacing: -0.03em;
-    color: var(--primary);
+    letter-spacing: -0.04em;
+    color: var(--on-surface);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.modal-header h2::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--primary);
+    border-radius: 2px;
 }
 
 /* Form Group & Input Styling */
