@@ -386,6 +386,13 @@ export function renderCards() {
         return catMatch && subCatMatch && typeMatch && searchMatch;
     });
 
+    // ✅ 프리미엄(우수사이트) 우선 정렬
+    filteredData.sort((a, b) => {
+        if (a.isPremium && !b.isPremium) return -1;
+        if (!a.isPremium && b.isPremium) return 1;
+        return 0;
+    });
+
     if (DOM.itemsCountEl) DOM.itemsCountEl.textContent = filteredData.length;
 
     // Chunked Rendering 최적화: 한 번에 수십 개를 그리지 않고 나눠서 렌더링
