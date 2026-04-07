@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const compression = require('compression');
 
 // Models
 const User = require('./models/User');
@@ -24,9 +25,10 @@ const PORT = process.env.PORT || 8086;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mymoney';
 
 // Middleware
+app.use(compression());
 app.use(cors());
-app.use(bodyParser.json({ limit: '100mb' }));
-app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // ✅ 정적 파일 서빙 (CSS, JS, 이미지 등)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -61,11 +63,11 @@ app.use(async (req, res, next) => {
 app.get('/api/data', async (req, res) => {
     try {
         const [usersDB, categories, items, posts, shortcuts] = await Promise.all([
-            User.find({}),
-            Category.find({}),
-            Item.find({}),
-            Post.find({}),
-            Shortcut.find({})
+            User.find({}).lean(),
+            Category.find({}).lean(),
+            Item.find({}).lean(),
+            Post.find({}).lean(),
+            Shortcut.find({}).lean()
         ]);
 
         const fullData = {

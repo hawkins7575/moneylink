@@ -378,82 +378,98 @@ export function renderCards() {
 
     if (DOM.itemsCountEl) DOM.itemsCountEl.textContent = filteredData.length;
 
-    filteredData.forEach((item, index) => {
-        const card = document.createElement('article');
-        card.className = `card ${item.category} ${item.isPremium ? 'premium' : ''}`;
-        card.style.animationDelay = `${Math.min(index * 0.05, 0.3)}s`;
+    // Chunked Rendering 최적화: 한 번에 수십 개를 그리지 않고 나눠서 렌더링
+    const CHUNK_SIZE = 12;
+    let currentIndex = 0;
 
-        const catLabel = (state.categories.find(c => c.id === item.category)?.name || item.category).toUpperCase();
-        
-        // Handle multiple subcategories for badge rendering
-        let subCatLabels = [];
-        if (item.subCategory) {
-            const pCat = state.categories.find(c => c.id === item.category);
-            if (pCat) {
-                const subCatIds = Array.isArray(item.subCategory) ? item.subCategory : [item.subCategory];
-                subCatIds.forEach(id => {
-                    const scObj = pCat.subCategories.find(sc => sc.id === id);
-                    if (scObj) subCatLabels.push(scObj.name);
-                });
+    function renderNextChunk() {
+        const nextChunk = filteredData.slice(currentIndex, currentIndex + CHUNK_SIZE);
+        if (nextChunk.length === 0) return;
+
+        nextChunk.forEach((item, i) => {
+            const absoluteIndex = currentIndex + i;
+            const card = document.createElement('article');
+            card.className = `card ${item.category} ${item.isPremium ? 'premium' : ''}`;
+            card.style.animationDelay = `${Math.min(i * 0.05, 0.3)}s`;
+
+            const catLabel = (state.categories.find(c => c.id === item.category)?.name || item.category).toUpperCase();
+            
+            let subCatLabels = [];
+            if (item.subCategory) {
+                const pCat = state.categories.find(c => c.id === item.category);
+                if (pCat) {
+                    const subCatIds = Array.isArray(item.subCategory) ? item.subCategory : [item.subCategory];
+                    subCatIds.forEach(id => {
+                        const scObj = pCat.subCategories.find(sc => sc.id === id);
+                        if (scObj) subCatLabels.push(scObj.name);
+                    });
+                }
             }
-        }
-        const subCatLabel = subCatLabels.length > 0 ? ` > ${subCatLabels.join(', ')}` : '';
+            const subCatLabel = subCatLabels.length > 0 ? ` > ${subCatLabels.join(', ')}` : '';
 
-        let faviconUrl = '';
-        try {
-            const domain = new URL(item.url).hostname;
-            faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-        } catch (e) {
-            faviconUrl = `https://www.google.com/s2/favicons?domain=example.com&sz=64`;
-        }
+            let faviconUrl = '';
+            try {
+                const domain = new URL(item.url).hostname;
+                faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+            } catch (e) {
+                faviconUrl = `https://www.google.com/s2/favicons?domain=example.com&sz=64`;
+            }
 
-        let actionsHtml = '';
-        if (state.currentUser && (state.currentUser.role === 'admin' || state.currentUser.username === item.userId)) {
-            actionsHtml = `
-                <div class="card-actions" onclick="event.preventDefault(); event.stopPropagation();">
-                    <button class="card-action-btn edit" title="수정" onclick="window.editItem(${item.id});">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button class="card-action-btn delete" title="삭제" onclick="window.deleteItem(${item.id});">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            `;
-        }
-
-        let ownerBadge = '';
-        if (item.userId && item.userId !== 'admin') {
-            ownerBadge = `<span class="badge" style="background:#e3f2fd; color:#0d47a1;"><i class="fa-solid fa-user"></i> 나의 즐겨찾기</span>`;
-        }
-
-        const typeIcon = item.type === 'youtube' ? '<i class="fa-brands fa-youtube" style="color:#ff0000"></i>' : '<i class="fa-solid fa-globe"></i>';
-        const typeLabel = item.type === 'youtube' ? 'YouTube' : 'Website';
-        const typeBadge = `<span class="badge" style="background:#f5f5f5; color:var(--on-surface-variant);"><span style="margin-right:0.25rem;">${typeIcon}</span> ${typeLabel}</span>`;
-        const premiumBadge = item.isPremium ? `<div class="premium-badge" title="우수사이트"><i class="fa-solid fa-crown"></i></div>` : '';
-
-        card.innerHTML = `
-            ${premiumBadge}
-            ${actionsHtml}
-            <a href="${item.url}" target="_blank" class="card-link">
-                <div class="card-header">
-                    <div class="card-icon" style="background: transparent; display: flex; align-items: center; justify-content: center;">
-                        <img src="${faviconUrl}" 
-                             alt="${item.title.replace(/"/g, '&quot;')} 아이콘" 
-                             style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;"
-                             onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-globe\' style=\'font-size: 1.2rem; color: var(--on-surface-variant); opacity: 0.6;\'></i>';">
+            let actionsHtml = '';
+            if (state.currentUser && (state.currentUser.role === 'admin' || state.currentUser.username === item.userId)) {
+                actionsHtml = `
+                    <div class="card-actions" onclick="event.preventDefault(); event.stopPropagation();">
+                        <button class="card-action-btn edit" title="수정" onclick="window.editItem(${item.id});">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="card-action-btn delete" title="삭제" onclick="window.deleteItem(${item.id});">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
-                    <h3 class="card-title" style="margin:0; font-size:1.05rem; font-weight:600;">${item.title}</h3>
-                </div>
-                <div class="card-desc">${item.description}</div>
-                <div class="card-badges">
-                    <span class="badge badge-category">${catLabel}${subCatLabel}</span>
-                    ${typeBadge}
-                    ${ownerBadge}
-                </div>
-            </a>
-        `;
-        DOM.grid.appendChild(card);
-    });
+                `;
+            }
+
+            let ownerBadge = '';
+            if (item.userId && item.userId !== 'admin') {
+                ownerBadge = `<span class="badge" style="background:#e3f2fd; color:#0d47a1;"><i class="fa-solid fa-user"></i> 나의 즐겨찾기</span>`;
+            }
+
+            const typeIcon = item.type === 'youtube' ? '<i class="fa-brands fa-youtube" style="color:#ff0000"></i>' : '<i class="fa-solid fa-globe"></i>';
+            const typeLabel = item.type === 'youtube' ? 'YouTube' : 'Website';
+            const typeBadge = `<span class="badge" style="background:#f5f5f5; color:var(--on-surface-variant);"><span style="margin-right:0.25rem;">${typeIcon}</span> ${typeLabel}</span>`;
+            const premiumBadge = item.isPremium ? `<div class="premium-badge" title="우수사이트"><i class="fa-solid fa-crown"></i></div>` : '';
+
+            card.innerHTML = `
+                ${premiumBadge}
+                ${actionsHtml}
+                <a href="${item.url}" target="_blank" class="card-link">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: transparent; display: flex; align-items: center; justify-content: center;">
+                            <img src="${faviconUrl}" 
+                                 alt="${item.title.replace(/"/g, '&quot;')} 아이콘" 
+                                 style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-globe\' style=\'font-size: 1.2rem; color: var(--on-surface-variant); opacity: 0.6;\'></i>';">
+                        </div>
+                        <h3 class="card-title" style="margin:0; font-size:1.05rem; font-weight:600;">${item.title}</h3>
+                    </div>
+                    <div class="card-desc">${item.description}</div>
+                    <div class="card-badges">
+                        <span class="badge badge-category">${catLabel}${subCatLabel}</span>
+                        ${typeBadge}
+                        ${ownerBadge}
+                    </div>
+                </a>
+            `;
+            DOM.grid.appendChild(card);
+        });
+
+        currentIndex += CHUNK_SIZE;
+        if (currentIndex < filteredData.length) {
+            requestAnimationFrame(renderNextChunk);
+        }
+    }
+
+    renderNextChunk();
 }
 
 function renderCategoryManager() {
