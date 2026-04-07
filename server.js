@@ -92,6 +92,14 @@ app.post('/api/data', async (req, res) => {
     try {
         const { usersDB, categories, items, newsData, boardData, communityData, shortcuts } = req.body;
 
+        // ✅ 보호 로직: 전송받은 데이터가 비어있으면 DB를 삭제하지 않음
+        if (!items || items.length === 0) {
+            console.warn('⚠️ Empty item list received. Sync rejected to protect database.');
+            return res.status(400).json({ error: '데이터 보호: 빈 데이터는 동기화할 수 없습니다.' });
+        }
+
+        console.log(`Syncing database: ${items.length} items...`);
+
         if (usersDB) { await User.deleteMany({}); if(usersDB.length > 0) await User.insertMany(usersDB); }
         if (categories) { await Category.deleteMany({}); if(categories.length > 0) await Category.insertMany(categories); }
         if (items) { await Item.deleteMany({}); if(items.length > 0) await Item.insertMany(items); }
