@@ -472,6 +472,7 @@ export function renderCards() {
                 ${actionsHtml}
                 <a href="${item.url}" target="_blank" class="card-link">
                     <div class="card-header">
+                        <div class="card-icon">
                             ${faviconUrl ? 
                                 `<img src="${faviconUrl}" 
                                      data-title="${item.title.replace(/"/g, '&quot;')}"
@@ -481,7 +482,7 @@ export function renderCards() {
                                 : getLetterAvatarHTML(item.title)
                             }
                         </div>
-                        <h3 class="card-title" style="margin:0; font-size:1.05rem; font-weight:600;">${item.title}</h3>
+                        <h3 class="card-title">${item.title}</h3>
                     </div>
                     <div class="card-desc">${item.description}</div>
                     <div class="card-badges">
