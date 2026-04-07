@@ -436,8 +436,11 @@ export function renderCards() {
             ${actionsHtml}
             <a href="${item.url}" target="_blank" class="card-link">
                 <div class="card-header">
-                    <div class="card-icon" style="background: transparent;">
-                        <img src="${faviconUrl}" alt="${item.title.replace(/"/g, '&quot;')} 아이콘" style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;">
+                    <div class="card-icon" style="background: transparent; display: flex; align-items: center; justify-content: center;">
+                        <img src="${faviconUrl}" 
+                             alt="${item.title.replace(/"/g, '&quot;')} 아이콘" 
+                             style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-globe\' style=\'font-size: 1.2rem; color: var(--on-surface-variant); opacity: 0.6;\'></i>';">
                     </div>
                     <h3 class="card-title" style="margin:0; font-size:1.05rem; font-weight:600;">${item.title}</h3>
                 </div>
