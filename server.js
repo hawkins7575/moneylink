@@ -1,0 +1,136 @@
+const dns = require('dns');
+// Force use of reliable DNS to bypass local SRV resolution issues
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+
+require('dotenv').config();
+
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const path = require('path');
+const axios = require('axios');
+const cheerio = require('cheerio');
+
+// Models
+const User = require('./models/User');
+const Category = require('./models/Category');
+const Item = require('./models/Item');
+const Post = require('./models/Post');
+const Shortcut = require('./models/Shortcut');
+
+const app = express();
+const PORT = process.env.PORT || 8086;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mymoney';
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+
+// ✅ 정적 파일 서빙 (CSS, JS, 이미지 등)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// MongoDB Connection
+mongoose.connect(MONGODB_URI)
+    .then(() => console.log('Connected to MongoDB Successfully'))
+    .catch(err => console.error('MongoDB Connection Error:', err));
+
+// API: Get All Data (Full State)
+app.get('/api/data', async (req, res) => {
+    try {
+        const [usersDB, categories, items, posts, shortcuts] = await Promise.all([
+            User.find({}),
+            Category.find({}),
+            Item.find({}),
+            Post.find({}),
+            Shortcut.find({})
+        ]);
+
+        const fullData = {
+            usersDB,
+            categories,
+            items,
+            newsData: posts.filter(p => p.postType === 'news'),
+            boardData: posts.filter(p => p.postType === 'board'),
+            communityData: posts.filter(p => p.postType === 'community'),
+            shortcuts
+        };
+
+        res.json(fullData);
+    } catch (err) {
+        console.error('Error fetching data from MongoDB:', err);
+        res.status(500).json({ error: 'Failed to fetch data' });
+    }
+});
+
+// API: Save All Data (Sync)
+app.post('/api/data', async (req, res) => {
+    try {
+        const { usersDB, categories, items, newsData, boardData, communityData, shortcuts } = req.body;
+
+        if (usersDB) { await User.deleteMany({}); if(usersDB.length > 0) await User.insertMany(usersDB); }
+        if (categories) { await Category.deleteMany({}); if(categories.length > 0) await Category.insertMany(categories); }
+        if (items) { await Item.deleteMany({}); if(items.length > 0) await Item.insertMany(items); }
+        
+        await Post.deleteMany({});
+        if (newsData && newsData.length > 0) await Post.insertMany(newsData.map(p => ({ ...p, postType: 'news' })));
+        if (boardData && boardData.length > 0) await Post.insertMany(boardData.map(p => ({ ...p, postType: 'board' })));
+        if (communityData && communityData.length > 0) await Post.insertMany(communityData.map(p => ({ ...p, postType: 'community' })));
+        
+        if (shortcuts) { await Shortcut.deleteMany({}); if(shortcuts.length > 0) await Shortcut.insertMany(shortcuts); }
+
+        console.log('Database synced successfully to MongoDB');
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error syncing to MongoDB:', err);
+        res.status(500).json({ error: 'Failed to sync database' });
+    }
+});
+
+// API: Fetch Metadata (URL info)
+app.get('/api/fetch-meta', async (req, res) => {
+    const targetUrl = req.query.url;
+    if (!targetUrl) return res.status(400).json({ error: 'URL is required' });
+
+    console.log(`Fetching metadata for: ${targetUrl}`);
+    try {
+        const response = await axios.get(targetUrl, {
+            timeout: 5000,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'
+            },
+            maxRedirects: 3
+        });
+
+        const html = response.data;
+        const $ = cheerio.load(html);
+
+        const title = $('title').text().trim() || 
+                      $('meta[property="og:title"]').attr('content') || '';
+        
+        const description = $('meta[name="description"]').attr('content') || 
+                            $('meta[property="og:description"]').attr('content') || '';
+
+        res.json({ title, description });
+    } catch (err) {
+        console.warn(`Metadata fetch failed for ${targetUrl}:`, err.message);
+        res.json({ title: '', description: '' });
+    }
+});
+
+// SPA Fallback - index.html (API 경로 제외)
+app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api/')) {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    }
+});
+
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Professional MongoDB Server running at http://localhost:${PORT}`);
+        console.log('Press Ctrl+C to stop');
+    });
+}
+
+module.exports = app;
