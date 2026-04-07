@@ -232,8 +232,8 @@
                                     <a href="#" data-view="shortcuts">익스프레스</a>
                                     <a href="#" data-view="board">알파 리포트</a>
                                     <span class="footer-separator">|</span>
-                                    <a href="#">이용약관</a>
-                                    <a href="#">개인정보처리방침</a>
+                                    <a href="#" id="termsLink">이용약관</a>
+                                    <a href="#" id="privacyLink">개인정보처리방침</a>
                                 </nav>
                                 <div class="footer-info">
                                     <span class="copyright">&copy; 2026 MY MONEY CURATION.</span>
@@ -532,6 +532,59 @@
             <div style="display: flex; gap: 1rem;">
                 <button id="confirmCancelBtn" class="action-btn" style="flex: 1; height: 50px; border-radius: 12px; font-weight: 600; background: #f5f5f5; color: #333; border: none; cursor: pointer;">취소</button>
                 <button id="confirmOkBtn" class="submit-btn" style="flex: 1; height: 50px; border-radius: 12px; font-weight: 600; background: #ff4d4f; color: white; border: none; cursor: pointer;">삭제하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Service Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>이용약관</h2>
+                <button id="closeTermsModal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem; line-height: 1.7; color: var(--on-surface);">
+                <h3 style="margin-top:0">제 1 조 (목적)</h3>
+                <p>본 약관은 'MY MONEY'(이하 "회사" 또는 "서비스")가 제공하는 금융 포털 및 큐레이션 서비스의 이용 조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.</p>
+                
+                <h3>제 2 조 (서비스의 성격 및 면책)</h3>
+                <p>1. 본 서비스는 사용자의 금융 웹사이트 관리 및 인사이트 공유를 돕는 보조 도구입니다.<br>
+                   2. 서비스 내에서 제공되는 모든 정보는 투자 권유가 아니며, 이를 바탕으로 한 모든 투자 결정의 책임은 사용자 본인에게 있습니다.<br>
+                   3. 회사는 링크된 외부 사이트의 콘텐츠나 정보의 정확성에 대해 보증하거나 책임을 지지 않습니다.</p>
+
+                <h3>제 3 조 (회원의 의무)</h3>
+                <p>1. 회원은 타인의 계정을 도용하거나 부정한 방법으로 서비스를 이용하여서는 안 됩니다.<br>
+                   2. 게시판 이용 시 욕설, 비방, 허위 사실 유포 등 타인에게 피해를 주는 행위는 금지되며, 위반 시 관리자에 의해 게시물이 삭제되거나 이용이 제한될 수 있습니다.</p>
+
+                <h3>제 4 조 (데이터 보존)</h3>
+                <p>회사는 사용자가 등록한 데이터를 최선을 다해 안전하게 관리하나, 천재지변이나 기술적 한계로 인한 예기치 못한 데이터 유실에 대해서는 복구 노력을 다하되 법적 책임을 지지 않습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>개인정보처리방침</h2>
+                <button id="closePrivacyModal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem; line-height: 1.7; color: var(--on-surface);">
+                <h3 style="margin-top:0">1. 개인정보 수집 항목</h3>
+                <p>회사는 원활한 서비스 제공을 위해 아래와 같은 정보를 수집합니다.<br>
+                   - 수집 항목: 아이디, 비밀번호(암호화), 사용자 생성 즐겨찾기 목록, 게시글 데이터 등</p>
+
+                <h3>2. 개인정보 수집 및 이용 목적</h3>
+                <p>사용자 맞춤형 대시보드 제공, 커뮤니티 활동 관리, 보안 강화 및 서비스 개선을 위해 데이터를 활용합니다.</p>
+
+                <h3>3. 개인정보의 보유 및 이용 기간</h3>
+                <p>회원 탈퇴 시까지 데이터를 보유하며, 탈퇴 시 사용자의 개인 식별 정보는 기술적 방법으로 즉시 파기합니다. 단, 게시판에 작성된 공용 데이터는 운영 정책에 따라 보관될 수 있습니다.</p>
+
+                <h3>4. 데이터 보안 및 보호</h3>
+                <p>회사는 실시간 클라우드 DB(MongoDB Atlas)를 사용하여 데이터를 엄격하게 관리하며, 외부 유출 방지를 위해 기술적 방어 체계를 운영하고 있습니다.</p>
+                
+                <h3>5. 개인정보 보호 문의</h3>
+                <p>개인정보 관련 문의는 고객센터 혹은 관리자 메일을 통해 투명하게 응대하고 있습니다.</p>
             </div>
         </div>
     </div>

@@ -106,6 +106,12 @@ export const DOM = {
     get typeButtons() { return document.querySelectorAll('[data-filter-type="type"] .filter-btn'); },
     get overviewSection() { return document.querySelector('.overview-section'); },
     get bookmarksSection() { return document.querySelector('.bookmarks-section'); },
-    get sidebarNavItems() { return document.querySelectorAll('.sidebar-nav-list .nav-btn'); }
+    get sidebarNavItems() { return document.querySelectorAll('.sidebar-nav-list .nav-btn'); },
+    get termsLink() { return document.getElementById('termsLink'); },
+    get privacyLink() { return document.getElementById('privacyLink'); },
+    get termsModal() { return document.getElementById('termsModal'); },
+    get privacyModal() { return document.getElementById('privacyModal'); },
+    get closeTermsModal() { return document.getElementById('closeTermsModal'); },
+    get closePrivacyModal() { return document.getElementById('closePrivacyModal'); }
 };
 

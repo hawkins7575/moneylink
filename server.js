@@ -153,10 +153,19 @@ app.post('/api/data', async (req, res) => {
         if (categories) { await Category.deleteMany({}); if(categories.length > 0) await Category.insertMany(categories); }
         if (items) { await Item.deleteMany({}); if(items.length > 0) await Item.insertMany(items); }
         
-        await Post.deleteMany({});
-        if (newsData && newsData.length > 0) await Post.insertMany(newsData.map(p => ({ ...p, postType: 'news' })));
-        if (boardData && boardData.length > 0) await Post.insertMany(boardData.map(p => ({ ...p, postType: 'board' })));
-        if (communityData && communityData.length > 0) await Post.insertMany(communityData.map(p => ({ ...p, postType: 'community' })));
+        // 게시판 데이터 개별 업데이트 (누락 방지)
+        if (newsData) {
+            await Post.deleteMany({ postType: 'news' });
+            if (newsData.length > 0) await Post.insertMany(newsData.map(p => ({ ...p, postType: 'news' })));
+        }
+        if (boardData) {
+            await Post.deleteMany({ postType: 'board' });
+            if (boardData.length > 0) await Post.insertMany(boardData.map(p => ({ ...p, postType: 'board' })));
+        }
+        if (communityData) {
+            await Post.deleteMany({ postType: 'community' });
+            if (communityData.length > 0) await Post.insertMany(communityData.map(p => ({ ...p, postType: 'community' })));
+        }
         
         if (shortcuts) { await Shortcut.deleteMany({}); if(shortcuts.length > 0) await Shortcut.insertMany(shortcuts); }
 

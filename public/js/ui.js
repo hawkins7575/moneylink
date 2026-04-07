@@ -911,9 +911,14 @@ export function setupUIEvents() {
         renderCategoryManager(); renderCategoryFilters(); renderFormCategories();
     });
 
-    [DOM.modal, DOM.categoryModal, DOM.authModal, DOM.newsModal, DOM.newsReadModal, DOM.boardModal, DOM.boardReadModal, DOM.shortcutModal].forEach(m => {
+    [DOM.modal, DOM.categoryModal, DOM.authModal, DOM.newsModal, DOM.newsReadModal, DOM.boardModal, DOM.boardReadModal, DOM.shortcutModal, DOM.termsModal, DOM.privacyModal].forEach(m => {
         if(m) m.addEventListener('click', (e) => { if (e.target === m) closeAllModals(); });
     });
+
+    if (DOM.termsLink) DOM.termsLink.addEventListener('click', (e) => { e.preventDefault(); closeAllModals(); DOM.termsModal.classList.add('active'); });
+    if (DOM.privacyLink) DOM.privacyLink.addEventListener('click', (e) => { e.preventDefault(); closeAllModals(); DOM.privacyModal.classList.add('active'); });
+    if (DOM.closeTermsModal) DOM.closeTermsModal.addEventListener('click', () => closeAllModals());
+    if (DOM.closePrivacyModal) DOM.closePrivacyModal.addEventListener('click', () => closeAllModals());
 
     DOM.topMenuItems.forEach(item => {
         item.addEventListener('click', (e) => {
