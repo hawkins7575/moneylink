@@ -5,12 +5,20 @@ import { updateAuthUI } from './auth.js';
 
 // ✅ 레터 아바타 생성 함수
 export function getLetterAvatarHTML(title) {
-    if (!title) return '<div class="letter-avatar" style="background: var(--av-1)">?</div>';
-    const firstLetter = title.charAt(0).toUpperCase();
+    if (!title || typeof title !== 'string') return '<div class="letter-avatar" style="background: var(--av-1)">?</div>';
+    
+    // 첫 글자 추출 (공백 제거 후 실제 글자만)
+    const cleanTitle = title.trim();
+    const firstLetter = cleanTitle.charAt(0).toUpperCase();
+    
     // 타이틀 기반으로 1~6 사이의 고유 인덱스 생성
-    const charCodeSum = Array.from(title).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const charCodeSum = Array.from(cleanTitle).reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const colorIndex = (charCodeSum % 6) + 1;
-    return `<div class="letter-avatar" style="background: var(--av-${colorIndex})">${firstLetter}</div>`;
+    
+    // 따옴표 이스케이프: ' 기호가 있으면 \'로 변환하여 에러 방지
+    const safeLetter = firstLetter === "'" ? "\\'" : firstLetter;
+    
+    return `<div class="letter-avatar" style="background: var(--av-${colorIndex})">${safeLetter}</div>`;
 }
 
 export function initEditors() {
@@ -465,9 +473,9 @@ export function renderCards() {
                         <div class="card-icon" style="background: transparent; display: flex; align-items: center; justify-content: center;">
                             ${faviconUrl ? 
                                 `<img src="${faviconUrl}" 
-                                     alt="${item.title.replace(/"/g, '&quot;')} 아이콘" 
+                                     alt="${item.title.replace(/"/g, '&quot;')}" 
                                      style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;"
-                                     onerror="this.style.display='none'; this.parentElement.innerHTML='${getLetterAvatarHTML(item.title)}';">`
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML='${getLetterAvatarHTML(item.title).replace(/'/g, "\\'")}';">`
                                 : getLetterAvatarHTML(item.title)
                             }
                         </div>
