@@ -106,20 +106,22 @@
                             <button id="mobileMenuBtn" class="mobile-menu-btn" title="메뉴 열기">
                                 <i class="fa-solid fa-bars"></i>
                             </button>
-                            <span class="mobile-logo" style="font-weight: 800; color: var(--primary); font-size: 1.1rem; display: none;">MY MONEY</span>
+                            <span class="mobile-logo" style="font-weight: 800; color: var(--primary); font-size: 1.1rem; display: none; white-space: nowrap;">MY MONEY</span>
                         </div>
                         
-                        <div class="header-actions">
-                            <button id="manageCategoryBtn" class="action-btn circle-btn" title="카테고리 관리" style="display: none;">
-                                <i class="fa-solid fa-gear"></i>
-                            </button>
-                            <button id="addBtn" class="action-btn plus-btn" style="display: none;">
-                                <i class="fa-solid fa-plus"></i> <span class="btn-text">추가하기</span>
-                            </button>
-                            <button id="addBoardBtn" class="action-btn plus-btn" style="display: none; background: linear-gradient(135deg, #FF6B6B, #EE5253);">
-                                <i class="fa-solid fa-pen-to-square"></i> <span class="btn-text">작성</span>
-                            </button>
-                            
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                             <div class="header-actions-mobile-hidden" style="display: flex; gap: 0.5rem;">
+                                <button id="manageCategoryBtn" class="action-btn circle-btn" title="카테고리 관리" style="display: none;">
+                                    <i class="fa-solid fa-gear"></i>
+                                </button>
+                                <button id="addBtn" class="action-btn plus-btn" style="display: none;">
+                                    <i class="fa-solid fa-plus"></i> <span class="btn-text">추가</span>
+                                </button>
+                                <button id="addBoardBtn" class="action-btn plus-btn" style="display: none; background: linear-gradient(135deg, #FF6B6B, #EE5253);">
+                                    <i class="fa-solid fa-pen-to-square"></i> <span class="btn-text">작성</span>
+                                </button>
+                             </div>
+
                             <div id="authContainerHeader">
                                 <button id="loginBtnTrigger" class="login-trigger-btn">
                                     <i class="fa-solid fa-user-circle"></i>

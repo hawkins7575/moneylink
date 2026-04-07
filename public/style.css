@@ -698,17 +698,16 @@ h1, h2, h3, .card-title, .modal-header h2 {
 /* Mobile Header Overlap Fix & Refinement */
 @media (max-width: 600px) {
     .main-header {
-        padding: 0 1rem;
+        padding: 1.25rem 1rem 0.75rem; /* Increased top padding for breathing room */
         height: auto;
-        min-height: 100px;
-        padding: 0.75rem 1rem;
+        min-height: auto;
         flex-direction: column;
         align-items: stretch;
         position: sticky;
         top: 0;
         z-index: 1000;
         background: var(--surface-container-lowest);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
     }
 
     .header-content {
@@ -724,28 +723,63 @@ h1, h2, h3, .card-title, .modal-header h2 {
         padding-bottom: 0.5rem;
     }
 
+    .main-header {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10000 !important;
+        background: #ffffff !important;
+        height: auto !important; /* No more height limits */
+        max-height: none !important;
+        min-height: auto !important;
+        width: 100% !important;
+        padding: 3rem 1.25rem 0.5rem !important; /* Move logo down */
+        display: flex !important;
+        flex-direction: column !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .header-content {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        gap: 0.5rem !important;
+    }
+
     .mobile-logo {
         display: block !important;
-        font-weight: 900;
+        font-weight: 800;
         color: var(--primary);
-        letter-spacing: -0.05em;
         font-size: 1.2rem;
-        text-transform: uppercase;
+        white-space: nowrap;
     }
-    
+
+    /* Tabs must stay inside the white header box */
     .top-nav {
-        border-top: 1px solid rgba(0, 0, 0, 0.04);
-        margin-top: 0.5rem;
-        padding-top: 0.25rem;
+        display: block !important;
+        position: static !important; /* No more floating */
+        margin: 0.75rem 0 0 !important;
+        padding: 0.5rem 0 !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        background: transparent !important;
+        overflow-x: auto !important;
     }
-    
-    .header-actions {
-        gap: 0.5rem;
+
+    .top-menu {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 0.5rem !important;
+        padding: 0 !important;
         width: 100%;
-        justify-content: flex-end;
-        border-top: 1px solid rgba(0, 0, 0, 0.03);
-        padding-top: 0.75rem;
-        margin-top: 0.25rem;
+    }
+
+    /* THE NUCLEAR GAP FIX: Push cards down by exactly enough space */
+    .view-content, #main-container > main {
+        margin-top: 1.5rem !important; /* Extra gap below the sticky header */
+        padding-top: 0 !important;
+    }
+
+    .header-actions {
+        display: none !important;
     }
 
     .header-actions .action-btn span {
