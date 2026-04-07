@@ -6,20 +6,22 @@ import { updateAuthUI } from './auth.js';
 // ✅ 레터 아바타 생성 함수
 export function getLetterAvatarHTML(title) {
     if (!title || typeof title !== 'string') return '<div class="letter-avatar" style="background: var(--av-1)">?</div>';
-    
-    // 첫 글자 추출 (공백 제거 후 실제 글자만)
     const cleanTitle = title.trim();
     const firstLetter = cleanTitle.charAt(0).toUpperCase();
-    
-    // 타이틀 기반으로 1~6 사이의 고유 인덱스 생성
     const charCodeSum = Array.from(cleanTitle).reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const colorIndex = (charCodeSum % 6) + 1;
-    
-    // 따옴표 이스케이프: ' 기호가 있으면 \'로 변환하여 에러 방지
-    const safeLetter = firstLetter === "'" ? "\\'" : firstLetter;
-    
-    return `<div class="letter-avatar" style="background: var(--av-${colorIndex})">${safeLetter}</div>`;
+    return `<div class="letter-avatar" style="background: var(--av-${colorIndex})">${firstLetter}</div>`;
 }
+
+// ✅ [추가] 글로벌 아이콘 에러 핸들러: 데이터 속성(data-title)을 읽어와서 레터 아바타를 생성
+window.handleIconError = function(imgElement) {
+    if (!imgElement) return;
+    const title = imgElement.dataset.title || '';
+    const parent = imgElement.parentElement;
+    if (parent) {
+        parent.innerHTML = getLetterAvatarHTML(title);
+    }
+};
 
 export function initEditors() {
     const quillOptions = {
@@ -470,12 +472,12 @@ export function renderCards() {
                 ${actionsHtml}
                 <a href="${item.url}" target="_blank" class="card-link">
                     <div class="card-header">
-                        <div class="card-icon" style="background: transparent; display: flex; align-items: center; justify-content: center;">
                             ${faviconUrl ? 
                                 `<img src="${faviconUrl}" 
+                                     data-title="${item.title.replace(/"/g, '&quot;')}"
                                      alt="${item.title.replace(/"/g, '&quot;')}" 
                                      style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;"
-                                     onerror="this.style.display='none'; this.parentElement.innerHTML='${getLetterAvatarHTML(item.title).replace(/'/g, "\\'")}';">`
+                                     onerror="handleIconError(this)">`
                                 : getLetterAvatarHTML(item.title)
                             }
                         </div>
