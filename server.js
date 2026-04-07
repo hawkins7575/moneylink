@@ -60,19 +60,41 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 // ✅ 정적 파일 서빙 (CSS, JS, 이미지 등)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// MongoDB Connection caching for Serverless
-let cachedConnection = null;
+// MongoDB Connection caching for Serverless (Official Global Pattern)
+let cached = global.mongoose;
+
+if (!cached) {
+    cached = global.mongoose = { conn: null, promise: null };
+}
 
 async function connectToDatabase() {
-    if (cachedConnection) return cachedConnection;
-    
-    console.log('Establishing new MongoDB connection...');
-    const conn = await mongoose.connect(MONGODB_URI, {
-        bufferCommands: false, // Disable Mongoose buffering for faster error reporting in serverless
-    });
-    cachedConnection = conn;
-    console.log('Connected to MongoDB Successfully');
-    return conn;
+    if (cached.conn) {
+        return cached.conn;
+    }
+
+    if (!cached.promise) {
+        const opts = {
+            bufferCommands: false,
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+        };
+
+        console.log('🔄 Establishing new MongoDB connection (Serverless Cache)...');
+        cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+            console.log('✅ Connected to MongoDB Successfully');
+            return mongoose;
+        });
+    }
+
+    try {
+        cached.conn = await cached.promise;
+    } catch (e) {
+        cached.promise = null;
+        throw e;
+    }
+
+    return cached.conn;
 }
 
 // Middleware to ensure DB connection
