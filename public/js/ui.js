@@ -50,7 +50,7 @@ export function closeAllModals(pushState = true) {
     const modals = [
         DOM.modal, DOM.categoryModal, DOM.authModal, DOM.newsModal, 
         DOM.newsReadModal, DOM.boardModal, DOM.boardReadModal, 
-        DOM.shortcutModal, DOM.confirmModal
+        DOM.shortcutModal, DOM.confirmModal, DOM.termsModal, DOM.privacyModal
     ];
     modals.forEach(m => {
         if (m) m.classList.remove('active');
