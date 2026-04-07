@@ -98,7 +98,7 @@ async function initApp() {
         handleRouting();
 
     } catch(e) {
-        alert('백엔드 서버(server.ps1)가 켜져 있는지 확인해주세요!');
+        alert('서버로부터 데이터를 불러오는데 실패했습니다. 네트워크 상태를 확인하시거나 잠시 후 다시 시도해주세요.');
         console.error(e);
     }
 }

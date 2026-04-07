@@ -12,3 +12,7 @@ yarn-error.log*
 *.swo
 *.tmp
 *.bak
+
+# Project Backups & Migrations
+_backup_VER-1/
+_migration_tools/
