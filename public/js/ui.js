@@ -3,6 +3,16 @@ import { DOM } from './dom.js';
 import { syncData, fetchMeta } from './api.js';
 import { updateAuthUI } from './auth.js';
 
+// ✅ 레터 아바타 생성 함수
+export function getLetterAvatarHTML(title) {
+    if (!title) return '<div class="letter-avatar" style="background: var(--av-1)">?</div>';
+    const firstLetter = title.charAt(0).toUpperCase();
+    // 타이틀 기반으로 1~6 사이의 고유 인덱스 생성
+    const charCodeSum = Array.from(title).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const colorIndex = (charCodeSum % 6) + 1;
+    return `<div class="letter-avatar" style="background: var(--av-${colorIndex})">${firstLetter}</div>`;
+}
+
 export function initEditors() {
     const quillOptions = {
         theme: 'snow',
@@ -450,8 +460,8 @@ export function renderCards() {
                                 `<img src="${faviconUrl}" 
                                      alt="${item.title.replace(/"/g, '&quot;')} 아이콘" 
                                      style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;"
-                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-globe\' style=\'font-size: 1.2rem; color: var(--on-surface-variant); opacity: 0.6;\'></i>';">`
-                                : `<i class="fa-solid fa-globe" style="font-size: 1.2rem; color: var(--on-surface-variant); opacity: 0.6;"></i>`
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML='${getLetterAvatarHTML(item.title)}';">`
+                                : getLetterAvatarHTML(item.title)
                             }
                         </div>
                         <h3 class="card-title" style="margin:0; font-size:1.05rem; font-weight:600;">${item.title}</h3>

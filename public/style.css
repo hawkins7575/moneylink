@@ -26,9 +26,28 @@
     --premium-gold: #FFD700;
     --premium-gold-shadow: rgba(255, 215, 0, 0.4);
 
+    /* Avatar Colors */
+    --av-1: #FF8A65; --av-2: #BA68C8; --av-3: #4FC3F7;
+    --av-4: #AED581; --av-5: #FFD54F; --av-6: #9575CD;
+
     /* Ghost Border & Shadows */
     --ghost-border: 1px solid rgba(69, 70, 82, 0.1);
     --hover-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.letter-avatar {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    user-select: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 html {
