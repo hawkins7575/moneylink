@@ -410,8 +410,8 @@ export function renderCards() {
             let faviconUrl = '';
             try {
                 const domain = new URL(item.url).hostname;
-                // DuckDuckGo Favicon Service가 더 안정적이며 404 처리가 깔끔함
-                faviconUrl = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+                // 외부 404 로그 방지를 위해 서버 프록시 사용
+                faviconUrl = `/api/favicon?domain=${domain}`;
             } catch (e) {
                 faviconUrl = ''; 
             }

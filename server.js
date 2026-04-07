@@ -21,6 +21,33 @@ const Post = require('./models/Post');
 const Shortcut = require('./models/Shortcut');
 
 const app = express();
+// ✅ 파비콘 프록시: 외부 404 에러 로그가 콘솔에 남지 않도록 서버에서 중계
+app.get('/api/favicon', async (req, res) => {
+    const domain = req.query.domain;
+    if (!domain) return res.status(400).send('Domain is required');
+
+    const providers = [
+        `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+        `https://icons.duckduckgo.com/ip3/${domain}.ico`
+    ];
+
+    for (const url of providers) {
+        try {
+            const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 3000 });
+            if (response.status === 200) {
+                res.set('Content-Type', response.headers['content-type'] || 'image/x-icon');
+                res.set('Cache-Control', 'public, max-age=86400'); // 1일 캐싱
+                return res.send(response.data);
+            }
+        } catch (e) {
+            // 실패 시 다음 공급자로 이동
+        }
+    }
+
+    // 모든 시도 실패 시 404 대신 투명 이미지나 빈 응답을 주어 브라우저 에러 로그 방지
+    res.status(204).end();
+});
+
 const PORT = process.env.PORT || 8086;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mymoney';
 
