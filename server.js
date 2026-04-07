@@ -31,10 +31,31 @@ app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 // ✅ 정적 파일 서빙 (CSS, JS, 이미지 등)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// MongoDB Connection
-mongoose.connect(MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB Successfully'))
-    .catch(err => console.error('MongoDB Connection Error:', err));
+// MongoDB Connection caching for Serverless
+let cachedConnection = null;
+
+async function connectToDatabase() {
+    if (cachedConnection) return cachedConnection;
+    
+    console.log('Establishing new MongoDB connection...');
+    const conn = await mongoose.connect(MONGODB_URI, {
+        bufferCommands: false, // Disable Mongoose buffering for faster error reporting in serverless
+    });
+    cachedConnection = conn;
+    console.log('Connected to MongoDB Successfully');
+    return conn;
+}
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+    try {
+        await connectToDatabase();
+        next();
+    } catch (err) {
+        console.error('Database connection failed:', err);
+        res.status(500).json({ error: 'Database connection failed', details: err.message });
+    }
+});
 
 // API: Get All Data (Full State)
 app.get('/api/data', async (req, res) => {
@@ -84,7 +105,7 @@ app.post('/api/data', async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Error syncing to MongoDB:', err);
-        res.status(500).json({ error: 'Failed to sync database' });
+        res.status(500).json({ error: 'Failed to sync database', details: err.message });
     }
 });
 

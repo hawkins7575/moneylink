@@ -6,6 +6,18 @@
       "destination": "/server.js"
     },
     {
+      "source": "/(js|css|images|assets)/(.*)",
+      "destination": "/public/$1/$2"
+    },
+    {
+      "source": "/style.css",
+      "destination": "/public/style.css"
+    },
+    {
+      "source": "/data.js",
+      "destination": "/public/data.js"
+    },
+    {
       "source": "/((?!api/|.*\\.).*)",
       "destination": "/server.js"
     }

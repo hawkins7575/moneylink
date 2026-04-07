@@ -51,30 +51,16 @@ async function initApp() {
         let needsSync = false;
 
         if (state.usersDB.length === 0) {
-            const lsUsers = localStorage.getItem('fin_usersDB');
-            if (lsUsers) state.usersDB = JSON.parse(lsUsers);
-            else state.usersDB = [{ username: 'admin', password: 'admin', role: 'admin' }];
+            state.usersDB = [{ username: 'admin', password: 'admin', role: 'admin' }];
             needsSync = true;
         }
         
         if (state.categories.length === 0) {
-            const lsCat = localStorage.getItem('financialCategoriesData');
-            if (lsCat) state.categories = JSON.parse(lsCat);
-            else state.categories = JSON.parse(JSON.stringify(defaultCategories));
+            state.categories = JSON.parse(JSON.stringify(defaultCategories));
             needsSync = true;
         }
         
         if (state.items.length === 0) {
-            const lsItems = localStorage.getItem('financialFavorites');
-            if (lsItems) {
-                state.items = JSON.parse(lsItems);
-            } else if (typeof window !== 'undefined' && window.financialData) {
-                state.items = [...window.financialData].map(i => {
-                    i.userId = 'admin';
-                    if(!i.subCategory) i.subCategory = 'general';
-                    return i;
-                });
-            }
             state.items.forEach(i => { if (!i.userId) i.userId = 'admin'; });
             needsSync = true;
         }
@@ -84,10 +70,7 @@ async function initApp() {
             state.currentUser = JSON.parse(sessionUser);
         }
 
-        if (needsSync) {
-            await syncData();
-        }
-
+        // 최적화: UI 먼저 렌더링 (동기화 완료 전이라도)
         updateAuthUI();
         renderCategoryFilters();
         renderFormCategories();
@@ -96,6 +79,11 @@ async function initApp() {
 
         // 초기 라우팅 처리
         handleRouting();
+
+        // 최적화: 동기화는 백그라운드에서 진행 (사용자 대기 시간 제거)
+        if (needsSync) {
+            syncData(); 
+        }
 
     } catch(e) {
         alert('서버로부터 데이터를 불러오는데 실패했습니다. 네트워크 상태를 확인하시거나 잠시 후 다시 시도해주세요.');
