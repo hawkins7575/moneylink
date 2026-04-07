@@ -101,42 +101,46 @@
         <div id="main-container">
             <header class="main-header">
                 <div class="header-content">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <button id="mobileMenuBtn" class="mobile-menu-btn" title="메뉴 열기">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                        <nav class="top-nav">
-                            <ul class="top-menu">
-                                <li><a href="#" class="active" data-view="bookmarks">대시보드</a></li>
-                                <li><a href="#" data-view="community-board">게시판</a></li>
-                                <li><a href="#" data-view="shortcuts">익스프레스</a></li>
-                                <li><a href="#" data-view="board">알파 리포트</a></li>
-                            </ul>
-                        </nav>
-                    </div>
-                    
-                    <div class="header-actions">
-                        <button id="manageCategoryBtn" class="action-btn circle-btn" title="카테고리 관리" style="display: none;">
-                            <i class="fa-solid fa-gear"></i>
-                        </button>
-                        <button id="addBtn" class="action-btn plus-btn" style="display: none;">
-                            <i class="fa-solid fa-plus"></i> 추가하기
-                        </button>
-                        <button id="addBoardBtn" class="action-btn plus-btn" style="display: none; background: linear-gradient(135deg, #FF6B6B, #EE5253);">
-                            <i class="fa-solid fa-pen-to-square"></i> 인사이트 쓰기
-                        </button>
+                    <div class="header-top-row">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <button id="mobileMenuBtn" class="mobile-menu-btn" title="메뉴 열기">
+                                <i class="fa-solid fa-bars"></i>
+                            </button>
+                            <span class="mobile-logo" style="font-weight: 800; color: var(--primary); font-size: 1.1rem; display: none;">MY MONEY</span>
+                        </div>
                         
-                        <div id="authContainerHeader">
-                             <button id="loginBtnTrigger" class="login-trigger-btn">
-                                <i class="fa-solid fa-user-circle"></i>
-                                <span>로그인</span>
-                             </button>
-                             <div id="userProfile" style="display: none; align-items: center; gap: 0.8rem;">
-                                <span id="userNameDisplay" class="user-name"></span>
-                                <button id="logoutBtn" class="logout-mini-btn" title="로그아웃"><i class="fa-solid fa-sign-out-alt"></i></button>
-                             </div>
+                        <div class="header-actions">
+                            <button id="manageCategoryBtn" class="action-btn circle-btn" title="카테고리 관리" style="display: none;">
+                                <i class="fa-solid fa-gear"></i>
+                            </button>
+                            <button id="addBtn" class="action-btn plus-btn" style="display: none;">
+                                <i class="fa-solid fa-plus"></i> <span class="btn-text">추가하기</span>
+                            </button>
+                            <button id="addBoardBtn" class="action-btn plus-btn" style="display: none; background: linear-gradient(135deg, #FF6B6B, #EE5253);">
+                                <i class="fa-solid fa-pen-to-square"></i> <span class="btn-text">작성</span>
+                            </button>
+                            
+                            <div id="authContainerHeader">
+                                <button id="loginBtnTrigger" class="login-trigger-btn">
+                                    <i class="fa-solid fa-user-circle"></i>
+                                    <span>로그인</span>
+                                </button>
+                                <div id="userProfile" style="display: none; align-items: center; gap: 0.8rem;">
+                                    <span id="userNameDisplay" class="user-name"></span>
+                                    <button id="logoutBtn" class="logout-mini-btn" title="로그아웃"><i class="fa-solid fa-sign-out-alt"></i></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <nav class="top-nav">
+                        <ul class="top-menu">
+                            <li><a href="#" class="active" data-view="bookmarks">대시보드</a></li>
+                            <li><a href="#" data-view="community-board">게시판</a></li>
+                            <li><a href="#" data-view="shortcuts">익스프레스</a></li>
+                            <li><a href="#" data-view="board">알파 리포트</a></li>
+                        </ul>
+                    </nav>
                 </div>
             </header>
 
