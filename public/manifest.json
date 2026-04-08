@@ -1,0 +1,23 @@
+{
+  "name": "MY MONEY | 스마트 금융 포털",
+  "short_name": "MY MONEY",
+  "description": "나만의 스마트 금융 즐겨찾기 & 인사이트 포털",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00083D",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
