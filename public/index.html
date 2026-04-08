@@ -65,10 +65,10 @@
             <nav class="sidebar-nav">
                 <div class="menu-label navigation-label">PORTAL</div>
                 <div class="sidebar-nav-list" style="margin-bottom: 2rem;">
-                    <button class="nav-btn active" data-view="bookmarks"><i class="fa-solid fa-house"></i> 대시보드</button>
+                    <button class="nav-btn active" data-view="bookmarks"><i class="fa-solid fa-house"></i> 즐겨찾기</button>
                     <button class="nav-btn" data-view="community-board"><i class="fa-solid fa-comments"></i> 게시판</button>
-                    <button class="nav-btn" data-view="shortcuts"><i class="fa-solid fa-link"></i> 익스프레스</button>
-                    <button class="nav-btn" data-view="board"><i class="fa-solid fa-star"></i> 알파 리포트</button>
+                    <button class="nav-btn" data-view="shortcuts"><i class="fa-solid fa-link"></i> 바로가기</button>
+                    <button class="nav-btn" data-view="board"><i class="fa-solid fa-star"></i> 인사이트</button>
                 </div>
 
                 <div class="menu-label">SECTORS</div>
@@ -101,16 +101,16 @@
         <div id="main-container">
             <header class="main-header">
                 <div class="header-content">
-                    <div class="header-top-row">
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="header-top-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <div class="header-logo-side" style="display: flex; align-items: center; gap: 0.75rem;">
                             <button id="mobileMenuBtn" class="mobile-menu-btn" title="메뉴 열기">
                                 <i class="fa-solid fa-bars"></i>
                             </button>
                             <span class="mobile-logo" style="font-weight: 800; color: var(--primary); font-size: 1.1rem; display: none; white-space: nowrap;">MY MONEY</span>
                         </div>
                         
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                             <div class="header-actions-mobile-hidden" style="display: flex; gap: 0.5rem;">
+                        <div class="header-action-side" style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="header-actions-mobile-hidden" style="display: flex; gap: 0.5rem;">
                                 <button id="manageCategoryBtn" class="action-btn circle-btn" title="카테고리 관리" style="display: none;">
                                     <i class="fa-solid fa-gear"></i>
                                 </button>
@@ -120,27 +120,27 @@
                                 <button id="addBoardBtn" class="action-btn plus-btn" style="display: none; background: linear-gradient(135deg, #FF6B6B, #EE5253);">
                                     <i class="fa-solid fa-pen-to-square"></i> <span class="btn-text">작성</span>
                                 </button>
-                             </div>
-
-                            <div id="authContainerHeader">
-                                <button id="loginBtnTrigger" class="login-trigger-btn">
-                                    <i class="fa-solid fa-user-circle"></i>
-                                    <span>로그인</span>
-                                </button>
-                                <div id="userProfile" style="display: none; align-items: center; gap: 0.8rem;">
-                                    <span id="userNameDisplay" class="user-name"></span>
-                                    <button id="logoutBtn" class="logout-mini-btn" title="로그아웃"><i class="fa-solid fa-sign-out-alt"></i></button>
-                                </div>
                             </div>
                         </div>
                     </div>
 
                     <nav class="top-nav">
                         <ul class="top-menu">
-                            <li><a href="#" class="active" data-view="bookmarks">대시보드</a></li>
+                            <li><a href="#" class="active" data-view="bookmarks">즐겨찾기</a></li>
                             <li><a href="#" data-view="community-board">게시판</a></li>
-                            <li><a href="#" data-view="shortcuts">익스프레스</a></li>
-                            <li><a href="#" data-view="board">알파 리포트</a></li>
+                            <li><a href="#" data-view="shortcuts">바로가기</a></li>
+                            <li><a href="#" data-view="board">인사이트</a></li>
+                            <li class="menu-login-item">
+                                <div id="authContainerHeader">
+                                    <button id="loginBtnTrigger" class="menu-style-login-btn">
+                                        <i class="fa-solid fa-user-circle"></i> <span>로그인</span>
+                                    </button>
+                                    <div id="userProfile" style="display: none; align-items: center; gap: 0.5rem;">
+                                        <span id="userNameDisplay" class="user-name" style="font-size: 0.85rem;"></span>
+                                        <button id="logoutBtn" class="logout-mini-btn" title="로그아웃"><i class="fa-solid fa-sign-out-alt"></i></button>
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
                     </nav>
                 </div>
@@ -235,8 +235,8 @@
                             <div class="footer-right">
                                 <nav class="footer-links">
                                     <a href="#" data-view="bookmarks">홈</a>
-                                    <a href="#" data-view="shortcuts">익스프레스</a>
-                                    <a href="#" data-view="board">알파 리포트</a>
+                                    <a href="#" data-view="shortcuts">바로가기</a>
+                                    <a href="#" data-view="board">인사이트</a>
                                     <span class="footer-separator">|</span>
                                     <a href="#" id="termsLink">이용약관</a>
                                     <a href="#" id="privacyLink">개인정보처리방침</a>
@@ -338,31 +338,47 @@
 
     <!-- Login / Signup Modal -->
     <div id="authModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <div class="modal-header" style="flex-direction: column; align-items: center; gap: 1rem; border: none; padding-bottom: 0;">
-                <div class="auth-brand" style="text-align: center; margin-bottom: 1rem;">
-                    <h1 style="font-size: 1.8rem; font-weight: 900; color: var(--primary); letter-spacing: -0.05em; margin: 0;">MY MONEY</h1>
-                    <p style="font-size: 0.75rem; color: var(--on-surface-variant); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.7;">Private Financial Portal</p>
+        <div class="modal-content" style="max-width: 380px; padding: 2.5rem; border-radius: 24px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px);">
+            <button id="closeAuthModal" class="close-btn" style="position: absolute; top: 1.25rem; right: 1.25rem; width: 32px; height: 32px; border-radius: 50%; background: var(--surface-container-low); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer;">
+                <i class="fa-solid fa-times" style="font-size: 0.9rem; color: var(--on-surface-variant);"></i>
+            </button>
+            
+            <div class="modal-header" style="flex-direction: column; align-items: center; text-align: center; border: none; padding: 0; margin-bottom: 2.5rem;">
+                <div class="auth-brand" style="margin-bottom: 0.75rem;">
+                    <h1 style="font-size: 2rem; font-weight: 900; color: var(--primary); letter-spacing: -0.06em; margin: 0; line-height: 1;">MY MONEY</h1>
+                    <p style="font-size: 0.7rem; color: var(--on-surface-variant); font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin-top: 0.25rem; opacity: 0.6;">Private Financial Portal</p>
                 </div>
-                <h2 id="authModalTitle" style="font-size: 1.25rem; font-weight: 800;">로그인</h2>
-                <button id="closeAuthModal" class="close-btn" style="position: absolute; top: 1.5rem; right: 1.5rem;">
-                    <i class="fa-solid fa-times"></i>
-                </button>
+                <h2 id="authModalTitle" style="font-size: 1.35rem; font-weight: 800; color: var(--on-surface); margin-top: 1rem;">로그인</h2>
             </div>
             
-            <form id="authForm">
-                <div class="form-group">
-                    <label for="username">아이디 (ID)</label>
-                    <input type="text" id="username" required placeholder="아이디를 입력하세요">
-                </div>
-                <div class="form-group">
-                    <label for="password">비밀번호</label>
-                    <input type="password" id="password" required placeholder="비밀번호를 입력하세요">
+            <form id="authForm" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div class="form-group" style="margin: 0;">
+                    <label for="username" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--on-surface-variant); margin-bottom: 0.6rem; margin-left: 0.2rem;">아이디 (ID)</label>
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-user" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--on-surface-variant); opacity: 0.5; font-size: 0.9rem;"></i>
+                        <input type="text" id="username" required placeholder="아이디를 입력하세요" 
+                               style="width: 100%; height: 52px; padding: 0 1rem 0 2.8rem; border-radius: 14px; border: 1.5px solid var(--surface-container-high); background: var(--surface-container-low); font-size: 0.95rem; font-weight: 500; transition: all 0.3s ease;">
+                    </div>
                 </div>
                 
-                <div class="form-actions" style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button type="submit" id="authSubmitBtn" class="submit-btn" style="flex: 1;">로그인</button>
-                    <button type="button" id="authModeToggleBtn" class="action-btn" style="flex: 1; background: var(--surface-container-low); color: var(--on-surface);">회원가입 하기</button>
+                <div class="form-group" style="margin: 0;">
+                    <label for="password" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--on-surface-variant); margin-bottom: 0.6rem; margin-left: 0.2rem;">비밀번호</label>
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--on-surface-variant); opacity: 0.5; font-size: 0.9rem;"></i>
+                        <input type="password" id="password" required placeholder="비밀번호를 입력하세요" 
+                               style="width: 100%; height: 52px; padding: 0 1rem 0 2.8rem; border-radius: 14px; border: 1.5px solid var(--surface-container-high); background: var(--surface-container-low); font-size: 0.95rem; font-weight: 500; transition: all 0.3s ease;">
+                    </div>
+                </div>
+                
+                <div class="auth-footer" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
+                    <button type="submit" id="authSubmitBtn" class="submit-btn" 
+                            style="width: 100%; height: 54px; border-radius: 14px; font-weight: 700; font-size: 1rem; background: var(--primary); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 8px 16px rgba(0, 8, 61, 0.15); transition: all 0.3s ease;">
+                        <span>로그인</span> <i class="fa-solid fa-arrow-right-to-bracket" style="font-size: 0.9rem;"></i>
+                    </button>
+                    <button type="button" id="authModeToggleBtn" class="action-btn" 
+                            style="width: 100%; height: 50px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; background: transparent; color: var(--on-surface-variant); border: 1.5px solid var(--surface-container-high); cursor: pointer; transition: all 0.2s ease;">
+                        회원가입 하기
+                    </button>
                 </div>
             </form>
         </div>
