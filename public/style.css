@@ -813,41 +813,71 @@ h1, h2, h3, .card-title, .modal-header h2 {
         white-space: nowrap;
     }
 
-    /* Tabs must stay inside the white header box */
-    .top-nav {
-        display: block !important;
-        position: static !important; /* No more floating */
-        margin: 0.75rem 0 0 !important;
-        padding: 0.5rem 0 !important;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-        background: transparent !important;
-        overflow-x: auto !important;
+    .mobile-menu-btn {
+        display: none !important; /* Hamburger removed as requested */
     }
 
-    .top-menu {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        gap: 0.5rem !important;
-        padding: 0 !important;
-        width: 100%;
-    }
-
-    /* THE NUCLEAR GAP FIX: Push cards down by exactly enough space */
-    .view-content, #main-container > main {
-        margin-top: 1.5rem !important; /* Extra gap below the sticky header */
-        padding-top: 0 !important;
-    }
-
-    .header-actions {
+    /* Reset layout for mobile without sidebar */
+    #sidebar {
         display: none !important;
     }
 
-    .header-actions .action-btn span {
-        display: none; /* Hide text on mobile for small buttons */
+    #sidebar-overlay {
+        display: none !important;
     }
-    
-    .header-actions .plus-btn {
-        padding: 0 1rem;
+
+    #main-container {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .content-scroll-area {
+        padding: 1rem !important;
+    }
+
+    /* Category Quick Filters as horizontal chips */
+    .main-filter-group, .sub-filter-group {
+        display: none; /* Controlled by JS via inline style when needed */
+        overflow-x: auto;
+        gap: 0.5rem;
+        padding: 0.2rem 0 1rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .main-filter-group::-webkit-scrollbar, .sub-filter-group::-webkit-scrollbar {
+        display: none;
+    }
+
+    .filter-btn, .sub-filter-btn {
+        flex: 0 0 auto;
+        padding: 0.5rem 1rem !important;
+        font-size: 0.85rem !important;
+        height: auto !important;
+        border-radius: 999px !important;
+        background: var(--surface-container-low) !important;
+        color: var(--on-surface-variant) !important;
+        border: 1px solid rgba(0,0,0,0.04) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.4rem !important;
+        white-space: nowrap !important;
+    }
+
+    .filter-btn.active, .sub-filter-btn.active {
+        background: var(--primary) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 10px rgba(0, 8, 61, 0.15);
+    }
+
+    /* Push cards down slightly for spacing */
+    .view-content, #main-container > main {
+        margin-top: 0.5rem !important;
+        padding-top: 0 !important;
     }
 }
 

@@ -271,28 +271,39 @@ const categoryIcons = {
 };
 
 export function renderCategoryFilters() {
-    DOM.catContainer.innerHTML = `
+    const filterHTML = `
         <button class="filter-btn ${state.currentCategory === 'all' ? 'active' : ''}" data-filter="all">
             <i class="${categoryIcons['all'] || 'fa-solid fa-folder'}"></i>
             <span>전체</span>
-        </button>`;
-        
-    state.categories.forEach(c => {
+        </button>` + 
+    state.categories.map(c => {
         const iconClass = categoryIcons[c.id] || 'fa-solid fa-folder';
-        DOM.catContainer.innerHTML += `
+        return `
             <button class="filter-btn ${state.currentCategory === c.id ? 'active' : ''}" data-filter="${c.id}">
                 <i class="${iconClass}"></i>
                 <span>${c.name}</span>
             </button>`;
-    });
+    }).join('');
 
-    DOM.catContainer.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            state.currentCategory = btn.dataset.filter;
-            state.currentSubCategory = ['all'];
-            renderCategoryFilters();
-            renderSubCategoryFilters();
-            renderCards();
+    // Render to sidebar (desktop)
+    if (DOM.catContainer) DOM.catContainer.innerHTML = filterHTML;
+    
+    // Render to main view (mobile/quick access)
+    const mainCatContainer = document.getElementById('main-category-filter-container');
+    if (mainCatContainer) mainCatContainer.innerHTML = filterHTML;
+
+    // Attach events to both
+    const containers = [DOM.catContainer, mainCatContainer];
+    containers.forEach(container => {
+        if (!container) return;
+        container.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.currentCategory = btn.dataset.filter;
+                state.currentSubCategory = ['all'];
+                renderCategoryFilters();
+                renderSubCategoryFilters();
+                renderCards();
+            });
         });
     });
 
@@ -995,26 +1006,39 @@ export function setupUIEvents() {
         if (DOM.communityBoardSection) DOM.communityBoardSection.style.display = 'none';
         if (DOM.shortcutsSection) DOM.shortcutsSection.style.display = 'none';
 
-        if (view === 'board') {
+        const mobileFilter = document.getElementById('main-category-filter-container');
+
+        if (view === 'bookmarks') {
+            if (DOM.overviewSection) DOM.overviewSection.style.display = 'block';
+            if (DOM.bookmarksSection) DOM.bookmarksSection.style.display = 'block';
+            if (mobileFilter && window.innerWidth <= 600) mobileFilter.style.display = 'flex';
+            renderNews();
+            renderCards();
+        } else if (view === 'board') {
             state.currentBoardType = 'board';
             if (DOM.boardSection) {
                 DOM.boardSection.style.display = 'block';
                 renderBoard();
             }
+            if (mobileFilter) mobileFilter.style.display = 'none';
         } else if (view === 'community-board') {
             state.currentBoardType = 'community';
             if (DOM.communityBoardSection) {
                 DOM.communityBoardSection.style.display = 'block';
                 renderCommunityBoard();
             }
+            if (mobileFilter) mobileFilter.style.display = 'none';
         } else if (view === 'shortcuts') {
             if (DOM.shortcutsSection) {
                 DOM.shortcutsSection.style.display = 'block';
                 renderShortcuts();
             }
+            if (mobileFilter) mobileFilter.style.display = 'none';
         } else {
+            // Default home view logic if others missed
             if (DOM.overviewSection) DOM.overviewSection.style.display = 'block';
             if (DOM.bookmarksSection) DOM.bookmarksSection.style.display = 'block';
+            if (mobileFilter && view === 'bookmarks' && window.innerWidth <= 600) mobileFilter.style.display = 'flex';
             renderNews();
             renderCards();
         }
