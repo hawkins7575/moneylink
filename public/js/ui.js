@@ -407,10 +407,20 @@ export function renderCards() {
         return catMatch && subCatMatch && typeMatch && searchMatch;
     });
 
-    // ✅ 프리미엄(우수사이트) 우선 정렬
+    // ✅ 1순위: 웹(youtube가 아닌 것)을 우선 정렬, 2순위: 프리미엄(우수사이트) 판단
     filteredData.sort((a, b) => {
+        const isAWeb = a.type !== 'youtube';
+        const isBWeb = b.type !== 'youtube';
+        
+        // 1. 웹사이트가 유튜브보다 우선
+        if (isAWeb && !isBWeb) return -1;
+        if (!isAWeb && isBWeb) return 1;
+        
+        // 2. 같은 타입일 경우 프리미엄 우선 정렬
         if (a.isPremium && !b.isPremium) return -1;
         if (!a.isPremium && b.isPremium) return 1;
+        
+        // 3. 나머지는 그대로 
         return 0;
     });
 
