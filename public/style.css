@@ -1110,64 +1110,46 @@ h1, h2, h3, .card-title, .modal-header h2 {
     opacity: 1;
 }
 
-/* PC View settings for star badge */
+/* Global Settings - Make Star button identical to Crown and always visible */
 .my-star-btn {
     position: absolute;
-    top: 0.85rem;
-    right: 0.85rem;
-    background: transparent;
-    border: none;
+    top: 26px; /* Right beneath the crown's 26px height */
+    right: -6px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 0;
-    font-size: 1.35rem;
+    margin: 0;
+    font-size: 0.75rem; /* Matches crown font size */
+    z-index: 110;
     cursor: pointer;
-    z-index: 105;
-    opacity: 0;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
 }
 
-.card:hover .my-star-btn {
-    opacity: 1;
+.my-star-btn:hover {
+    transform: scale(1.15) translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Prevent overlap on desktop if Admin actions are present */
-.card:has(.card-actions) .my-star-btn {
-    right: 4.8rem;
+/* Move to top if no crown is present */
+.card:not(.premium) .my-star-btn {
+    top: -6px;
 }
 
 .card-action-btn:hover {
     transform: translateY(-2px) scale(1.05);
 }
 
-/* Mobile Settings - Make Star button identical to Crown */
+/* Mobile Overrides */
 @media (max-width: 1024px) {
     .card-actions {
         opacity: 1 !important;
-    }
-    
-    .my-star-btn {
-        opacity: 1 !important;
-        position: absolute;
-        top: 26px; /* Right beneath the crown's 26px height */
-        right: -6px;
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background: #ffffff;
-        border: 2px solid #ffffff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        margin: 0;
-        font-size: 0.75rem; /* Matches crown font size */
-        z-index: 110;
-        transition: transform 0.2s;
-    }
-
-    /* Move to top if no crown is present */
-    .card:not(.premium) .my-star-btn {
-        top: -6px;
     }
 }
 
