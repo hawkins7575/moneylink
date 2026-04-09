@@ -500,7 +500,6 @@ export function renderCards() {
             }
 
             let myBookmarkBtn = '';
-            let myBadgeHtml = '';
             if (state.currentUser) {
                 const isMy = state.currentUser.myBookmarks && state.currentUser.myBookmarks.includes(item.id);
                 // 좀 더 선명하고 고급스러운 색상으로 수정
@@ -508,13 +507,10 @@ export function renderCards() {
                     ? '<i class="fa-solid fa-star" style="color: #FFB300; filter: drop-shadow(0 2px 4px rgba(255,179,0,0.4)); text-shadow: 0 0 1px rgba(0,0,0,0.1);"></i>' 
                     : '<i class="fa-regular fa-star" style="color: #8B9BB4; transition: color 0.2s;"></i>';
                 myBookmarkBtn = `
-                    <button class="card-action-btn my-star-btn" title="내 즐겨찾기에 추가/제거" onclick="window.toggleMyBookmark(${item.id}, event);" style="background:transparent; border:none; padding:5px; font-size:1.35rem; cursor:pointer; margin-right:4px;">
+                    <button class="my-star-btn" title="내 즐겨찾기에 추가/제거" onclick="window.toggleMyBookmark(${item.id}, event);">
                         ${starIcon}
                     </button>
                 `;
-                if (isMy) {
-                    myBadgeHtml = `<div class="premium-badge" style="background:#fff3cd; color:#ffc107; right:10px; left:auto; display:flex; align-items:center; gap:4px; font-size:0.7rem; padding:4px 8px; border-radius:12px; top:-10px; border:1px solid #ffeeba;" title="내 즐겨찾기"><i class="fa-solid fa-star"></i> <span>My</span></div>`;
-                }
             }
 
             let actionsHtml = '';
@@ -543,11 +539,10 @@ export function renderCards() {
 
             card.innerHTML = `
                 ${premiumBadge}
-                ${myBadgeHtml}
-                <div class="card-actions" style="display:flex; gap:0.5rem;" onclick="event.preventDefault(); event.stopPropagation();">
-                    ${myBookmarkBtn}
+                ${myBookmarkBtn}
+                ${actionsHtml ? `<div class="card-actions" style="display:flex; gap:0.5rem;" onclick="event.preventDefault(); event.stopPropagation();">
                     ${actionsHtml.replace('<div class="card-actions" onclick="event.preventDefault(); event.stopPropagation();">', '').replace('</div>', '')}
-                </div>
+                </div>` : ''}
                 <a href="${item.url}" target="_blank" class="card-link">
                     <div class="card-header">
                         <div class="card-icon">
