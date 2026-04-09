@@ -8,6 +8,9 @@ import {
     renderFormCategories, 
     renderNews, 
     renderCards,
+    renderBoard,
+    renderCommunityBoard,
+    renderShortcuts,
     openNewsModal,
     openBoardModal,
     closeAllModals,
@@ -78,6 +81,9 @@ async function initApp() {
         renderFormCategories();
         renderNews();
         renderCards();
+        renderBoard();
+        renderCommunityBoard();
+        renderShortcuts();
 
         // 초기 라우팅 처리
         if (!handleRouting()) {
