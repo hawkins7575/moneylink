@@ -2523,6 +2523,7 @@ body.admin-mode .add-btn.admin-only {
 /* Sub-category Filter Group */
 .sub-filter-group {
     display: flex;
+    flex-wrap: nowrap !important;
     gap: 0.5rem;
     padding: 0.25rem;
     overflow-x: auto;
@@ -2537,16 +2538,17 @@ body.admin-mode .add-btn.admin-only {
 
 .sub-filter-btn {
     flex-shrink: 0;
-    padding: 0.45rem 1rem;
-    background: var(--surface-container-low);
-    border: 1px solid transparent;
-    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 999px;
     color: var(--on-surface-variant);
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    white-space: nowrap;
+    white-space: nowrap !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .sub-filter-btn:hover {
@@ -2557,6 +2559,7 @@ body.admin-mode .add-btn.admin-only {
     background: var(--secondary-container);
     color: var(--on-secondary-container);
     border-color: var(--on-secondary-container);
+    box-shadow: 0 4px 8px rgba(0, 8, 61, 0.08);
 }
 
 @media (max-width: 1024px) {
