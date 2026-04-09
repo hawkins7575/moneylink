@@ -1110,6 +1110,12 @@ h1, h2, h3, .card-title, .modal-header h2 {
     opacity: 1;
 }
 
+@media (max-width: 1024px) {
+    .card-actions {
+        opacity: 1 !important;
+    }
+}
+
 .card-action-btn {
     width: 32px;
     height: 32px;
