@@ -10,7 +10,8 @@ import {
     renderCards,
     openNewsModal,
     openBoardModal,
-    closeAllModals
+    closeAllModals,
+    switchView
 } from './ui.js';
 
 function handleRouting() {
@@ -20,19 +21,20 @@ function handleRouting() {
 
     if (!view || !id) {
         closeAllModals(false);
-        return;
+        return false;
     }
 
     if (view === 'news') {
         const news = state.newsData.find(n => n.id === parseInt(id));
-        if (news) openNewsModal(news);
+        if (news) { openNewsModal(news); return true; }
     } else if (view === 'board') {
         const post = state.boardData.find(b => b.id === parseInt(id));
-        if (post) openBoardModal(post);
+        if (post) { openBoardModal(post); return true; }
     } else if (view === 'community-board') {
         const post = state.communityData.find(b => b.id === parseInt(id));
-        if (post) openBoardModal(post);
+        if (post) { openBoardModal(post); return true; }
     }
+    return false;
 }
 
 async function initApp() {
@@ -78,7 +80,9 @@ async function initApp() {
         renderCards();
 
         // 초기 라우팅 처리
-        handleRouting();
+        if (!handleRouting()) {
+            switchView('bookmarks', '즐겨찾기');
+        }
 
         // 최적화: 동기화는 백그라운드에서 진행 (사용자 대기 시간 제거)
         if (needsSync) {

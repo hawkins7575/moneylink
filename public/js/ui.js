@@ -904,25 +904,29 @@ export function setupUIEvents() {
         });
     }
 
-    DOM.formCategory.addEventListener('change', updateFormSubCategories);
+    if (DOM.formCategory) {
+        DOM.formCategory.addEventListener('change', updateFormSubCategories);
+    }
 
     if(DOM.manageCategoryBtn) {
         DOM.manageCategoryBtn.addEventListener('click', () => { renderCategoryManager(); DOM.categoryModal.classList.add('active'); });
     }
     if (DOM.closeCategoryModal) DOM.closeCategoryModal.addEventListener('click', () => closeAllModals());
 
-    DOM.addCategorySubmitBtn.addEventListener('click', async () => {
-        const id = DOM.newCatId.value.trim();
-        const name = DOM.newCatName.value.trim();
-        if (!id || !name) return alert('ID와 이름을 입력하세요.');
-        if (state.categories.find(c => c.id === id)) return alert('이미 존재하는 ID입니다.');
-        state.categories.push({ id, name, subCategories: [] });
-        DOM.newCatId.value = ''; DOM.newCatName.value = '';
-        await syncData(); 
-        renderCategoryManager(); renderCategoryFilters(); renderFormCategories();
-    });
+    if (DOM.addCategorySubmitBtn) {
+        DOM.addCategorySubmitBtn.addEventListener('click', async () => {
+            const id = DOM.newCatId.value.trim();
+            const name = DOM.newCatName.value.trim();
+            if (!id || !name) return alert('ID와 이름을 입력하세요.');
+            if (state.categories.find(c => c.id === id)) return alert('이미 존재하는 ID입니다.');
+            state.categories.push({ id, name, subCategories: [] });
+            DOM.newCatId.value = ''; DOM.newCatName.value = '';
+            await syncData(); 
+            renderCategoryManager(); renderCategoryFilters(); renderFormCategories();
+        });
+    }
 
-    [DOM.modal, DOM.categoryModal, DOM.authModal, DOM.newsModal, DOM.newsReadModal, DOM.boardModal, DOM.boardReadModal, DOM.shortcutModal, DOM.termsModal, DOM.privacyModal].forEach(m => {
+    [DOM.modal, DOM.categoryModal, DOM.authModal, DOM.newsModal, DOM.newsReadModal, DOM.boardModal, DOM.boardReadModal, DOM.shortcutModal, DOM.termsModal, DOM.privacyModal, DOM.confirmModal].forEach(m => {
         if(m) m.addEventListener('click', (e) => { if (e.target === m) closeAllModals(); });
     });
 
@@ -931,120 +935,29 @@ export function setupUIEvents() {
     if (DOM.closeTermsModal) DOM.closeTermsModal.addEventListener('click', () => closeAllModals());
     if (DOM.closePrivacyModal) DOM.closePrivacyModal.addEventListener('click', () => closeAllModals());
 
-    DOM.topMenuItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleViewSwitch(item.getAttribute('data-view'), item);
+    if (DOM.topMenuItems) {
+        DOM.topMenuItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchView(item.getAttribute('data-view'), item.textContent.trim());
+            });
         });
-    });
-
-    DOM.sidebarNavItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleViewSwitch(item.getAttribute('data-view'), item);
-            if (window.innerWidth <= 1024) {
-                DOM.sidebar.classList.remove('active');
-                DOM.sidebarOverlay.classList.remove('active');
-            }
-        });
-    });
-
-    function handleViewSwitch(view, activeBtn) {
-        // Sync active state for both top menu and sidebar nav
-        const viewAttr = activeBtn.getAttribute('data-view');
-        
-        DOM.topMenuItems.forEach(i => {
-            if (i.getAttribute('data-view') === view && i.textContent.trim() === activeBtn.textContent.trim()) {
-                i.classList.add('active');
-            } else if (i.getAttribute('data-view') !== view || i.textContent.trim() !== activeBtn.textContent.trim()) {
-                // This logic is slightly complex because some buttons share the same data-view (bookmarks)
-                // but differ in text ("홈", "자산 관리", "투자 도구").
-                // Let's just match the exact button if possible or use text.
-            }
-        });
-
-        // Simpler approach: update all buttons based on text/view
-        const btnText = activeBtn.textContent.trim();
-        [...DOM.topMenuItems, ...DOM.sidebarNavItems].forEach(btn => {
-            if (btn.getAttribute('data-view') === view && btn.textContent.trim() === btnText) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-
-        // Add Comment Submission Event
-        if (DOM.submitCommentBtn) {
-            DOM.submitCommentBtn.onclick = async () => {
-                const author = DOM.commentAuthor.value.trim() || '익명';
-                const content = DOM.commentContent.value.trim();
-                if (!content) return alert('댓글 내용을 입력하세요.');
-
-                // Find current post from state based on URL id
-                const params = new URLSearchParams(window.location.search);
-                const id = parseInt(params.get('id'));
-                const post = [...state.boardData, ...state.communityData].find(p => p.id === id);
-
-                if (post) {
-                    if (!post.comments) post.comments = [];
-                    post.comments.push({
-                        author: author,
-                        content: content,
-                        timestamp: Date.now()
-                    });
-                    
-                    DOM.commentContent.value = '';
-                    renderComments(post);
-                    await syncData();
-                }
-            };
-        }
-
-        if (DOM.overviewSection) DOM.overviewSection.style.display = 'none';
-        if (DOM.bookmarksSection) DOM.bookmarksSection.style.display = 'none';
-        if (DOM.boardSection) DOM.boardSection.style.display = 'none';
-        if (DOM.communityBoardSection) DOM.communityBoardSection.style.display = 'none';
-        if (DOM.shortcutsSection) DOM.shortcutsSection.style.display = 'none';
-
-        const mobileFilter = document.getElementById('main-category-filter-container');
-
-        if (view === 'bookmarks') {
-            if (DOM.overviewSection) DOM.overviewSection.style.display = 'block';
-            if (DOM.bookmarksSection) DOM.bookmarksSection.style.display = 'block';
-            if (mobileFilter && window.innerWidth <= 600) mobileFilter.style.display = 'flex';
-            renderNews();
-            renderCards();
-        } else if (view === 'board') {
-            state.currentBoardType = 'board';
-            if (DOM.boardSection) {
-                DOM.boardSection.style.display = 'block';
-                renderBoard();
-            }
-            if (mobileFilter) mobileFilter.style.display = 'none';
-        } else if (view === 'community-board') {
-            state.currentBoardType = 'community';
-            if (DOM.communityBoardSection) {
-                DOM.communityBoardSection.style.display = 'block';
-                renderCommunityBoard();
-            }
-            if (mobileFilter) mobileFilter.style.display = 'none';
-        } else if (view === 'shortcuts') {
-            if (DOM.shortcutsSection) {
-                DOM.shortcutsSection.style.display = 'block';
-                renderShortcuts();
-            }
-            if (mobileFilter) mobileFilter.style.display = 'none';
-        } else {
-            // Default home view logic if others missed
-            if (DOM.overviewSection) DOM.overviewSection.style.display = 'block';
-            if (DOM.bookmarksSection) DOM.bookmarksSection.style.display = 'block';
-            if (mobileFilter && view === 'bookmarks' && window.innerWidth <= 600) mobileFilter.style.display = 'flex';
-            renderNews();
-            renderCards();
-        }
-        updateAuthUI();
     }
 
+    if (DOM.sidebarNavItems) {
+        DOM.sidebarNavItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchView(item.getAttribute('data-view'), item.textContent.trim());
+                if (window.innerWidth <= 1024 && DOM.sidebar && DOM.sidebarOverlay) {
+                    DOM.sidebar.classList.remove('active');
+                    DOM.sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
+    }
+
+    // Metadata Fetching
     let isFetchingMeta = false;
     let lastFetchedUrl = '';
     if (DOM.urlInput) {
@@ -1060,20 +973,23 @@ export function setupUIEvents() {
 
             try {
                 const label = DOM.urlInput.previousElementSibling;
-                const originalText = label.innerHTML;
-                label.innerHTML = `URL <span style="font-size:0.75rem; color:var(--primary); margin-left:0.5rem;"><i class="fa-solid fa-spinner fa-spin"></i> 정보를 가져오는 중...</span>`;
+                const originalText = label ? label.innerHTML : "URL";
+                if (label) {
+                    label.innerHTML = `URL <span style="font-size:0.75rem; color:var(--primary); margin-left:0.5rem;"><i class="fa-solid fa-spinner fa-spin"></i> 정보를 가져오는 중...</span>`;
+                }
                 
                 const meta = await fetchMeta(url);
-                
                 if (meta.title && !DOM.titleInput.value) DOM.titleInput.value = meta.title;
                 if (meta.description && !DOM.descInput.value) DOM.descInput.value = meta.description;
                 
-                label.innerHTML = originalText;
+                if (label) label.innerHTML = originalText;
             } catch (e) {
                 console.error("Metadata fetch error:", e);
                 const label = DOM.urlInput.previousElementSibling;
-                label.innerHTML = `URL <span style="font-size:0.75rem; color:#D32F2F; margin-left:0.5rem;">가져오기 실패</span>`;
-                setTimeout(() => { label.innerHTML = "URL"; }, 2000);
+                if (label) {
+                    label.innerHTML = `URL <span style="font-size:0.75rem; color:#D32F2F; margin-left:0.5rem;">가져오기 실패</span>`;
+                    setTimeout(() => { label.innerHTML = "URL"; }, 2000);
+                }
             } finally {
                 isFetchingMeta = false;
             }
@@ -1095,33 +1011,12 @@ export function setupUIEvents() {
         DOM.addNewsBtn.addEventListener('click', () => {
             if (DOM.newsIdInput) DOM.newsIdInput.value = '';
             if (DOM.newsModalTitle) DOM.newsModalTitle.textContent = '뉴스 작성';
-            document.getElementById('newsTitle').value = '';
+            if (document.getElementById('newsTitle')) document.getElementById('newsTitle').value = '';
             if (editors.quill) editors.quill.setContents([]); 
-            DOM.newsModal.classList.add('active');
+            if (DOM.newsModal) DOM.newsModal.classList.add('active');
         });
     }
 
-    // Window hooks for news actions
-    window.editNews = (id) => {
-        const news = state.newsData.find(n => n.id === id);
-        if (news) {
-            if (DOM.newsIdInput) DOM.newsIdInput.value = news.id;
-            if (DOM.newsModalTitle) DOM.newsModalTitle.textContent = '뉴스 수정';
-            document.getElementById('newsTitle').value = news.title;
-            if (editors.quill) {
-                editors.quill.root.innerHTML = news.content || news.desc || '';
-            }
-            DOM.newsModal.classList.add('active');
-        }
-    };
-
-    window.deleteNews = (id) => {
-        confirmAction('뉴스 삭제', '이 뉴스를 정말 삭제하시겠습니까?', async () => {
-            state.newsData = state.newsData.filter(n => n.id !== id);
-            await syncData();
-            renderNews();
-        });
-    };
     if (DOM.closeNewsModal) DOM.closeNewsModal.addEventListener('click', () => closeAllModals());
     if (DOM.cancelNewsBtn) DOM.cancelNewsBtn.addEventListener('click', () => closeAllModals());
     if (DOM.closeNewsReadModal) DOM.closeNewsReadModal.addEventListener('click', () => closeAllModals());
@@ -1131,7 +1026,8 @@ export function setupUIEvents() {
             e.preventDefault();
             const id = DOM.newsIdInput ? DOM.newsIdInput.value : '';
             const content = editors.quill ? editors.quill.root.innerHTML : '';
-            const title = document.getElementById('newsTitle').value.trim();
+            const newsTitleEl = document.getElementById('newsTitle');
+            const title = newsTitleEl ? newsTitleEl.value.trim() : '';
 
             if (id) {
                 const idx = state.newsData.findIndex(n => n.id === parseInt(id));
@@ -1155,12 +1051,8 @@ export function setupUIEvents() {
         DOM.mobileMenuBtn.addEventListener('click', toggleSidebar);
         DOM.sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        DOM.catContainer.addEventListener('click', (e) => {
-            if (window.innerWidth <= 1024 && e.target.closest('.filter-btn')) toggleSidebar();
-        });
-        const typeContainer = document.querySelector('.sidebar-type-list');
-        if (typeContainer) {
-            typeContainer.addEventListener('click', (e) => {
+        if (DOM.catContainer) {
+            DOM.catContainer.addEventListener('click', (e) => {
                 if (window.innerWidth <= 1024 && e.target.closest('.filter-btn')) toggleSidebar();
             });
         }
@@ -1168,15 +1060,13 @@ export function setupUIEvents() {
 
     if (DOM.addShortcutBtn) {
         DOM.addShortcutBtn.addEventListener('click', () => {
-            DOM.shortcutForm.reset();
-            document.getElementById('shortcutId').value = '';
-            DOM.shortcutModalTitle.textContent = '바로가기 추가';
-            DOM.shortcutModal.classList.add('active');
+            if (DOM.shortcutForm) DOM.shortcutForm.reset();
+            if (document.getElementById('shortcutId')) document.getElementById('shortcutId').value = '';
+            if (DOM.shortcutModalTitle) DOM.shortcutModalTitle.textContent = '바로가기 추가';
+            if (DOM.shortcutModal) DOM.shortcutModal.classList.add('active');
         });
     }
-    if (DOM.closeShortcutModal) {
-        DOM.closeShortcutModal.addEventListener('click', () => closeAllModals());
-    }
+    if (DOM.closeShortcutModal) DOM.closeShortcutModal.addEventListener('click', () => closeAllModals());
 
     if (DOM.shortcutForm) {
         DOM.shortcutForm.addEventListener('submit', async (e) => {
@@ -1202,17 +1092,14 @@ export function setupUIEvents() {
             state.currentBoardType = 'board';
             if (DOM.boardIdInput) DOM.boardIdInput.value = '';
             if (DOM.boardModalTitle) DOM.boardModalTitle.textContent = '인사이트 작성';
-            document.getElementById('boardTitle').value = '';
-            
-            // Show Author/Email fields
+            if (document.getElementById('boardTitle')) document.getElementById('boardTitle').value = '';
             if (DOM.boardAnonFields) {
                 DOM.boardAnonFields.style.display = 'flex';
                 if (DOM.boardNicknameInput) DOM.boardNicknameInput.value = state.currentUser ? state.currentUser.username : '';
                 if (DOM.boardEmailInput) DOM.boardEmailInput.value = '';
             }
-
             if (editors.boardQuill) editors.boardQuill.setContents([]);
-            DOM.boardModal.classList.add('active');
+            if (DOM.boardModal) DOM.boardModal.classList.add('active');
         });
     }
 
@@ -1221,46 +1108,16 @@ export function setupUIEvents() {
             state.currentBoardType = 'community';
             if (DOM.boardIdInput) DOM.boardIdInput.value = '';
             if (DOM.boardModalTitle) DOM.boardModalTitle.textContent = '자유 게시글 작성';
-            document.getElementById('boardTitle').value = '';
-            
-            // Show Author/Email fields
+            if (document.getElementById('boardTitle')) document.getElementById('boardTitle').value = '';
             if (DOM.boardAnonFields) {
                 DOM.boardAnonFields.style.display = 'flex';
                 if (DOM.boardNicknameInput) DOM.boardNicknameInput.value = state.currentUser ? state.currentUser.username : '';
                 if (DOM.boardEmailInput) DOM.boardEmailInput.value = '';
             }
-
             if (editors.boardQuill) editors.boardQuill.setContents([]);
-            DOM.boardModal.classList.add('active');
+            if (DOM.boardModal) DOM.boardModal.classList.add('active');
         });
     }
-
-    // Window hooks for board actions
-    window.editBoard = (id) => {
-        let post = state.boardData.find(b => b.id === Number(id));
-        state.currentBoardType = 'board';
-        
-        if (!post) {
-            post = state.communityData.find(b => b.id === Number(id));
-            state.currentBoardType = 'community';
-        }
-
-        if (post) {
-            if (DOM.boardIdInput) DOM.boardIdInput.value = post.id;
-            if (DOM.boardModalTitle) DOM.boardModalTitle.textContent = state.currentBoardType === 'community' ? '자유 게시글 수정' : '인사이트 수정';
-            document.getElementById('boardTitle').value = post.title;
-            
-            // Hide Nickname field during edit
-            if (DOM.boardAnonFields) DOM.boardAnonFields.style.display = 'none';
-
-            if (editors.boardQuill) {
-                editors.boardQuill.root.innerHTML = post.content;
-            }
-            DOM.boardModal.classList.add('active');
-        }
-    };
-
-
 
     if (DOM.confirmOkBtn) {
         DOM.confirmOkBtn.addEventListener('click', async () => {
@@ -1268,9 +1125,7 @@ export function setupUIEvents() {
             closeAllModals();
         });
     }
-    if (DOM.confirmCancelBtn) {
-        DOM.confirmCancelBtn.addEventListener('click', () => closeAllModals());
-    }
+    if (DOM.confirmCancelBtn) DOM.confirmCancelBtn.addEventListener('click', () => closeAllModals());
     if (DOM.closeBoardModal) DOM.closeBoardModal.addEventListener('click', () => closeAllModals());
     if (DOM.closeBoardReadModal) DOM.closeBoardReadModal.addEventListener('click', () => closeAllModals());
 
@@ -1279,36 +1134,23 @@ export function setupUIEvents() {
             e.preventDefault();
             const id = DOM.boardIdInput ? DOM.boardIdInput.value : '';
             const content = editors.boardQuill ? editors.boardQuill.root.innerHTML : '';
-            const title = document.getElementById('boardTitle').value.trim();
+            const boardTitleEl = document.getElementById('boardTitle');
+            const title = boardTitleEl ? boardTitleEl.value.trim() : '';
             
             const targetData = state.currentBoardType === 'community' ? state.communityData : state.boardData;
 
             if (id) {
-                // Update
                 const idx = targetData.findIndex(b => b.id === parseInt(id));
                 if (idx !== -1) {
-                    targetData[idx] = {
-                        ...targetData[idx],
-                        title: title,
-                        content: content,
-                        timestamp: Date.now()
-                    };
+                    targetData[idx] = { ...targetData[idx], title, content, timestamp: Date.now() };
                 }
             } else {
-                // Create
                 const author = DOM.boardNicknameInput.value.trim() || '익명';
                 const email = DOM.boardEmailInput.value.trim();
-                const newPost = {
-                    id: Date.now(),
-                    title: title,
-                    content: content,
-                    author: author,
-                    email: email,
-                    timestamp: Date.now(),
-                    views: 0,
-                    comments: []
-                };
-                targetData.push(newPost);
+                targetData.push({
+                    id: Date.now(), title, content, author, email,
+                    timestamp: Date.now(), views: 0, comments: []
+                });
             }
             
             await syncData();
@@ -1317,5 +1159,74 @@ export function setupUIEvents() {
             closeAllModals();
         });
     }
+
+    // Comment submission in board modal
+    if (DOM.submitCommentBtn) {
+        DOM.submitCommentBtn.onclick = async () => {
+            const author = DOM.commentAuthor.value.trim() || '익명';
+            const content = DOM.commentContent.value.trim();
+            if (!content) return alert('댓글 내용을 입력하세요.');
+
+            const params = new URLSearchParams(window.location.search);
+            const id = parseInt(params.get('id'));
+            const post = [...state.boardData, ...state.communityData].find(p => p.id === id);
+
+            if (post) {
+                if (!post.comments) post.comments = [];
+                post.comments.push({ author, content, timestamp: Date.now() });
+                DOM.commentContent.value = '';
+                renderComments(post);
+                await syncData();
+            }
+        };
+    }
 }
 
+export function switchView(view, title) {
+    const sections = {
+        'bookmarks': DOM.bookmarksSection,
+        'shortcuts': DOM.shortcutsSection,
+        'board': DOM.boardSection,
+        'community-board': DOM.communityBoardSection,
+        'news': DOM.newsFeedSection
+    };
+
+    Object.values(sections).forEach(section => {
+        if (section) section.style.display = 'none';
+    });
+
+    const targetSection = sections[view] || sections['bookmarks'];
+    if (targetSection) targetSection.style.display = 'block';
+
+    const actualView = sections[view] ? view : 'bookmarks';
+
+    if (DOM.topMenuItems) {
+        DOM.topMenuItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('data-view') === actualView) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    if (DOM.sidebarNavItems) {
+        DOM.sidebarNavItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('data-view') === actualView) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    if (actualView === 'bookmarks') {
+        history.pushState({view: 'bookmarks'}, '', '/');
+    } else {
+        history.pushState({view: actualView}, '', `/?view=${actualView}`);
+    }
+    
+    // 모바일 카테고리 필터 표시/레이아웃 안정화 보장
+    if (actualView === 'bookmarks') {
+        const mobileFilter = document.getElementById('main-category-filter-container');
+        if (mobileFilter) mobileFilter.style.display = ''; // CSS의 media qeury에 맡김
+    }
+}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mymoney-v1';
+const CACHE_NAME = 'mymoney-v2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -14,8 +14,8 @@ const ASSETS = [
   '/manifest.json'
 ];
 
-// 서비스 워커 설치 및 캐싱
 self.addEventListener('install', (event) => {
+  self.skipWaiting(); // 즉시 활성화
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
@@ -23,11 +23,36 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 캐시 응답
+self.addEventListener('activate', (event) => {
+  // 이전 버전 캐기 삭제
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Network First 전략 적용
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((response) => {
+        // 네트워크 성공 시 캐시 업데이트
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        // 오프라인이거나 네트워크 실패 시 캐시 반환
+        return caches.match(event.request);
+      })
   );
 });

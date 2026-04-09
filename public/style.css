@@ -819,7 +819,7 @@ h1, h2, h3, .card-title, .modal-header h2 {
 
     /* Filters as premium horizontal chips */
     .main-filter-group, .sub-filter-group {
-        display: none; 
+        display: flex; 
         overflow-x: auto;
         gap: 0.65rem;
         padding: 0.5rem 1.25rem 1.25rem !important; 
@@ -2454,4 +2454,116 @@ body.admin-mode .add-btn.admin-only {
 @keyframes authModalAppear {
     from { opacity: 0; transform: scale(0.95) translateY(10px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
+}
+/* Main Category Filter Group (Mobile Optimized) */
+.main-filter-group {
+    display: none; /* Hidden on desktop */
+    gap: 0.6rem;
+    padding: 0.5rem 0.25rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 1.5rem !important;
+}
+
+@media (max-width: 1024px) {
+    .main-filter-group {
+        display: flex; /* Show on mobile/tablet */
+        width: 100vw;
+        margin-left: -1rem; /* Alignment tweak for full-width scroll */
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+.main-filter-group::-webkit-scrollbar {
+    display: none;
+}
+
+.main-filter-group .filter-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.1rem;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 999px;
+    color: var(--on-surface-variant);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    white-space: nowrap;
+}
+
+.main-filter-group .filter-btn i {
+    font-size: 0.95rem;
+    opacity: 0.7;
+}
+
+.main-filter-group .filter-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--surface-container-low);
+}
+
+.main-filter-group .filter-btn.active {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 8px 16px rgba(0, 8, 61, 0.15);
+}
+
+.main-filter-group .filter-btn.active i {
+    opacity: 1;
+}
+
+/* Sub-category Filter Group */
+.sub-filter-group {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.25rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 2rem;
+}
+
+.sub-filter-group::-webkit-scrollbar {
+    display: none;
+}
+
+.sub-filter-btn {
+    flex-shrink: 0;
+    padding: 0.45rem 1rem;
+    background: var(--surface-container-low);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--on-surface-variant);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.sub-filter-btn:hover {
+    background: var(--surface-container-high);
+}
+
+.sub-filter-btn.active {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+    border-color: var(--on-secondary-container);
+}
+
+@media (max-width: 1024px) {
+    .main-filter-group, .sub-filter-group {
+        width: 100vw;
+        margin-left: -1rem; /* Alignment tweak for full-width scroll */
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
