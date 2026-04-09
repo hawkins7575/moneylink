@@ -89,6 +89,7 @@ export const DOM = {
     get readBoardContent() { return document.getElementById('readBoardContent'); },
     get shortcutsSection() { return document.getElementById('shortcutsSection'); },
     get shortcutsGrid() { return document.getElementById('shortcutsGrid'); },
+    get bookmarksSection() { return document.getElementById('bookmarksSection'); },
     get sidebar() { return document.getElementById('sidebar'); },
     get mobileMenuBtn() { return document.getElementById('mobileMenuBtn'); },
     get sidebarOverlay() { return document.getElementById('sidebar-overlay'); },

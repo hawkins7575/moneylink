@@ -841,7 +841,8 @@ export async function openBoardModal(post) {
     updateJSONLD('board', post);
 }
 
-function renderBoard() {
+export function renderBoard() {
+    if (!DOM.boardGrid) return;
     DOM.boardGrid.innerHTML = '';
     if (!state.boardData || state.boardData.length === 0) {
         DOM.boardGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--on-surface-variant);">아직 작성된 추천글이 없습니다. 첫 번째 인사이트를 나눠보세요!</div>';
