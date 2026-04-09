@@ -518,7 +518,7 @@ export function renderCards() {
             }
 
             let actionsHtml = '';
-            if (state.currentUser && (state.currentUser.role === 'admin' || state.currentUser.username === item.userId)) {
+            if (state.currentUser && state.currentUser.role === 'admin') {
                 actionsHtml = `
                     <div class="card-actions" onclick="event.preventDefault(); event.stopPropagation();">
                         <button class="card-action-btn edit" title="수정" onclick="window.editItem(${item.id});">
@@ -809,7 +809,7 @@ export async function openBoardModal(post) {
     DOM.readBoardContent.innerHTML = post.content;
     
     // Check permissions
-    if (state.currentUser && (state.currentUser.role === 'admin' || state.currentUser.username === post.author)) {
+    if (state.currentUser && state.currentUser.role === 'admin') {
         DOM.readBoardActions.style.display = 'flex';
         DOM.editReadPostBtn.onclick = () => { closeAllModals(false); window.editBoard(post.id); };
         DOM.deleteReadPostBtn.onclick = () => { closeAllModals(false); window.deleteBoard(post.id); };
@@ -887,7 +887,7 @@ function renderBoard() {
             openBoardModal(post);
         };
 
-        if (state.currentUser && (state.currentUser.username === post.author || state.currentUser.role === 'admin')) {
+        if (state.currentUser && state.currentUser.role === 'admin') {
             const actions = document.createElement('div');
             actions.className = 'board-card-actions';
             actions.onclick = (e) => e.stopPropagation(); 
