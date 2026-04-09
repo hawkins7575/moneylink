@@ -192,8 +192,15 @@
                     <!-- 추천 게시판 섹션 (Card Type) -->
                     <section id="boardSection" class="board-section" style="display: none;">
                         <div class="section-header">
-                            <h2>인사이트</h2>
-                            <p>최고의 금융 정보를 공유하고 인사이트를 얻어보세요.</p>
+                            <div class="header-left">
+                                <h2>인사이트</h2>
+                                <p>최고의 금융 정보를 공유하고 인사이트를 얻어보세요.</p>
+                            </div>
+                            <div class="header-right">
+                                <button id="addBoardBtn" class="action-btn admin-only" style="background: none; border: 1px solid var(--primary); color: var(--primary); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;" title="인사이트 추가">
+                                    <i class="fa-solid fa-plus"></i> 글쓰기
+                                </button>
+                            </div>
                         </div>
                         <div id="boardGrid" class="board-grid">
                             <!-- Board cards will be generated here -->

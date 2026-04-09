@@ -1292,4 +1292,7 @@ export function switchView(view, title) {
         const mobileFilter = document.getElementById('main-category-filter-container');
         if (mobileFilter) mobileFilter.style.display = ''; // CSS의 media qeury에 맡김
     }
+
+    // 뷰 전환에 따른 권한별 버튼(추가 버튼 등) 가시성 즉각 반영
+    updateAuthUI();
 }
