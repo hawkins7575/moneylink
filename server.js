@@ -110,6 +110,11 @@ app.use(async (req, res, next) => {
 
 // API: Get All Data (Full State)
 app.get('/api/data', async (req, res) => {
+    // 🔥 확실한 데이터 갱신을 위해 브라우저와 CDN 캐싱을 원천 차단
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     try {
         const [usersDB, categories, items, posts, shortcuts] = await Promise.all([
             User.find({}).lean(),

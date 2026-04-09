@@ -39,7 +39,7 @@ function handleRouting() {
 
 async function initApp() {
     try {
-        const resp = await fetch('/api/data');
+        const resp = await fetch('/api/data?t=' + Date.now());
         const data = await resp.json();
         
         state.usersDB = data.usersDB || [];
