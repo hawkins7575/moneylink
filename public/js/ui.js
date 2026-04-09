@@ -503,9 +503,12 @@ export function renderCards() {
             let myBadgeHtml = '';
             if (state.currentUser) {
                 const isMy = state.currentUser.myBookmarks && state.currentUser.myBookmarks.includes(item.id);
-                const starIcon = isMy ? '<i class="fa-solid fa-star" style="color: #FFD700;"></i>' : '<i class="fa-regular fa-star" style="color: #ccc;"></i>';
+                // 좀 더 선명하고 고급스러운 색상으로 수정
+                const starIcon = isMy 
+                    ? '<i class="fa-solid fa-star" style="color: #FFB300; filter: drop-shadow(0 2px 4px rgba(255,179,0,0.4)); text-shadow: 0 0 1px rgba(0,0,0,0.1);"></i>' 
+                    : '<i class="fa-regular fa-star" style="color: #8B9BB4; transition: color 0.2s;"></i>';
                 myBookmarkBtn = `
-                    <button class="card-action-btn" title="내 즐겨찾기에 추가/제거" onclick="window.toggleMyBookmark(${item.id}, event);" style="background:transparent; border:none; padding:5px; font-size:1.2rem; cursor:pointer;">
+                    <button class="card-action-btn my-star-btn" title="내 즐겨찾기에 추가/제거" onclick="window.toggleMyBookmark(${item.id}, event);" style="background:transparent; border:none; padding:5px; font-size:1.35rem; cursor:pointer; margin-right:4px;">
                         ${starIcon}
                     </button>
                 `;
