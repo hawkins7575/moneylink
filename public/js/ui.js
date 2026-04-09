@@ -23,6 +23,29 @@ window.handleIconError = function(imgElement) {
     }
 };
 
+window.toggleMyBookmark = async function(id, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    if (!state.currentUser) return;
+    
+    if (!state.currentUser.myBookmarks) state.currentUser.myBookmarks = [];
+    const idx = state.currentUser.myBookmarks.indexOf(id);
+    if (idx > -1) {
+        state.currentUser.myBookmarks.splice(idx, 1);
+    } else {
+        state.currentUser.myBookmarks.push(id);
+    }
+    
+    const userInDb = state.usersDB.find(u => u.username === state.currentUser.username);
+    if (userInDb) userInDb.myBookmarks = [...state.currentUser.myBookmarks];
+    localStorage.setItem('fin_currentUser', JSON.stringify(state.currentUser));
+    
+    renderCards();
+    syncData();
+};
+
 export function initEditors() {
     const quillOptions = {
         theme: 'snow',
@@ -271,7 +294,13 @@ const categoryIcons = {
 };
 
 export function renderCategoryFilters() {
-    const filterHTML = `
+    const myFilterBtn = state.currentUser ? `
+        <button class="filter-btn ${state.currentCategory === 'my' ? 'active' : ''}" data-filter="my" style="color:var(--primary); font-weight:800;">
+            <i class="fa-solid fa-star"></i>
+            <span>내 즐겨찾기</span>
+        </button>` : '';
+
+    const filterHTML = myFilterBtn + `
         <button class="filter-btn ${state.currentCategory === 'all' ? 'active' : ''}" data-filter="all">
             <i class="${categoryIcons['all'] || 'fa-solid fa-folder'}"></i>
             <span>전체</span>
@@ -389,13 +418,16 @@ export function renderCards() {
     } else if (state.currentUser.role === 'user') {
         filteredData = filteredData.filter(item => item.userId === 'admin' || item.userId === state.currentUser.username);
     }
-
     filteredData = filteredData.filter(item => {
-        const catMatch = state.currentCategory === 'all' || item.category === state.currentCategory;
+        const isMyMode = state.currentCategory === 'my';
+        if (isMyMode) {
+            if (!state.currentUser || !state.currentUser.myBookmarks || !state.currentUser.myBookmarks.includes(item.id)) return false;
+        }
+
+        const catMatch = isMyMode ? true : (state.currentCategory === 'all' || item.category === state.currentCategory);
         
-        // Multi-category filtering logic (Intersection)
         let subCatMatch = false;
-        if (state.currentSubCategory.includes('all')) {
+        if (isMyMode || state.currentSubCategory.includes('all')) {
             subCatMatch = true;
         } else {
             const itemSubCats = Array.isArray(item.subCategory) ? item.subCategory : [item.subCategory].filter(Boolean);
@@ -407,20 +439,24 @@ export function renderCards() {
         return catMatch && subCatMatch && typeMatch && searchMatch;
     });
 
-    // ✅ 1순위: 웹(youtube가 아닌 것)을 우선 정렬, 2순위: 프리미엄(우수사이트) 판단
+    // ✅ 0순위: 내 즐겨찾기, 1순위: 웹, 2순위: 프리미엄 판단
     filteredData.sort((a, b) => {
+        if (state.currentUser && state.currentUser.myBookmarks) {
+            const isAMy = state.currentUser.myBookmarks.includes(a.id);
+            const isBMy = state.currentUser.myBookmarks.includes(b.id);
+            if (isAMy && !isBMy) return -1;
+            if (!isAMy && isBMy) return 1;
+        }
+
         const isAWeb = a.type !== 'youtube';
         const isBWeb = b.type !== 'youtube';
         
-        // 1. 웹사이트가 유튜브보다 우선
         if (isAWeb && !isBWeb) return -1;
         if (!isAWeb && isBWeb) return 1;
         
-        // 2. 같은 타입일 경우 프리미엄 우선 정렬
         if (a.isPremium && !b.isPremium) return -1;
         if (!a.isPremium && b.isPremium) return 1;
         
-        // 3. 나머지는 그대로 
         return 0;
     });
 
@@ -458,10 +494,24 @@ export function renderCards() {
             let faviconUrl = '';
             try {
                 const domain = new URL(item.url).hostname;
-                // 외부 404 로그 방지를 위해 서버 프록시 사용
                 faviconUrl = `/api/favicon?domain=${domain}`;
             } catch (e) {
                 faviconUrl = ''; 
+            }
+
+            let myBookmarkBtn = '';
+            let myBadgeHtml = '';
+            if (state.currentUser) {
+                const isMy = state.currentUser.myBookmarks && state.currentUser.myBookmarks.includes(item.id);
+                const starIcon = isMy ? '<i class="fa-solid fa-star" style="color: #FFD700;"></i>' : '<i class="fa-regular fa-star" style="color: #ccc;"></i>';
+                myBookmarkBtn = `
+                    <button class="card-action-btn" title="내 즐겨찾기에 추가/제거" onclick="window.toggleMyBookmark(${item.id}, event);" style="background:transparent; border:none; padding:5px; font-size:1.2rem; cursor:pointer;">
+                        ${starIcon}
+                    </button>
+                `;
+                if (isMy) {
+                    myBadgeHtml = `<div class="premium-badge" style="background:#fff3cd; color:#ffc107; right:10px; left:auto; display:flex; align-items:center; gap:4px; font-size:0.7rem; padding:4px 8px; border-radius:12px; top:-10px; border:1px solid #ffeeba;" title="내 즐겨찾기"><i class="fa-solid fa-star"></i> <span>My</span></div>`;
+                }
             }
 
             let actionsHtml = '';
@@ -490,7 +540,11 @@ export function renderCards() {
 
             card.innerHTML = `
                 ${premiumBadge}
-                ${actionsHtml}
+                ${myBadgeHtml}
+                <div class="card-actions" style="display:flex; gap:0.5rem;" onclick="event.preventDefault(); event.stopPropagation();">
+                    ${myBookmarkBtn}
+                    ${actionsHtml.replace('<div class="card-actions" onclick="event.preventDefault(); event.stopPropagation();">', '').replace('</div>', '')}
+                </div>
                 <a href="${item.url}" target="_blank" class="card-link">
                     <div class="card-header">
                         <div class="card-icon">
