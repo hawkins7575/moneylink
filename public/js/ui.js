@@ -793,7 +793,7 @@ export function renderShortcuts() {
                 ? '<i class="fa-solid fa-star" style="color: #FFB300; filter: drop-shadow(0 2px 4px rgba(255,179,0,0.4)); text-shadow: 0 0 1px rgba(0,0,0,0.1);"></i>' 
                 : '<i class="fa-regular fa-star" style="color: #8B9BB4; transition: color 0.2s;"></i>';
             myShortcutBtn = `
-                <button class="my-star-btn" title="내 즐겨찾기에 추가/제거" onclick="window.toggleMyShortcut(${item.id}, event);" style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10; background: none; border: none; font-size: 1.2rem; cursor: pointer;">
+                <button class="shortcut-star" title="내 즐겨찾기에 추가/제거" onclick="window.toggleMyShortcut(${item.id}, event);">
                     ${starIcon}
                 </button>
             `;

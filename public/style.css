@@ -2626,3 +2626,30 @@ body.admin-mode .add-btn.admin-only {
         padding-right: 1rem;
     }
 }
+
+/* Shortcut Star Positioning */
+.shortcut-star {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 10;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    outline: none !important;
+}
+.shortcut-star:hover, .shortcut-star:active, .shortcut-star:focus {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 600px) {
+    .shortcut-star {
+        top: 2px;
+        right: 2px;
+        font-size: 0.8rem;
+    }
+}
