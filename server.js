@@ -131,6 +131,7 @@ app.get('/api/data', async (req, res) => {
             newsData: posts.filter(p => p.postType === 'news'),
             boardData: posts.filter(p => p.postType === 'board'),
             communityData: posts.filter(p => p.postType === 'community'),
+            feedbackData: posts.filter(p => p.postType === 'feedback'),
             shortcuts
         };
 
@@ -144,7 +145,7 @@ app.get('/api/data', async (req, res) => {
 // API: Save All Data (Sync)
 app.post('/api/data', async (req, res) => {
     try {
-        const { usersDB, categories, items, newsData, boardData, communityData, shortcuts } = req.body;
+        const { usersDB, categories, items, newsData, boardData, communityData, feedbackData, shortcuts } = req.body;
 
         // ✅ 보호 로직: 전송받은 데이터가 비어있으면 DB를 삭제하지 않음
         if (!items || items.length === 0) {
@@ -170,6 +171,10 @@ app.post('/api/data', async (req, res) => {
         if (communityData && communityData.length > 0) {
             await Post.deleteMany({ postType: 'community' });
             await Post.insertMany(communityData.map(p => ({ ...p, postType: 'community' })));
+        }
+        if (feedbackData && feedbackData.length > 0) {
+            await Post.deleteMany({ postType: 'feedback' });
+            await Post.insertMany(feedbackData.map(p => ({ ...p, postType: 'feedback' })));
         }
         
         if (shortcuts && shortcuts.length > 0) {

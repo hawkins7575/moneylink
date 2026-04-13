@@ -817,6 +817,19 @@ h1, h2, h3, .card-title, .modal-header h2 {
         display: none !important;
     }
 
+    .menu-login-item {
+        position: absolute !important;
+        top: 2.5rem !important; /* Align vertically with title */
+        right: 1.25rem !important;
+        margin: 0 !important;
+        z-index: 100 !important;
+    }
+
+    .menu-style-login-btn {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.8rem !important;
+    }
+
     /* Filters as premium horizontal chips */
     .main-filter-group, .sub-filter-group {
         display: flex; 

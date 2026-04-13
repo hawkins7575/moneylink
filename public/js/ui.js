@@ -46,6 +46,29 @@ window.toggleMyBookmark = async function(id, event) {
     syncData();
 };
 
+window.toggleMyShortcut = async function(id, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    if (!state.currentUser) return;
+    
+    if (!state.currentUser.myShortcuts) state.currentUser.myShortcuts = [];
+    const idx = state.currentUser.myShortcuts.indexOf(id);
+    if (idx > -1) {
+        state.currentUser.myShortcuts.splice(idx, 1);
+    } else {
+        state.currentUser.myShortcuts.push(id);
+    }
+    
+    const userInDb = state.usersDB.find(u => u.username === state.currentUser.username);
+    if (userInDb) userInDb.myShortcuts = [...state.currentUser.myShortcuts];
+    localStorage.setItem('fin_currentUser', JSON.stringify(state.currentUser));
+    
+    renderShortcuts();
+    syncData();
+};
+
 export function initEditors() {
     const quillOptions = {
         theme: 'snow',
@@ -182,10 +205,15 @@ window.editNews = (id) => {
 window.deleteBoard = async (id) => {
     confirmAction('게시글 삭제', '이 게시글을 삭제하시겠습니까?', async () => {
         const isComm = state.communityData.find(b => b.id === Number(id));
+        const isFeedback = state.feedbackData.find(b => b.id === Number(id));
         if (isComm) {
             state.communityData = state.communityData.filter(b => b.id !== Number(id));
             await syncData();
             renderCommunityBoard();
+        } else if (isFeedback) {
+            state.feedbackData = state.feedbackData.filter(b => b.id !== Number(id));
+            await syncData();
+            renderFeedbackBoard();
         } else {
             state.boardData = state.boardData.filter(b => b.id !== Number(id));
             await syncData();
@@ -723,7 +751,18 @@ export function renderShortcuts() {
         return;
     }
 
-    state.shortcuts.forEach((item, index) => {
+    let sortedShortcuts = [...state.shortcuts];
+    sortedShortcuts.sort((a, b) => {
+        if (state.currentUser && state.currentUser.myShortcuts) {
+            const isAMy = state.currentUser.myShortcuts.includes(a.id);
+            const isBMy = state.currentUser.myShortcuts.includes(b.id);
+            if (isAMy && !isBMy) return -1;
+            if (!isAMy && isBMy) return 1;
+        }
+        return 0;
+    });
+
+    sortedShortcuts.forEach((item, index) => {
         let domain = '';
         try { domain = new URL(item.url).hostname; } 
         catch (e) { domain = '링크 바로가기'; }
@@ -731,6 +770,7 @@ export function renderShortcuts() {
         const card = document.createElement('div');
         card.className = 'shortcut-card-wrapper';
         card.style.animationDelay = `${index * 0.03}s`;
+        card.style.position = 'relative';
 
         let adminActions = '';
         if (state.currentUser && state.currentUser.role === 'admin') {
@@ -746,8 +786,22 @@ export function renderShortcuts() {
             `;
         }
 
+        let myShortcutBtn = '';
+        if (state.currentUser) {
+            const isMy = state.currentUser.myShortcuts && state.currentUser.myShortcuts.includes(item.id);
+            const starIcon = isMy 
+                ? '<i class="fa-solid fa-star" style="color: #FFB300; filter: drop-shadow(0 2px 4px rgba(255,179,0,0.4)); text-shadow: 0 0 1px rgba(0,0,0,0.1);"></i>' 
+                : '<i class="fa-regular fa-star" style="color: #8B9BB4; transition: color 0.2s;"></i>';
+            myShortcutBtn = `
+                <button class="my-star-btn" title="내 즐겨찾기에 추가/제거" onclick="window.toggleMyShortcut(${item.id}, event);" style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10; background: none; border: none; font-size: 1.2rem; cursor: pointer;">
+                    ${starIcon}
+                </button>
+            `;
+        }
+
         card.innerHTML = `
-            <a href="${item.url}" target="_blank" class="shortcut-card">
+            <a href="${item.url}" target="_blank" class="shortcut-card" style="position:relative; width:100%; height:100%; display:block;">
+                ${myShortcutBtn}
                 ${adminActions}
                 <div class="card-title">${item.title}</div>
                 <div class="card-domain">${domain}</div>
@@ -931,6 +985,38 @@ export function renderCommunityBoard() {
         };
         
         DOM.communityBoardList.appendChild(tr);
+    });
+}
+
+export function renderFeedbackBoard() {
+    if (!DOM.feedbackBoardList) return;
+    DOM.feedbackBoardList.innerHTML = '';
+    
+    if (!state.feedbackData || state.feedbackData.length === 0) {
+        DOM.feedbackBoardList.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:3rem; color:var(--on-surface-variant);">등록된 글이 없습니다. 첫 글을 작성해보세요!</td></tr>';
+        return;
+    }
+
+    const posts = [...state.feedbackData].sort((a, b) => b.timestamp - a.timestamp);
+    
+    posts.forEach((post, index) => {
+        const dateObj = new Date(post.timestamp);
+        const dateStr = `${dateObj.getMonth() + 1}.${dateObj.getDate()}`;
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `
+            <td class="col-num">${posts.length - index}</td>
+            <td class="col-title">${post.title} ${post.comments?.length > 0 ? `<span style="font-size:0.75rem; color:var(--primary); font-weight:800; margin-left:0.3rem;">[${post.comments.length}]</span>` : ''}</td>
+            <td class="col-author">${post.author}</td>
+            <td class="col-date">${dateStr}</td>
+            <td class="col-views">${post.views || 0}</td>
+        `;
+        
+        tr.onclick = () => {
+            openBoardModal(post);
+        };
+        
+        DOM.feedbackBoardList.appendChild(tr);
     });
 }
 
@@ -1182,6 +1268,22 @@ export function setupUIEvents() {
         });
     }
 
+    if (DOM.writeFeedbackBtn) {
+        DOM.writeFeedbackBtn.addEventListener('click', () => {
+            state.currentBoardType = 'feedback';
+            if (DOM.boardIdInput) DOM.boardIdInput.value = '';
+            if (DOM.boardModalTitle) DOM.boardModalTitle.textContent = '건의&추천 작성';
+            if (document.getElementById('boardTitle')) document.getElementById('boardTitle').value = '';
+            if (DOM.boardAnonFields) {
+                DOM.boardAnonFields.style.display = 'flex';
+                if (DOM.boardNicknameInput) DOM.boardNicknameInput.value = state.currentUser ? state.currentUser.username : '';
+                if (DOM.boardEmailInput) DOM.boardEmailInput.value = '';
+            }
+            if (editors.boardQuill) editors.boardQuill.setContents([]);
+            if (DOM.boardModal) DOM.boardModal.classList.add('active');
+        });
+    }
+
     if (DOM.confirmOkBtn) {
         DOM.confirmOkBtn.addEventListener('click', async () => {
             if (currentConfirmCallback) await currentConfirmCallback();
@@ -1200,7 +1302,9 @@ export function setupUIEvents() {
             const boardTitleEl = document.getElementById('boardTitle');
             const title = boardTitleEl ? boardTitleEl.value.trim() : '';
             
-            const targetData = state.currentBoardType === 'community' ? state.communityData : state.boardData;
+            let targetData = state.boardData;
+            if (state.currentBoardType === 'community') targetData = state.communityData;
+            else if (state.currentBoardType === 'feedback') targetData = state.feedbackData;
 
             if (id) {
                 const idx = targetData.findIndex(b => b.id === parseInt(id));
@@ -1218,6 +1322,7 @@ export function setupUIEvents() {
             
             await syncData();
             if (state.currentBoardType === 'community') renderCommunityBoard();
+            else if (state.currentBoardType === 'feedback') renderFeedbackBoard();
             else renderBoard();
             closeAllModals();
         });
@@ -1232,7 +1337,7 @@ export function setupUIEvents() {
 
             const params = new URLSearchParams(window.location.search);
             const id = parseInt(params.get('id'));
-            const post = [...state.boardData, ...state.communityData].find(p => p.id === id);
+            const post = [...state.boardData, ...state.communityData, ...state.feedbackData].find(p => p.id === id);
 
             if (post) {
                 if (!post.comments) post.comments = [];
@@ -1251,6 +1356,7 @@ export function switchView(view, title) {
         'shortcuts': DOM.shortcutsSection,
         'board': DOM.boardSection,
         'community-board': DOM.communityBoardSection,
+        'feedback-board': DOM.feedbackBoardSection,
         'news': DOM.newsFeedSection
     };
 

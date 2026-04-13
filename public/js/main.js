@@ -10,6 +10,7 @@ import {
     renderCards,
     renderBoard,
     renderCommunityBoard,
+    renderFeedbackBoard,
     renderShortcuts,
     openNewsModal,
     openBoardModal,
@@ -36,6 +37,9 @@ function handleRouting() {
     } else if (view === 'community-board') {
         const post = state.communityData.find(b => b.id === parseInt(id));
         if (post) { openBoardModal(post); return true; }
+    } else if (view === 'feedback-board') {
+        const post = state.feedbackData.find(b => b.id === parseInt(id));
+        if (post) { openBoardModal(post); return true; }
     }
     return false;
 }
@@ -51,6 +55,7 @@ async function initApp() {
         state.newsData = data.newsData || [];
         state.boardData = data.boardData || [];
         state.communityData = data.communityData || [];
+        state.feedbackData = data.feedbackData || [];
         state.shortcuts = data.shortcuts || [];
         
         let needsSync = false;
@@ -83,6 +88,7 @@ async function initApp() {
         renderCards();
         renderBoard();
         renderCommunityBoard();
+        renderFeedbackBoard();
         renderShortcuts();
 
         // 초기 라우팅 처리

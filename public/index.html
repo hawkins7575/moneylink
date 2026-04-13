@@ -84,6 +84,7 @@
                     <button class="nav-btn" data-view="community-board"><i class="fa-solid fa-comments"></i> 게시판</button>
                     <button class="nav-btn" data-view="shortcuts"><i class="fa-solid fa-link"></i> 바로가기</button>
                     <button class="nav-btn" data-view="board"><i class="fa-solid fa-star"></i> 인사이트</button>
+                    <button class="nav-btn" data-view="feedback-board"><i class="fa-solid fa-lightbulb"></i> 건의&추천</button>
                 </div>
 
                 <div class="menu-label">SECTORS</div>
@@ -145,6 +146,7 @@
                             <li><a href="#" data-view="community-board">게시판</a></li>
                             <li><a href="#" data-view="shortcuts">바로가기</a></li>
                             <li><a href="#" data-view="board">인사이트</a></li>
+                            <li><a href="#" data-view="feedback-board">건의&추천</a></li>
                             <li class="menu-login-item">
                                 <div id="authContainerHeader">
                                     <button id="loginBtnTrigger" class="menu-style-login-btn">
@@ -241,6 +243,41 @@
                             </div>
                         </div>
                     </section>
+
+                    <!-- Custom Feedback Board Section -->
+                    <section id="feedbackBoardSection" class="board-section" style="display: none;">
+                        <div class="section-header">
+                            <div class="header-left">
+                                <h2>건의&추천</h2>
+                                <p>MY MONEY를 위한 다양한 건의사항이나 사이트 추천을 남겨주세요.</p>
+                            </div>
+                            <div class="header-right">
+                                <button id="writeFeedbackBtn" class="action-btn" style="background: none; border: 1px solid var(--primary); color: var(--primary); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fa-solid fa-pen"></i> 글쓰기
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="board-list-wrapper">
+                            <table class="board-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-num">번호</th>
+                                        <th class="col-title">제목</th>
+                                        <th class="col-author">작성자</th>
+                                        <th class="col-date">날짜</th>
+                                        <th class="col-views">조회</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feedbackBoardList">
+                                    <!-- Posts will be loaded here -->
+                                </tbody>
+                            </table>
+                            <div id="feedbackPagination" class="pagination">
+                                <!-- Pagination links -->
+                            </div>
+                        </div>
+                    </section>
                 </div>
                 
                 <footer class="main-footer">
@@ -263,6 +300,7 @@
                                     <a href="#" data-view="bookmarks">홈</a>
                                     <a href="#" data-view="shortcuts">바로가기</a>
                                     <a href="#" data-view="board">인사이트</a>
+                                    <a href="#" data-view="feedback-board">건의&추천</a>
                                     <span class="footer-separator">|</span>
                                     <a href="#" id="termsLink">이용약관</a>
                                     <a href="#" id="privacyLink">개인정보처리방침</a>

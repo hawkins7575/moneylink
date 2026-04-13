@@ -1,10 +1,11 @@
-﻿export const state = {
+export const state = {
     items: [],
     categories: [],
     usersDB: [],
     newsData: [],
     boardData: [],
     communityData: [],
+    feedbackData: [],
     shortcuts: [],
     currentUser: null,
     isLoginMode: true,
