@@ -1,7 +1,7 @@
 {
-  "name": "MY MONEY | 스마트 금융 포털",
-  "short_name": "MY MONEY",
-  "description": "나만의 스마트 금융 즐겨찾기 & 인사이트 포털",
+  "name": "MoneyLink | 스마트 금융 포털",
+  "short_name": "MoneyLink",
+  "description": "스마트 금융 즐겨찾기 | 재무제표 시각화 및 경제 뉴스 포털",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
