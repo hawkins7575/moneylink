@@ -2768,16 +2768,18 @@ body.admin-mode .add-btn.admin-only {
 .brand-logo-img {
     width: 48px;
     height: 48px;
+    object-fit: cover; /* 가로세로 비율 유지하며 중앙 크롭 */
     border-radius: 12px;
     margin-bottom: 0.75rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .nav-btn .menu-icon-img {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
     border-radius: 4px;
-    margin-right: 12px;
+    margin-right: 10px;
     display: inline-block;
     vertical-align: middle;
 }
@@ -2785,6 +2787,7 @@ body.admin-mode .add-btn.admin-only {
 .footer-logo-img {
     width: 24px;
     height: 24px;
+    object-fit: cover;
     border-radius: 6px;
     vertical-align: middle;
     margin-right: 4px;
