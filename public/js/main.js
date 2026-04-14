@@ -93,7 +93,7 @@ async function initApp() {
 
         // 초기 라우팅 처리
         if (!handleRouting()) {
-            switchView('bookmarks', '즐겨찾기');
+            switchView('guide', '사이트 사용법');
         }
 
         // 최적화: 동기화는 백그라운드에서 진행 (사용자 대기 시간 제거)

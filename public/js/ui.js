@@ -1352,6 +1352,7 @@ export function setupUIEvents() {
 
 export function switchView(view, title) {
     const sections = {
+        'guide': DOM.guideSection,
         'bookmarks': DOM.bookmarksSection,
         'shortcuts': DOM.shortcutsSection,
         'board': DOM.boardSection,

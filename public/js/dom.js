@@ -91,9 +91,10 @@ export const DOM = {
     get editReadPostBtn() { return document.getElementById('editReadPostBtn'); },
     get deleteReadPostBtn() { return document.getElementById('deleteReadPostBtn'); },
     get readBoardContent() { return document.getElementById('readBoardContent'); },
+    get bookmarksSection() { return document.getElementById('bookmarksSection'); },
+    get guideSection() { return document.getElementById('guideSection'); },
     get shortcutsSection() { return document.getElementById('shortcutsSection'); },
     get shortcutsGrid() { return document.getElementById('shortcutsGrid'); },
-    get bookmarksSection() { return document.getElementById('bookmarksSection'); },
     get sidebar() { return document.getElementById('sidebar'); },
     get mobileMenuBtn() { return document.getElementById('mobileMenuBtn'); },
     get sidebarOverlay() { return document.getElementById('sidebar-overlay'); },
@@ -109,8 +110,6 @@ export const DOM = {
     get isPremiumInput() { return document.getElementById('isPremium'); },
     get topMenuItems() { return document.querySelectorAll('.top-menu a'); },
     get typeButtons() { return document.querySelectorAll('[data-filter-type="type"] .filter-btn'); },
-    get overviewSection() { return document.getElementById('overviewSection'); },
-    get bookmarksSection() { return document.getElementById('bookmarksSection'); },
     get sidebarNavItems() { return document.querySelectorAll('.sidebar-nav-list .nav-btn'); },
     get termsLink() { return document.getElementById('termsLink'); },
     get privacyLink() { return document.getElementById('privacyLink'); },
@@ -119,4 +118,3 @@ export const DOM = {
     get closeTermsModal() { return document.getElementById('closeTermsModal'); },
     get closePrivacyModal() { return document.getElementById('closePrivacyModal'); }
 };
-
