@@ -2090,35 +2090,38 @@ function showCurationDetails(curation) {
                 `<i class="fa-solid fa-globe" style="font-size: 1.25rem; color: var(--premium-gold);"></i>`;
                 
             detailCard.innerHTML = `
-                <div class="curation-detail-card-left">
+                <div class="curation-detail-card-header">
                     <div class="curation-detail-favicon">
                         ${iconHtml}
                     </div>
-                    <div class="curation-detail-info">
-                        <h4 class="curation-detail-card-title">${item.title}</h4>
-                        <p class="curation-detail-card-desc">${item.description || '지정된 설명이 없습니다.'}</p>
-                        <div class="curation-detail-reason">
-                            <strong><i class="fa-solid fa-lightbulb" style="color: var(--premium-gold); margin-right: 4px;"></i> 분석 이유:</strong> ${info.reason}
-                        </div>
-                        <div class="curation-detail-tips">
-                            <strong><i class="fa-solid fa-user-tie" style="color: var(--premium-gold); margin-right: 4px;"></i> 활용 팁 (Routine Tip):</strong> ${info.tips}
-                        </div>
+                    <h4 class="curation-detail-card-title">${item.title}</h4>
+                </div>
+                <div class="curation-detail-card-body">
+                    <p class="curation-detail-card-desc">${item.description || '지정된 설명이 없습니다.'}</p>
+                    
+                    <div class="curation-detail-reason-box">
+                        <div class="curation-reason-header"><i class="fa-solid fa-lightbulb"></i> 분석 이유</div>
+                        <div class="curation-reason-content">${info.reason}</div>
+                    </div>
+                    
+                    <div class="curation-tip-item">
+                        <div style="font-weight: 800; color: var(--premium-gold); margin-bottom: 0.25rem;"><i class="fa-solid fa-user-tie"></i> 활용 팁</div>
+                        <div>${info.tips}</div>
                     </div>
                 </div>
-                <div class="curation-detail-card-right">
-                    <div class="curation-metric">
-                        <span class="curation-metric-label">분석 난이도</span>
-                        <div class="curation-stars">
-                            ${difficultyStars}
+                <div class="curation-detail-card-footer">
+                    <div class="curation-metrics">
+                        <div class="curation-metric-item">
+                            <span>난이도</span>
+                            <div class="curation-metric-stars">${difficultyStars}</div>
+                        </div>
+                        <div class="curation-metric-item">
+                            <span>활용도</span>
+                            <div class="curation-metric-stars">${utilityStars}</div>
                         </div>
                     </div>
-                    <div class="curation-metric">
-                        <span class="curation-metric-label">실무 활용성</span>
-                        <div class="curation-stars">
-                            ${utilityStars}
-                        </div>
-                    </div>
-                    <a href="${item.url}" target="_blank" class="curation-site-link-btn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-light); text-decoration: none; font-size: 0.85rem; font-weight: 600; text-align: center; transition: all 0.2s;">
+                    
+                    <a href="${item.url}" target="_blank" class="curation-detail-visit-btn">
                         사이트 이동 <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem;"></i>
                     </a>
                 </div>
