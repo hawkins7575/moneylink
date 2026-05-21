@@ -171,58 +171,83 @@
                     <!-- 사이트 사용법 섹션 -->
                     <section id="guideSection" class="guide-section" style="display: none;">
                         <div class="guide-hero">
-                            <div class="hero-icon"><i class="fa-solid fa-vault"></i></div>
+                            <div class="guide-hero-icon" style="font-size: 3rem; color: var(--primary); margin-bottom: 1.5rem; background: #ffffff; width: 80px; height: 80px; line-height: 80px; border-radius: 20px; display: inline-block; box-shadow: 0 8px 16px rgba(0, 8, 61, 0.1);"><i class="fa-solid fa-compass"></i></div>
                             <h2>MoneyLink 이용 가이드</h2>
-                            <p>더 똑똑한 금융 생활을 위한 MoneyLink의 주요 기능을 소개해 드립니다.</p>
+                            <p>국내외 최고의 금융 채널을 다루는 스마트 큐레이션 포털 MoneyLink를 200% 활용하는 비결을 소개합니다.</p>
                         </div>
                         
-                        <div class="guide-grid">
-                            <div class="guide-card">
-                                <div class="card-icon"><i class="fa-solid fa-user-plus"></i></div>
-                                <h3>회원가입 및 로그인</h3>
-                                <p>상단 '로그인' 버튼을 클릭한 후, '계정이 없으신가요? 계정 만들기' 버튼을 통해 간편하게 가입할 수 있습니다. 가입 후 로그인하면 개인 설정이 안전하게 서버에 동기화됩니다.</p>
+                        <!-- Visual Showcase Rows with Images -->
+                        <div class="guide-showcase-container">
+                            
+                            <!-- Step 1 -->
+                            <div class="guide-showcase-row">
+                                <div class="guide-showcase-img-wrap">
+                                    <img src="/guide_dashboard.png" alt="스마트 금융 즐겨찾기 대시보드" class="guide-showcase-img">
+                                </div>
+                                <div class="guide-showcase-content">
+                                    <span class="guide-showcase-badge">CORE SERVICE</span>
+                                    <h3>스마트 금융 즐겨찾기 & 큐레이션</h3>
+                                    <p>인터넷에 흩어져 있는 국내외 주식, 암호화폐, 채권, 부동산 사이트와 고품질 경제 금융 유튜브 채널을 카테고리별로 일목요연하게 큐레이션하여 제공합니다. 대분류 및 하위 소분류 멀티 필터링을 사용해 매일 아침 단 3초 만에 원하시는 경제 정보 채널로 순간 이동하실 수 있습니다.</p>
+                                    <div class="guide-showcase-features">
+                                        <div class="guide-showcase-feature-item"><i class="fa-solid fa-circle-check"></i> <span>원클릭 자산 카테고리 & 미디어 필터링</span></div>
+                                        <div class="guide-showcase-feature-item"><i class="fa-solid fa-circle-check"></i> <span>신뢰성 높은 우수 금융 사이트 왕관 표시 제공</span></div>
+                                    </div>
+                                </div>
                             </div>
                             
-                            <div class="guide-card">
-                                <div class="card-icon"><i class="fa-solid fa-bookmark"></i></div>
-                                <h3>나만의 즐겨찾기 관리</h3>
-                                <p>마음에 드는 카드 우측 상단의 별표(★) 아이콘을 눌러보세요. 나만의 즐겨찾기로 등록되어 어떤 기기에서 접속하든 가장 먼저 확인하고 간편하게 관리할 수 있습니다.</p>
+                            <!-- Step 2 -->
+                            <div class="guide-showcase-row reverse">
+                                <div class="guide-showcase-img-wrap">
+                                    <img src="/guide_sync.png" alt="실시간 데이터 동기화" class="guide-showcase-img">
+                                </div>
+                                <div class="guide-showcase-content">
+                                    <span class="guide-showcase-badge">PERSONALIZATION</span>
+                                    <h3>실시간 데이터 동기화 & 바로가기 고정</h3>
+                                    <p>회원가입 후 간편하게 로그인해 보세요. 나만의 전용 링크(북마크)를 등록할 수 있을 뿐만 아니라, 자주 찾는 사이트 카드 우측 상단의 별표(★)를 눌러 '바로가기' 메뉴판에 고정할 수 있습니다. 수정한 설정과 개인 데이터는 실시간으로 클라우드 서버(MongoDB Atlas)에 안전하게 자동 저장되어, 회사 PC, 스마트폰, 집 태블릿 등 모든 디바이스에서 언제나 동일하게 복원됩니다.</p>
+                                    <div class="guide-showcase-features">
+                                        <div class="guide-showcase-feature-item"><i class="fa-solid fa-circle-check"></i> <span>자주 찾는 사이트 최상단 '바로가기' 퀵 링크 고정</span></div>
+                                        <div class="guide-showcase-feature-item"><i class="fa-solid fa-circle-check"></i> <span>실시간 멀티 디바이스 클라우드 동기화 시스템</span></div>
+                                    </div>
+                                </div>
                             </div>
+                            
+                            <!-- Step 3 -->
+                            <div class="guide-showcase-row">
+                                <div class="guide-showcase-img-wrap">
+                                    <img src="/guide_community.png" alt="인사이트 및 투자자 커뮤니티" class="guide-showcase-img">
+                                </div>
+                                <div class="guide-showcase-content">
+                                    <span class="guide-showcase-badge">COMMUNITY</span>
+                                    <h3>투자 인사이트 공유 & 익명 자유 소통</h3>
+                                    <p>시장의 흐름을 분석하고 깊이 있는 금융 정보를 기고하는 전용 '인사이트(블로그)' 공간과, 닉네임을 사용해 투자 의견 및 관심 있는 주제를 가볍게 소통하는 '자유 게시판'을 운영합니다. 또한 사이트에 추가하고 싶은 사이트 추천이나 기능 건의사항을 남길 수 있는 '건의&추천' 소통 게시판을 통해 사용자와 함께 성장해가는 금융 허브를 만듭니다.</p>
+                                    <div class="guide-showcase-features">
+                                        <div class="guide-showcase-feature-item"><i class="fa-solid fa-circle-check"></i> <span>전문적인 리치 텍스트 에디터(Quill) 기반 인사이트 기고</span></div>
+                                        <div class="guide-showcase-feature-item"><i class="fa-solid fa-circle-check"></i> <span>게시글 추천(👍/👎) 및 실시간 댓글 상호작용 피드백</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
 
-                            <div class="guide-card">
-                                <div class="card-icon"><i class="fa-solid fa-sync"></i></div>
-                                <h3>개인화 서비스</h3>
-                                <p>로그인한 사용자는 내가 등록한 바로가기, 즐겨찾기 목록, 작성한 게시글 등이 실시간으로 저장되어 멀티 디바이스 환경에서도 동일한 경험을 누릴 수 있습니다.</p>
-                            </div>
-
-                            <div class="guide-card">
-                                <div class="card-icon"><i class="fa-solid fa-house"></i></div>
-                                <h3>즐겨찾기 (Bookmarks)</h3>
-                                <p>엄선된 금융 사이트와 리소스를 카테고리별로 모아둔 메인 화면입니다. 웹사이트와 유튜브 채널 등 다양한 채널의 정보를 한 번에 확인하세요.</p>
-                            </div>
-                            
-                            <div class="guide-card">
-                                <div class="card-icon"><i class="fa-solid fa-comments"></i></div>
-                                <h3>자유 게시판 (Community)</h3>
-                                <p>금융 정보부터 다양한 투자 의견, 궁금증을 자유롭게 나누는 공간입니다. 실명 대신 닉네임으로 편하게 소통하세요.</p>
-                            </div>
-                            
-                            <div class="guide-card">
-                                <div class="card-icon"><i class="fa-solid fa-link"></i></div>
-                                <h3>바로가기 (Shortcuts)</h3>
-                                <p>자주 방문하는 웹 사이트를 별표(★)로 체크하여 상단에 고정하세요. 나만의 맞춤형 메뉴판을 만들어 더욱 빠르게 이동할 수 있습니다.</p>
-                            </div>
-                            
-                            <div class="guide-card">
-                                <div class="card-icon"><i class="fa-solid fa-star"></i></div>
-                                <h3>인사이트 (Insights)</h3>
-                                <p>전문적인 분석과 깊이 있는 금융 정보를 제공하는 블로그 공간입니다. 시장의 흐름을 읽는 안목을 넓혀보세요.</p>
-                            </div>
-                            
-                            <div class="guide-card">
-                                <div class="card-icon"><i class="fa-solid fa-lightbulb"></i></div>
-                                <h3>건의&추천 (Feedback)</h3>
-                                <p>사이트에 추가하고 싶은 금융 사이트나 기능 개선 요청을 자유롭게 남겨주세요. 사용자의 의견으로 진화하는 MoneyLink를 만듭니다.</p>
+                        <!-- Bottom Quick FAQ / Tip Section -->
+                        <div class="guide-quick-features">
+                            <h3>이용 꿀팁 & 핵심 요약</h3>
+                            <div class="guide-quick-grid">
+                                <div class="guide-quick-card">
+                                    <div class="guide-quick-icon"><i class="fa-solid fa-key"></i></div>
+                                    <h4>간편 계정 가입 권장</h4>
+                                    <p>로그인 후 서비스를 사용하시면, 북마크 커스터마이징 기능이 영구적으로 제공되며 작성 글 및 댓글 관리가 훨씬 용이해집니다.</p>
+                                </div>
+                                <div class="guide-quick-card">
+                                    <div class="guide-quick-icon"><i class="fa-solid fa-crown"></i></div>
+                                    <h4>우수 사이트 활용</h4>
+                                    <p>카드 좌측 상단에 노란 왕관이 씌워진 사이트는 MoneyLink가 엄선한 우량 정보처이므로 가장 신뢰하셔도 좋습니다.</p>
+                                </div>
+                                <div class="guide-quick-card">
+                                    <div class="guide-quick-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                                    <h4>건의사항 활용하기</h4>
+                                    <p>필요한 금융 사이트가 있으신 경우 '건의&추천'에 링크를 올려주시면 관리자가 즉각 검토 후 즐겨찾기에 공식 추가해 드립니다.</p>
+                                </div>
                             </div>
                         </div>
                     </section>
