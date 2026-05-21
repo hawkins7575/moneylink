@@ -17,6 +17,6 @@
     "express": "^4.22.1",
     "mongoose": "^9.4.1"
   },
-  "author": "MY MONEY Team",
+  "author": "MoneyLink Team",
   "license": "ISC"
 }

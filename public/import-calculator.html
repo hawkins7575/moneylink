@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2Z 소싱 원가 계산기</title>
+<!-- Fonts -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface-input: #f1f5f9;
+    --border: #e2e8f0;
+    --border-hover: #cbd5e1;
+    --text: #0f172a;
+    --text-muted: #475569;
+    --text-sub: #64748b;
+    
+    /* Theme Colors */
+    --accent: #2563eb;
+    --accent-glow: rgba(37, 99, 235, 0.1);
+    --success: #059669;
+    --success-bg: rgba(5, 150, 105, 0.1);
+    --warning: #d97706;
+    --warning-bg: rgba(217, 119, 6, 0.1);
+    --danger: #dc2626;
+    --danger-bg: rgba(220, 38, 38, 0.1);
+
+    --radius-sm: 8px;
+    --radius: 12px;
+    --radius-lg: 16px;
+
+    --font-sans: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Page Container */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 6rem;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem 1rem 3rem;
+    }
+}
+
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin: 0;
+    background: linear-gradient(135deg, #1e293b, #475569);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header p {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin: 0.5rem 0 0 0;
+}
+
+@media (max-width: 640px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+    }
+    
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .header p {
+        font-size: 0.9rem;
+    }
+}
+
+
+.badge {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+    letter-spacing: 0.05em;
+}
+
+/* Main Layout Grid */
+.layout {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .layout {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .results-sidebar {
+        position: static;
+    }
+}
+
+
+
+/* Panels */
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+}
+
+.panel:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 640px) {
+    .panel {
+        padding: 1.25rem 1.25rem;
+        margin-bottom: 1rem;
+    }
+}
+
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+}
+
+.panel-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text);
+}
+
+.panel-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--surface-input);
+    color: var(--accent);
+    font-size: 0.9rem;
+    border: 1px solid var(--border);
+}
+
+/* Form Styles */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem 1rem;
+}
+
+@media (max-width: 480px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper input, .input-wrapper select {
+    width: 100%;
+    background: var(--surface-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    padding: 0.8rem 3rem 0.8rem 1rem;
+    transition: all 0.2s ease;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.input-wrapper input:hover, .input-wrapper select:hover {
+    border-color: var(--border-hover);
+}
+
+.input-wrapper input:focus, .input-wrapper select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow), inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Remove number arrows */
+.input-wrapper input::-webkit-outer-spin-button,
+.input-wrapper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input-wrapper input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.input-wrapper select {
+    appearance: none;
+    padding-right: 2.5rem;
+    cursor: pointer;
+    font-family: var(--font-sans);
+}
+
+.input-suffix {
+    position: absolute;
+    right: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-sub);
+    pointer-events: none;
+}
+
+.input-icon {
+    position: absolute;
+    right: 1rem;
+    color: var(--text-sub);
+    pointer-events: none;
+    font-size: 0.8rem;
+}
+
+/* Results Sidebar (Sticky) */
+.results-sidebar {
+    position: sticky;
+    top: 2rem;
+}
+
+.results-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2.25rem 2rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 640px) {
+    .results-card {
+        padding: 1.5rem 1.25rem;
+    }
+}
+
+
+/* Margin Progress Bar */
+.margin-bar-wrap {
+    margin-bottom: 2rem;
+}
+
+.mbar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 0.75rem;
+}
+
+.mbar-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.mbar-val {
+    font-family: var(--font-mono);
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.mbar-track {
+    height: 8px;
+    background: var(--surface-input);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.mbar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+}
+
+/* Tags */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    vertical-align: text-bottom;
+}
+.tag-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(52, 211, 153, 0.2); }
+.tag-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(251, 191, 36, 0.2); }
+.tag-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.2); }
+
+/* Metrics */
+.metric-row {
+    margin-bottom: 1.25rem;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+@media (max-width: 480px) {
+    .metric-grid {
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+}
+
+
+.metric-box {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.metric-box:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-hover);
+}
+
+.metric-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.metric-sub {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    margin-top: 0.4rem;
+}
+
+.metric-main {
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.08), transparent);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.metric-main .metric-value {
+    font-size: 2rem;
+}
+
+/* Breakdown List */
+.breakdown {
+    margin-bottom: 2.5rem;
+}
+
+.breakdown-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.br-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.95rem;
+}
+
+.br-row:last-child {
+    border-bottom: none;
+}
+
+.br-label {
+    color: var(--text-muted);
+}
+
+.br-calc {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    font-family: var(--font-mono);
+    margin-left: 0.4rem;
+}
+
+.br-val {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--text);
+}
+
+.br-subtotal {
+    background: rgba(255,255,255,0.03);
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem -0.75rem;
+    border-radius: 6px;
+    border: none;
+}
+
+.br-subtotal .br-label {
+    font-size: 0.85rem;
+}
+
+.br-total {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-weight: 600;
+}
+.br-total .br-label { color: var(--text); }
+.br-total .br-val { color: var(--accent); font-size: 1.2rem; }
+
+/* Buttons */
+.actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
+}
+
+.btn-ghost {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    flex: 1;
+}
+
+.btn-ghost:hover {
+    background: var(--surface-input);
+    border-color: var(--border-hover);
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+    flex: 2;
+    box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+/* Mobile Summary Bar */
+.mobile-summary-bar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 1rem;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media (max-width: 900px) {
+    .mobile-summary-bar {
+        display: flex;
+    }
+    
+    .container {
+        padding-bottom: 8rem; /* Extra space for sticky bar */
+    }
+}
+
+.msum-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.msum-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.msum-val {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.msum-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+</style>
+
+</head>
+<body>
+<div class="container">
+  
+  <header class="header">
+    <div>
+      <h1>A2Z 소싱 원가 계산기</h1>
+      <p>CIF 조건 기반 무역 비용 및 예상 마진 분석</p>
+    </div>
+    <div class="badge">PRO VERSION</div>
+  </header>
+
+  <div class="layout">
+    
+    <!-- Left: Inputs -->
+    <div class="inputs-section">
+      
+      <!-- Panel: 상품 정보 -->
+      <div class="panel">
+        <div class="panel-header">
+           <div class="panel-icon"><i class="fa-solid fa-box-open"></i></div>
+           <h2 class="panel-title">상품 & 환율 정보</h2>
+        </div>
+        <div class="form-grid">
+           <div class="form-group">
+              <label>구매 단가 (USD)</label>
+              <div class="input-wrapper">
+                 <input type="number" id="price_usd" value="5" min="0" step="0.01">
+                 <span class="input-suffix">USD</span>
+              </div>
+           </div>
+           <div class="form-group">
+              <label>수량 (개)</label>
+              <div class="input-wrapper">
+                 <input type="number" id="qty" value="500" min="1">
+                 <span class="input-suffix">개</span>
+              </div>
+           </div>
+           <div class="form-group full">
+              <label>적용 환율 (KRW/USD)</label>
+              <div class="input-wrapper">
+                 <input type="number" id="usd_rate" value="1340" min="0" step="1">
+                 <span class="input-suffix">KRW</span>
+              </div>
+           </div>
+        </div>
+      </div>
+      
+      <!-- Panel: 물류 정보 -->
+      <div class="panel">
+        <div class="panel-header">
+           <div class="panel-icon"><i class="fa-solid fa-ship"></i></div>
+           <h2 class="panel-title">운송 & 물류 비용</h2>
+        </div>
+        <div class="form-grid">
+           <div class="form-group full">
+              <label>운송 방식</label>
+              <div class="input-wrapper">
+                 <select id="ship_mode">
+                   <option value="sea">해상 운송 (Sea Freight)</option>
+                   <option value="air">항공 운송 (Air Freight)</option>
+                   <option value="express">특급 택배 (Express)</option>
+                 </select>
+                 <i class="fa-solid fa-chevron-down input-icon"></i>
+              </div>
+           </div>
+           <div class="form-group">
+              <label>운임 총액</label>
+              <div class="input-wrapper">
+                 <input type="number" id="freight" value="150000" min="0">
+                 <span class="input-suffix">KRW</span>
+              </div>
+           </div>
+           <div class="form-group">
+              <label>적하 보험료</label>
+              <div class="input-wrapper">
+                 <input type="number" id="insurance" value="0" min="0">
+                 <span class="input-suffix">KRW</span>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Panel: 세금 & 기타 부대비용 -->
+      <div class="panel">
+        <div class="panel-header">
+           <div class="panel-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+           <h2 class="panel-title">세금 & 부대비용</h2>
+        </div>
+        <div class="form-grid">
+           <div class="form-group">
+              <label>관세율 (%)</label>
+              <div class="input-wrapper">
+                 <input type="number" id="tariff_rate" value="8" min="0" max="100" step="0.1">
+                 <span class="input-suffix">%</span>
+              </div>
+           </div>
+           <div class="form-group">
+              <label>부가세율 (%)</label>
+              <div class="input-wrapper">
+                 <input type="number" id="vat_rate" value="10" min="0" max="100" step="0.1">
+                 <span class="input-suffix">%</span>
+              </div>
+           </div>
+           <div class="form-group">
+              <label>통관 수수료</label>
+              <div class="input-wrapper">
+                 <input type="number" id="customs_fee" value="50000" min="0">
+                 <span class="input-suffix">KRW</span>
+              </div>
+           </div>
+           <div class="form-group">
+              <label>기타(내륙운송/검수)</label>
+              <div class="input-wrapper">
+                 <input type="number" id="misc" value="30000" min="0">
+                 <span class="input-suffix">KRW</span>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Panel: 판매 전략 -->
+      <div class="panel">
+        <div class="panel-header">
+           <div class="panel-icon"><i class="fa-solid fa-tags"></i></div>
+           <h2 class="panel-title">판매 전략</h2>
+        </div>
+        <div class="form-grid">
+           <div class="form-group full">
+              <label>목표 판매가 (개당)</label>
+              <div class="input-wrapper">
+                 <input type="number" id="sell_price" value="18000" min="0">
+                 <span class="input-suffix">KRW</span>
+              </div>
+           </div>
+        </div>
+      </div>
+
+    </div> <!-- End Left Inputs -->
+
+    <!-- Right: Results -->
+    <div class="results-sidebar">
+      <div class="results-card">
+         
+         <div class="margin-bar-wrap" id="bar-section"></div>
+         
+         <div class="metric-row" id="metric-profit-wrap">
+            <!-- Profit Metric Generated Here -->
+         </div>
+
+         <div class="metric-grid" id="metric-grid">
+            <!-- Grid Metrics Generated Here -->
+         </div>
+         
+         <div class="breakdown">
+             <div class="breakdown-title"><i class="fa-solid fa-list-ul"></i> 원가 상세 내역</div>
+             <div id="breakdown-list"></div>
+         </div>
+
+         <div class="actions">
+            <button class="btn btn-ghost" onclick="resetAll()"><i class="fa-solid fa-rotate-right"></i> 초기화</button>
+            <button class="btn btn-primary" onclick="copyResult()"><i class="fa-solid fa-copy"></i> 결과 복사</button>
+         </div>
+
+      </div>
+    </div> <!-- End Right Results -->
+
+  </div>
+
+  <!-- Mobile Summary Bar -->
+  <div class="mobile-summary-bar" id="mobile-summary">
+    <div class="msum-item">
+      <span class="msum-label">예상 순이익</span>
+      <span class="msum-val" id="msum-profit">0원</span>
+    </div>
+    <div class="msum-item">
+      <span class="msum-label">마진율</span>
+      <span class="msum-val" id="msum-margin">0%</span>
+    </div>
+    <button class="msum-btn" onclick="document.querySelector('.results-sidebar').scrollIntoView({behavior:'smooth'})">상세보기</button>
+  </div>
+</div>
+
+
+<script>
+// Attach Event Listeners
+const inputIds = ['price_usd','qty','usd_rate','freight','insurance','tariff_rate','vat_rate','customs_fee','misc','sell_price'];
+inputIds.forEach(id => {
+    document.getElementById(id).addEventListener('input', calc);
+});
+document.getElementById('ship_mode').addEventListener('change', calc);
+
+// Utility Functions
+function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR'); }
+function fd(n, d=1) { return n.toFixed(d); }
+
+// Core Calculation Engine
+function getCalcData() {
+  const price_usd = v('price_usd');
+  const qty = Math.max(v('qty'), 1);
+  const usd_rate = v('usd_rate');
+  const freight = v('freight');
+  const insurance = v('insurance');
+  const tariff_r = v('tariff_rate') / 100;
+  const vat_r = v('vat_rate') / 100;
+  const customs_fee = v('customs_fee');
+  const misc = v('misc');
+  const sell_price = v('sell_price');
+
+  const item_total = price_usd * usd_rate * qty;
+  const cif = item_total + freight + insurance;
+  const tariff = cif * tariff_r;
+  const vat = (cif + tariff) * vat_r;
+  const total = cif + tariff + vat + customs_fee + misc;
+  
+  const unit_cost = total / qty;
+  const revenue = sell_price * qty;
+  const profit = revenue - total;
+  const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+  const markup = unit_cost > 0 ? ((sell_price - unit_cost) / unit_cost) * 100 : 0;
+
+  return { price_usd, qty, usd_rate, freight, insurance, tariff_r, vat_r, customs_fee, misc, sell_price, item_total, cif, tariff, vat, total, unit_cost, revenue, profit, margin, markup };
+}
+
+// UI Update Function
+function calc() {
+  const d = getCalcData();
+  const isPos = d.profit >= 0;
+
+  // 1. Render Profit Metric
+  const profitColor = isPos ? 'var(--success)' : 'var(--danger)';
+  const profitSign = isPos ? '+' : '−';
+  const profitBg = isPos ? 'rgba(52, 211, 153, 0.08)' : 'rgba(248, 113, 113, 0.08)';
+  const profitBorder = isPos ? 'rgba(52, 211, 153, 0.3)' : 'rgba(248, 113, 113, 0.3)';
+
+  document.getElementById('metric-profit-wrap').innerHTML = `
+    <div class="metric-box metric-main" style="background: linear-gradient(145deg, ${profitBg}, transparent); border-color: ${profitBorder}">
+      <div class="metric-label" style="color: ${profitColor}">예상 총 순이익</div>
+      <div class="metric-value" style="color: ${profitColor}">${profitSign}${fmt(Math.abs(d.profit))}원</div>
+      <div class="metric-sub">마크업(이윤율) ${fd(d.markup)}% 기준</div>
+    </div>
+  `;
+
+  // 2. Render Grid Metrics
+  document.getElementById('metric-grid').innerHTML = `
+    <div class="metric-box">
+      <div class="metric-label">개당 원가</div>
+      <div class="metric-value">${fmt(d.unit_cost)}원</div>
+      <div class="metric-sub">≈ $${fd(d.unit_cost/d.usd_rate, 2)}</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-label">총 수입 원가</div>
+      <div class="metric-value">${fmt(d.total)}원</div>
+      <div class="metric-sub">수량 ${fmt(d.qty)}개 적용</div>
+    </div>
+  `;
+
+  // 3. Render Margin Bar
+  const barW = Math.min(Math.max(d.margin, 0), 100);
+  let barColor, tagClass, tagText;
+  if (d.margin >= 30) { barColor = 'var(--success)'; tagClass = 'tag-success'; tagText = '우수'; }
+  else if (d.margin >= 15) { barColor = 'var(--warning)'; tagClass = 'tag-warning'; tagText = '보통'; }
+  else { barColor = 'var(--danger)'; tagClass = 'tag-danger'; tagText = '위험'; }
+
+  document.getElementById('bar-section').innerHTML = `
+    <div class="mbar-header">
+      <div class="mbar-label">목표 마진율 <span class="tag ${tagClass}">${tagText}</span></div>
+      <div class="mbar-val" style="color: ${barColor}">${fd(d.margin)}%</div>
+    </div>
+    <div class="mbar-track">
+      <div class="mbar-fill" style="width: ${barW}%; background: ${barColor}"></div>
+    </div>
+  `;
+
+  // 4. Render Breakdown
+  document.getElementById('breakdown-list').innerHTML = `
+    <div class="br-row">
+      <span class="br-label">상품 구매비 <span class="br-calc">($${d.price_usd} × ${fmt(d.qty)})</span></span>
+      <span class="br-val">${fmt(d.item_total)}원</span>
+    </div>
+    <div class="br-row">
+      <span class="br-label">운임 및 보험료</span>
+      <span class="br-val">${fmt(d.freight + d.insurance)}원</span>
+    </div>
+    <div class="br-row br-subtotal">
+      <span class="br-label">CIF 과세가격</span>
+      <span class="br-val" style="font-size: 0.85rem">${fmt(d.cif)}원</span>
+    </div>
+    <div class="br-row">
+      <span class="br-label">관세 <span class="br-calc">(${fd(d.tariff_r*100)}%)</span></span>
+      <span class="br-val">${fmt(d.tariff)}원</span>
+    </div>
+    <div class="br-row">
+      <span class="br-label">부가세 <span class="br-calc">(${fd(d.vat_r*100)}%)</span></span>
+      <span class="br-val">${fmt(d.vat)}원</span>
+    </div>
+    <div class="br-row">
+      <span class="br-label">부대 비용 <span class="br-calc">(수수료 등)</span></span>
+      <span class="br-val">${fmt(d.customs_fee + d.misc)}원</span>
+    </div>
+    <div class="br-row br-total">
+      <span class="br-label">최종 원가</span>
+      <span class="br-val">${fmt(d.total)}원</span>
+    </div>
+  `;
+
+  // 5. Update Mobile Summary
+  const mProfit = document.getElementById('msum-profit');
+  const mMargin = document.getElementById('msum-margin');
+  if (mProfit && mMargin) {
+      mProfit.innerText = `${isPos ? '+' : ''}${fmt(d.profit)}원`;
+      mProfit.style.color = profitColor;
+      mMargin.innerText = `${fd(d.margin)}%`;
+      mMargin.style.color = barColor;
+  }
+}
+
+
+// Utilities
+function resetAll() {
+  const defaults = {
+    price_usd: 5, qty: 500, usd_rate: 1340, 
+    freight: 150000, insurance: 0, 
+    tariff_rate: 8, vat_rate: 10, 
+    customs_fee: 50000, misc: 30000, sell_price: 18000
+  };
+  Object.entries(defaults).forEach(([id, val]) => {
+      document.getElementById(id).value = val;
+  });
+  document.getElementById('ship_mode').value = 'sea';
+  calc();
+}
+
+function copyResult() {
+  const d = getCalcData();
+  const text = `[수입 원가 & 마진 분석 결과]
+--------------------------------
+• 구매단가: $${d.price_usd} × ${fmt(d.qty)}개
+• 적용환율: ${fmt(d.usd_rate)}원
+--------------------------------
+• 총 수입 원가: ${fmt(d.total)}원
+• 개당 예상 원가: ${fmt(d.unit_cost)}원
+--------------------------------
+• 목표 판매가: ${fmt(d.sell_price)}원
+• 예상 순이익: ${fmt(d.profit)}원
+• 예상 마진율: ${fd(d.margin)}%
+--------------------------------
+* 이 계산은 참조용이며, 통관 시 실비와 차이가 있을 수 있습니다.`;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    alert('결과가 클립보드에 복사되었습니다.');
+  }).catch(() => {
+    alert('복사에 실패했습니다. 지원하지 않는 브라우저일 수 있습니다.');
+  });
+}
+
+// Initial Calculation
+calc();
+</script>
+</body>
+</html>

@@ -119,12 +119,13 @@ h1, h2, h3, .card-title, .modal-header h2 {
 }
 
 .sidebar-brand p {
-    font-size: 0.65rem; /* Reduced slightly */
-    font-weight: 700;
+    font-size: 0.75rem;
+    font-weight: 500;
     color: var(--on-surface-variant);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    opacity: 0.7;
+    line-height: 1.4;
+    margin-top: 0.35rem;
+    opacity: 0.85;
+    word-break: keep-all;
 }
 
 .sidebar-nav {
@@ -1375,7 +1376,7 @@ h1, h2, h3, .card-title, .modal-header h2 {
 
     /* Modern Mobile Typography Overrides (<= 1024px) */
     .sidebar-brand h1 { font-size: 1.3rem; }
-    .sidebar-brand p { font-size: 0.65rem; }
+    .sidebar-brand p { font-size: 0.7rem; line-height: 1.4; }
     .menu-label { font-size: 0.65rem; font-weight: 900; letter-spacing: 0.12em; }
     .filter-btn, .nav-btn { font-size: 0.85rem; padding: 0.75rem 0.85rem; }
     

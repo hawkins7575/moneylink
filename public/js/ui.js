@@ -661,7 +661,7 @@ export function updateJSONLD(type, item) {
         "datePublished": new Date(item.timestamp).toISOString(),
         "author": {
             "@type": "Person",
-            "name": item.author || "MY MONEY Team"
+            "name": item.author || "MoneyLink Team"
         }
     };
     script.textContent = JSON.stringify(ld);
