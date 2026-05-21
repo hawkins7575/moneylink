@@ -7,6 +7,7 @@ export const state = {
     communityData: [],
     feedbackData: [],
     shortcuts: [],
+    curations: [],
     currentUser: null,
     isLoginMode: true,
     currentCategory: 'all',

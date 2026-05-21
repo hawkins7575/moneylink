@@ -36,7 +36,8 @@ export async function syncData() {
                 boardData: state.boardData, 
                 communityData: state.communityData,
                 feedbackData: state.feedbackData,
-                shortcuts: state.shortcuts 
+                shortcuts: state.shortcuts,
+                curations: state.curations
             })
         });
 

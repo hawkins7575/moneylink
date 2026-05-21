@@ -12,6 +12,7 @@ import {
     renderCommunityBoard,
     renderFeedbackBoard,
     renderShortcuts,
+    renderCurations,
     openNewsModal,
     openBoardModal,
     closeAllModals,
@@ -58,6 +59,7 @@ async function initApp() {
         state.communityData = data.communityData || [];
         state.feedbackData = data.feedbackData || [];
         state.shortcuts = data.shortcuts || [];
+        state.curations = data.curations || [];
         
         let needsSync = false;
 
@@ -91,6 +93,7 @@ async function initApp() {
         renderCommunityBoard();
         renderFeedbackBoard();
         renderShortcuts();
+        renderCurations();
         renderTicker(); // 실시간 금융 지표 위젯 마운트
 
         // 초기 라우팅 처리

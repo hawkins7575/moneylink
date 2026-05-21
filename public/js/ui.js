@@ -3,6 +3,11 @@ import { DOM } from './dom.js';
 import { syncData, fetchMeta } from './api.js';
 import { updateAuthUI } from './auth.js';
 
+// Curation State
+let curationSelectionMode = false;
+let selectedCurationItemIds = [];
+let activeCurationTab = 'recommended';
+
 // ✅ 레터 아바타 생성 함수
 export function getLetterAvatarHTML(title) {
     if (!title || typeof title !== 'string') return '<div class="letter-avatar" style="background: var(--av-1)">?</div>';
@@ -628,8 +633,22 @@ export function renderCards() {
         nextChunk.forEach((item, i) => {
             const absoluteIndex = currentIndex + i;
             const card = document.createElement('article');
-            card.className = `card ${item.category} ${item.isPremium ? 'premium' : ''}`;
+            const isSelected = selectedCurationItemIds.includes(item.id);
+            card.className = `card ${item.category} ${item.isPremium ? 'premium' : ''} ${curationSelectionMode ? 'selection-mode-active' : ''} ${isSelected ? 'selected' : ''}`;
             card.style.animationDelay = `${Math.min(i * 0.05, 0.3)}s`;
+
+            // 큐레이션 모드일 때 클릭 시 동작 재정의
+            card.addEventListener('click', (e) => {
+                if (curationSelectionMode) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const checkbox = card.querySelector('.card-curation-checkbox');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        window.toggleCurationCardSelection(item.id, checkbox);
+                    }
+                }
+            });
 
             const catLabel = (state.categories.find(c => c.id === item.category)?.name || item.category).toUpperCase();
             
@@ -657,9 +676,8 @@ export function renderCards() {
             let myBookmarkBtn = '';
             if (state.currentUser) {
                 const isMy = state.currentUser.myBookmarks && state.currentUser.myBookmarks.includes(item.id);
-                // 좀 더 선명하고 고급스러운 색상으로 수정
                 const starIcon = isMy 
-                    ? '<i class="fa-solid fa-star" style="color: #FFB300; filter: drop-shadow(0 2px 4px rgba(255,179,0,0.4)); text-shadow: 0 0 1px rgba(0,0,0,0.1);"></i>' 
+                    ? '<i class="fa-solid fa-star" style="color: #FFB300; filter: drop-shadow(0 2px 4px rgba(255,179,0,0.4)); text-shadow: 0 0 1px rgba(0,0,0,0.1));"></i>' 
                     : '<i class="fa-regular fa-star" style="color: #8B9BB4; transition: color 0.2s;"></i>';
                 myBookmarkBtn = `
                     <button class="my-star-btn" title="내 즐겨찾기에 추가/제거" onclick="window.toggleMyBookmark(${item.id}, event);">
@@ -692,9 +710,17 @@ export function renderCards() {
             const typeBadge = `<span class="badge" style="background:#f5f5f5; color:var(--on-surface-variant);"><span style="margin-right:0.25rem;">${typeIcon}</span> ${typeLabel}</span>`;
             const premiumBadge = item.isPremium ? `<div class="premium-badge" title="우수사이트"><i class="fa-solid fa-crown"></i></div>` : '';
 
+            // Curation Checkbox
+            const checkboxHtml = `
+                <div class="card-curation-checkbox-wrapper" onclick="event.stopPropagation();">
+                    <input type="checkbox" class="card-curation-checkbox" data-id="${item.id}" ${isSelected ? 'checked' : ''} onchange="window.toggleCurationCardSelection(${item.id}, this)">
+                </div>
+            `;
+
             card.innerHTML = `
                 ${premiumBadge}
                 ${myBookmarkBtn}
+                ${checkboxHtml}
                 ${actionsHtml ? `<div class="card-actions" style="display:flex; gap:0.5rem;" onclick="event.preventDefault(); event.stopPropagation();">
                     ${actionsHtml.replace('<div class="card-actions" onclick="event.preventDefault(); event.stopPropagation();">', '').replace('</div>', '')}
                 </div>` : ''}
@@ -1504,6 +1530,9 @@ export function setupUIEvents() {
             }
         };
     }
+
+    // Bind Curation Events
+    setupCurationEvents();
 }
 
 export function switchView(view, title) {
@@ -1514,12 +1543,17 @@ export function switchView(view, title) {
         'board': DOM.boardSection,
         'community-board': DOM.communityBoardSection,
         'feedback-board': DOM.feedbackBoardSection,
-        'news': DOM.newsFeedSection
+        'news': DOM.newsFeedSection,
+        'curations': DOM.curationSection
     };
 
     Object.values(sections).forEach(section => {
         if (section) section.style.display = 'none';
     });
+
+    if (DOM.curationDetailSection) {
+        DOM.curationDetailSection.style.display = 'none';
+    }
 
     const targetSection = sections[view] || sections['bookmarks'];
     if (targetSection) targetSection.style.display = 'block';
@@ -1604,3 +1638,623 @@ export async function renderTicker() {
         tickerItemsEl.innerHTML = '<div class="ticker-loading"><i class="fa-solid fa-triangle-exclamation"></i> 지표 로딩 실패</div>';
     }
 }
+
+// ==========================================
+// 🧭 PREMIUM CURATION HUB & ROUTINE PLAYER CORE LOGIC (PHASE 2)
+// ==========================================
+
+function setupCurationEvents() {
+    // 1. 나만의 큐레이션 만들기 버튼 클릭
+    if (DOM.startCurationModeBtn) {
+        DOM.startCurationModeBtn.onclick = () => {
+            if (!state.currentUser) {
+                alert('나만의 큐레이션을 만들려면 로그인이 필요합니다.');
+                // Trigger auth modal opening directly if global helper exists
+                const loginBtn = document.getElementById('loginBtn');
+                if (loginBtn) loginBtn.click();
+                return;
+            }
+            toggleCurationSelectionMode(true);
+        };
+    }
+
+    // 2. 큐레이션 모드 패널 [선택 완료 & 저장] 버튼
+    if (DOM.curationSaveBtn) {
+        DOM.curationSaveBtn.onclick = () => {
+            if (selectedCurationItemIds.length === 0) {
+                alert('큐레이션에 추가할 즐겨찾기 카드를 최소 1개 이상 선택해 주세요.');
+                return;
+            }
+            openCurationCreateModal();
+        };
+    }
+
+    // 3. 큐레이션 모드 패널 [취소] 버튼
+    if (DOM.curationCancelBtn) {
+        DOM.curationCancelBtn.onclick = () => {
+            toggleCurationSelectionMode(false);
+        };
+    }
+
+    // 4. 큐레이션 탭 전환
+    const tabBtns = document.querySelectorAll('.curation-tab-btn');
+    tabBtns.forEach(btn => {
+        btn.onclick = (e) => {
+            tabBtns.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
+            });
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
+            activeCurationTab = btn.getAttribute('data-curation-tab');
+            renderCurations();
+        };
+    });
+
+    // 5. 큐레이션 상세 정보 보기 창에서 [돌아가기] 버튼
+    if (DOM.curationDetailBackBtn) {
+        DOM.curationDetailBackBtn.onclick = () => {
+            if (DOM.curationDetailSection) DOM.curationDetailSection.style.display = 'none';
+            if (DOM.curationSection) DOM.curationSection.style.display = 'block';
+        };
+    }
+
+    // 6. 큐레이션 생성 모달 닫기 및 취소 버튼
+    if (DOM.closeCurationCreateModal) {
+        DOM.closeCurationCreateModal.onclick = () => closeCurationModal();
+    }
+    if (DOM.cancelCurationFormBtn) {
+        DOM.cancelCurationFormBtn.onclick = () => closeCurationModal();
+    }
+
+    // 7. 큐레이션 생성 폼 제출
+    if (DOM.curationCreateForm) {
+        DOM.curationCreateForm.onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const title = DOM.curationTitleInput.value.trim();
+            const desc = DOM.curationDescInput.value.trim();
+            const tagsRaw = DOM.curationTagsInput.value.trim();
+            
+            if (!title || !desc) {
+                alert('필수 입력 항목을 채워주세요.');
+                return;
+            }
+
+            // 쉼표로 분리 및 # 태그 형식 정리
+            const tags = tagsRaw
+                .split(',')
+                .map(t => t.trim())
+                .filter(Boolean)
+                .map(t => t.startsWith('#') ? t : '#' + t);
+
+            const newCuration = {
+                id: Date.now(),
+                title,
+                description: desc,
+                itemIds: [...selectedCurationItemIds],
+                tags,
+                curationType: 'personal',
+                userId: state.currentUser ? state.currentUser.username : 'admin'
+            };
+
+            // 상태에 저장
+            if (!state.curations) state.curations = [];
+            state.curations.push(newCuration);
+
+            try {
+                // 백그라운드 동기화 진행
+                await syncData();
+                alert('나만의 큐레이션이 성공적으로 생성되었습니다!');
+            } catch (err) {
+                console.error(err);
+                alert('큐레이션을 저장하는 데 실패했습니다. 다시 시도해 주세요.');
+            }
+
+            closeCurationModal();
+            toggleCurationSelectionMode(false);
+            
+            // 🧭 큐레이션 뷰 전환 및 개인 탭 활성화
+            switchView('curations', '🧭 큐레이션');
+            const personalTabBtn = document.querySelector('.curation-tab-btn[data-curation-tab="personal"]');
+            if (personalTabBtn) {
+                personalTabBtn.click();
+            } else {
+                activeCurationTab = 'personal';
+                renderCurations();
+            }
+        };
+    }
+}
+
+function openCurationCreateModal() {
+    if (!DOM.curationCreateModal) return;
+    DOM.curationCreateModal.style.display = 'flex';
+    
+    // 선택된 카드 개수 업데이트
+    if (DOM.curationSelectedCount) {
+        DOM.curationSelectedCount.textContent = selectedCurationItemIds.length;
+    }
+    
+    // 선택된 사이트 목록 미니 그리드 렌더링
+    if (DOM.curationSelectedItemsGrid) {
+        DOM.curationSelectedItemsGrid.innerHTML = '';
+        
+        selectedCurationItemIds.forEach(id => {
+            const item = state.items.find(i => i.id === id);
+            if (!item) return;
+            
+            let faviconUrl = '';
+            try {
+                const domain = new URL(item.url).hostname;
+                faviconUrl = `/api/favicon?domain=${domain}`;
+            } catch (e) {}
+            
+            const miniCard = document.createElement('div');
+            miniCard.className = 'selected-item-mini-card';
+            miniCard.style.cssText = `
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid var(--border-color);
+                padding: 0.35rem 0.65rem;
+                border-radius: 6px;
+                font-size: 0.8rem;
+                color: var(--text-light);
+            `;
+            
+            const iconHtml = faviconUrl ? 
+                `<img src="${faviconUrl}" onerror="this.outerHTML='<i class=&quot;fa-solid fa-globe&quot;></i>'" style="width: 14px; height: 14px; object-fit: contain;">` :
+                `<i class="fa-solid fa-globe" style="font-size: 0.8rem;"></i>`;
+                
+            miniCard.innerHTML = `
+                ${iconHtml}
+                <span style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</span>
+            `;
+            DOM.curationSelectedItemsGrid.appendChild(miniCard);
+        });
+    }
+    
+    // 입력 필드 초기화
+    if (DOM.curationTitleInput) DOM.curationTitleInput.value = '';
+    if (DOM.curationDescInput) DOM.curationDescInput.value = '';
+    if (DOM.curationTagsInput) DOM.curationTagsInput.value = '';
+}
+
+function closeCurationModal() {
+    if (DOM.curationCreateModal) {
+        DOM.curationCreateModal.style.display = 'none';
+    }
+}
+
+function toggleCurationSelectionMode(active) {
+    curationSelectionMode = active;
+    
+    if (active) {
+        selectedCurationItemIds = [];
+        if (DOM.curationModePanel) DOM.curationModePanel.style.display = 'block';
+        
+        // 🧭 즐겨찾기 화면으로 전환해 선택 유도
+        switchView('bookmarks', '즐겨찾기');
+        
+        // 팝업 안내 배너에 애니메이션 효과 추가
+        if (DOM.curationModePanel) {
+            DOM.curationModePanel.classList.add('premium-slide-in');
+        }
+    } else {
+        selectedCurationItemIds = [];
+        if (DOM.curationModePanel) DOM.curationModePanel.style.display = 'none';
+    }
+    
+    // 즐겨찾기 카드 다시 렌더링 (체크박스 표시 및 카드 레이아웃 전환)
+    renderCards();
+}
+
+window.toggleCurationCardSelection = function(id, el) {
+    if (el.checked) {
+        if (!selectedCurationItemIds.includes(id)) {
+            selectedCurationItemIds.push(id);
+        }
+    } else {
+        selectedCurationItemIds = selectedCurationItemIds.filter(x => x !== id);
+    }
+    
+    // Toggle 'selected' class on the closest article card
+    const cardEl = el.closest('.card');
+    if (cardEl) {
+        if (el.checked) {
+            cardEl.classList.add('selected');
+        } else {
+            cardEl.classList.remove('selected');
+        }
+    }
+};
+
+export function renderCurations() {
+    if (!DOM.curationGrid) return;
+    DOM.curationGrid.innerHTML = '';
+    
+    // 현재 탭에 맞는 큐레이션 필터링
+    let filtered = [];
+    if (activeCurationTab === 'recommended') {
+        filtered = state.curations.filter(c => c.curationType === 'recommended');
+    } else {
+        // 나의 개인 큐레이션
+        if (!state.currentUser) {
+            DOM.curationGrid.innerHTML = `
+                <div class="empty-curations" style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: 12px; margin-top: 1rem;">
+                    <i class="fa-solid fa-lock" style="font-size: 2.5rem; color: var(--premium-gold); margin-bottom: 1rem; opacity: 0.8;"></i>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.5rem;">로그인이 필요합니다</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">나의 개인 큐레이션과 커스텀 루틴을 관리하려면 로그인을 진행해 주세요.</p>
+                    <button class="premium-gold-btn" onclick="const b = document.getElementById('loginBtn'); if(b) b.click();" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; font-size: 0.85rem; font-weight: 700;">
+                        로그인하러 가기 <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        filtered = state.curations.filter(c => c.curationType === 'personal' && c.userId === state.currentUser.username);
+    }
+    
+    if (filtered.length === 0) {
+        if (activeCurationTab === 'recommended') {
+            DOM.curationGrid.innerHTML = `
+                <div class="empty-curations" style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: 12px; margin-top: 1rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p style="font-size: 0.95rem;">제공되는 추천 큐레이션 데이터가 없습니다.</p>
+                </div>
+            `;
+        } else {
+            DOM.curationGrid.innerHTML = `
+                <div class="empty-curations" style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: 12px; margin-top: 1rem;">
+                    <i class="fa-solid fa-folder-plus" style="font-size: 2.5rem; color: var(--premium-gold); margin-bottom: 1rem; opacity: 0.8;"></i>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.5rem;">첫 번째 큐레이션을 만들어 보세요!</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">자신만의 투자 습관을 루틴으로 정의하고 한 번에 실행해 보세요.</p>
+                    <button class="premium-gold-btn" onclick="document.getElementById('startCurationModeBtn').click();" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; font-size: 0.85rem; font-weight: 700;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> 나만의 큐레이션 만들기
+                    </button>
+                </div>
+            `;
+        }
+        return;
+    }
+    
+    filtered.forEach((c, idx) => {
+        const card = document.createElement('article');
+        card.className = 'curation-card';
+        card.style.animationDelay = `${Math.min(idx * 0.05, 0.3)}s`;
+        
+        // 카드 클릭 시 상세 페이지로 이동
+        card.onclick = () => showCurationDetails(c);
+        
+        const collageHtml = generateCurationCollage(c.itemIds);
+        const tagsHtml = c.tags.map(t => `<span class="curation-card-tag">${t}</span>`).join('');
+        
+        let deleteBtnHtml = '';
+        if (c.curationType === 'personal') {
+            deleteBtnHtml = `
+                <button class="curation-delete-btn" onclick="event.stopPropagation(); window.deleteCuration(${c.id});" title="삭제" style="position: absolute; top: 12px; right: 12px; background: rgba(255, 75, 75, 0.1); border: 1px solid rgba(255, 75, 75, 0.2); border-radius: 4px; color: #FF4B4B; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;">
+                    <i class="fa-solid fa-trash" style="font-size: 0.8rem;"></i>
+                </button>
+            `;
+        }
+        
+        card.innerHTML = `
+            ${deleteBtnHtml}
+            ${collageHtml}
+            <div class="curation-card-content">
+                <div class="curation-card-badge ${c.curationType}">
+                    ${c.curationType === 'recommended' ? '추천 루틴' : '개인 루틴'}
+                </div>
+                <h3 class="curation-card-title">${c.title}</h3>
+                <p class="curation-card-desc">${c.description}</p>
+                <div class="curation-card-footer">
+                    <div class="curation-card-tags">
+                        ${tagsHtml}
+                    </div>
+                    <div class="curation-card-count">
+                        <i class="fa-solid fa-list-check"></i> ${c.itemIds.length}개 사이트
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        DOM.curationGrid.appendChild(card);
+    });
+}
+
+function generateCurationCollage(itemIds) {
+    let html = '<div class="curation-favicon-stack">';
+    
+    // Resolve items
+    const resolvedItems = itemIds
+        .map(id => state.items.find(i => i.id === id))
+        .filter(Boolean);
+        
+    // We want exactly 4 elements. If we have resolvedItems, use their favicons.
+    // If not, pad with placeholder links or letter avatars.
+    for (let i = 0; i < 4; i++) {
+        const item = resolvedItems[i];
+        if (item) {
+            let faviconUrl = '';
+            try {
+                const domain = new URL(item.url).hostname;
+                faviconUrl = `/api/favicon?domain=${domain}`;
+            } catch (e) {}
+            
+            const iconHtml = faviconUrl ? 
+                `<img src="${faviconUrl}" onerror="this.outerHTML='<i class=&quot;fa-solid fa-globe&quot; style=&quot;color: var(--premium-gold);&quot;></i>'" style="width: 20px; height: 20px; border-radius: 4px; object-fit: contain;">` :
+                `<i class="fa-solid fa-globe" style="color: var(--premium-gold);"></i>`;
+
+            html += `
+                <div class="curation-stacked-icon" title="${item.title.replace(/"/g, '&quot;')}">
+                    ${iconHtml}
+                </div>
+            `;
+        } else {
+            // Placeholder
+            html += `
+                <div class="curation-stacked-icon placeholder-icon">
+                    <i class="fa-solid fa-link" style="color: var(--premium-gold); opacity: 0.35;"></i>
+                </div>
+            `;
+        }
+    }
+    
+    html += '</div>';
+    return html;
+}
+
+function showCurationDetails(curation) {
+    if (!DOM.curationSection || !DOM.curationDetailSection) return;
+    
+    DOM.curationSection.style.display = 'none';
+    DOM.curationDetailSection.style.display = 'block';
+    
+    // 상세 페이지 스크롤 맨 위로 이동
+    DOM.curationDetailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    // 메타데이터 바인딩
+    if (DOM.curationDetailBadge) {
+        DOM.curationDetailBadge.className = 'curation-badge ' + curation.curationType;
+        DOM.curationDetailBadge.textContent = curation.curationType === 'recommended' ? 'RECOMMENDED' : 'MY ROUTINE';
+        // 개인화된 배지 컬러 설정
+        if (curation.curationType === 'personal') {
+            DOM.curationDetailBadge.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+            DOM.curationDetailBadge.style.color = '#fff';
+        } else {
+            DOM.curationDetailBadge.style.background = 'var(--premium-gold)';
+            DOM.curationDetailBadge.style.color = '#000';
+        }
+    }
+    
+    if (DOM.curationDetailTitle) DOM.curationDetailTitle.textContent = curation.title;
+    if (DOM.curationDetailDesc) DOM.curationDetailDesc.textContent = curation.description;
+    
+    if (DOM.curationDetailTags) {
+        DOM.curationDetailTags.innerHTML = curation.tags.map(t => `<span class="curation-detail-tag" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.5rem; display: inline-block;">${t}</span>`).join('');
+    }
+    
+    // 루틴 일괄 실행 버튼 바인딩
+    if (DOM.curationOpenAllBtn) {
+        DOM.curationOpenAllBtn.onclick = () => openAllRoutineUrls(curation.itemIds);
+    }
+    
+    // 세부 사이트 덱 렌더링
+    if (DOM.curationDetailDeck) {
+        DOM.curationDetailDeck.innerHTML = '';
+        
+        const resolvedItems = curation.itemIds
+            .map(id => state.items.find(i => i.id === id))
+            .filter(Boolean);
+            
+        if (resolvedItems.length === 0) {
+            DOM.curationDetailDeck.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                    <p>포함된 즐겨찾기 사이트가 삭제되었거나 찾을 수 없습니다.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        resolvedItems.forEach((item, idx) => {
+            const info = getCurationSiteEditorialInfo(item);
+            
+            let faviconUrl = '';
+            try {
+                const domain = new URL(item.url).hostname;
+                faviconUrl = `/api/favicon?domain=${domain}`;
+            } catch (e) {}
+            
+            const difficultyStars = Array.from({length: 5}, (_, i) => 
+                i < info.difficulty 
+                    ? '<i class="fa-solid fa-star gold" style="color: var(--premium-gold); margin-right: 2px;"></i>' 
+                    : '<i class="fa-regular fa-star" style="color: var(--border-color); margin-right: 2px;"></i>'
+            ).join('');
+            
+            const utilityStars = Array.from({length: 5}, (_, i) => 
+                i < info.utility 
+                    ? '<i class="fa-solid fa-star gold" style="color: var(--premium-gold); margin-right: 2px;"></i>' 
+                    : '<i class="fa-regular fa-star" style="color: var(--border-color); margin-right: 2px;"></i>'
+            ).join('');
+            
+            const detailCard = document.createElement('div');
+            detailCard.className = 'curation-detail-card';
+            detailCard.style.animationDelay = `${Math.min(idx * 0.05, 0.3)}s`;
+            
+            const iconHtml = faviconUrl ? 
+                `<img src="${faviconUrl}" onerror="this.outerHTML='<i class=&quot;fa-solid fa-globe&quot; style=&quot;color: var(--premium-gold);&quot;></i>'" style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;">` :
+                `<i class="fa-solid fa-globe" style="font-size: 1.25rem; color: var(--premium-gold);"></i>`;
+                
+            detailCard.innerHTML = `
+                <div class="curation-detail-card-left">
+                    <div class="curation-detail-favicon">
+                        ${iconHtml}
+                    </div>
+                    <div class="curation-detail-info">
+                        <h4 class="curation-detail-card-title">${item.title}</h4>
+                        <p class="curation-detail-card-desc">${item.description || '지정된 설명이 없습니다.'}</p>
+                        <div class="curation-detail-reason">
+                            <strong><i class="fa-solid fa-lightbulb" style="color: var(--premium-gold); margin-right: 4px;"></i> 분석 이유:</strong> ${info.reason}
+                        </div>
+                        <div class="curation-detail-tips">
+                            <strong><i class="fa-solid fa-user-tie" style="color: var(--premium-gold); margin-right: 4px;"></i> 활용 팁 (Routine Tip):</strong> ${info.tips}
+                        </div>
+                    </div>
+                </div>
+                <div class="curation-detail-card-right">
+                    <div class="curation-metric">
+                        <span class="curation-metric-label">분석 난이도</span>
+                        <div class="curation-stars">
+                            ${difficultyStars}
+                        </div>
+                    </div>
+                    <div class="curation-metric">
+                        <span class="curation-metric-label">실무 활용성</span>
+                        <div class="curation-stars">
+                            ${utilityStars}
+                        </div>
+                    </div>
+                    <a href="${item.url}" target="_blank" class="curation-site-link-btn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-light); text-decoration: none; font-size: 0.85rem; font-weight: 600; text-align: center; transition: all 0.2s;">
+                        사이트 이동 <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem;"></i>
+                    </a>
+                </div>
+            `;
+            
+            DOM.curationDetailDeck.appendChild(detailCard);
+        });
+    }
+}
+
+function openAllRoutineUrls(itemIds) {
+    const resolvedItems = itemIds
+        .map(id => state.items.find(i => i.id === id))
+        .filter(Boolean);
+        
+    if (resolvedItems.length === 0) {
+        alert('이 큐레이션에 포함된 사이트가 없습니다.');
+        return;
+    }
+    
+    let blockedCount = 0;
+    const openedWindows = [];
+    
+    resolvedItems.forEach((item) => {
+        try {
+            const win = window.open(item.url, '_blank');
+            if (win) {
+                openedWindows.push(win);
+            } else {
+                blockedCount++;
+            }
+        } catch (e) {
+            console.error(e);
+            blockedCount++;
+        }
+    });
+    
+    if (blockedCount > 0) {
+        alert(`일부 사이트가 팝업 차단으로 인해 열리지 않았습니다.\n\nMoneyLink의 원클릭 동시 접속 루틴 플레이 기능을 100% 원활하게 사용하시려면, 브라우저 주소 표시줄의 [팝업 차단 항상 허용] 옵션을 꼭 설정해 주세요!`);
+    }
+}
+
+function getCurationSiteEditorialInfo(item) {
+    const title = item.title.toLowerCase();
+    const url = item.url.toLowerCase();
+    
+    // DART 전자공시
+    if (title.includes('dart') || title.includes('전자공시') || url.includes('dart.fss.or.kr')) {
+        return {
+            difficulty: 5,
+            utility: 5,
+            reason: "국내 모든 상장법인의 정기 보고서, 주요 경영 공시 및 주주 지분 변동 내역을 실시간으로 확인하는 대한민국 투자 정보의 핵심 시발점입니다.",
+            tips: "정기보고서 제출 마감일 직후 5영업일 이내에 공시되는 임원·주요주주의 특정증권 소유상황 보고서를 면밀히 대조하여 대주주의 지분 매입 흐름을 선제 포착하십시오."
+        };
+    }
+    // FnGuide / 에프앤가이드
+    if (title.includes('fnguide') || title.includes('에프앤가이드') || url.includes('fnguide')) {
+        return {
+            difficulty: 3,
+            utility: 4,
+            reason: "국내 대표 금융정보 플랫폼으로서 개별 기업의 밸류에이션 지표, 재무제표 5개년 요약, 컨센서스(시장 전망치) 추이를 한눈에 직관적으로 비교할 수 있습니다.",
+            tips: "컨센서스 변화 추이 메뉴에서 최근 4주간 기관 목표주가 괴리율 및 하향 조정 강도를 추적하여, 악재 소멸 구간의 역발상 매수 타이밍을 도출하는 데 유용합니다."
+        };
+    }
+    // 삼프로TV
+    if (title.includes('삼프로') || title.includes('3pro') || url.includes('3pro') || url.includes('youtube.com/c/삼프로tv')) {
+        return {
+            difficulty: 2,
+            utility: 4,
+            reason: "국내외 최고의 매크로 전문가, 애널리스트 및 업계 실무 리더들이 매일 실시간으로 시장 트렌드와 산업 보고서 핵심 논리를 짚어주는 금융 전문 미디어입니다.",
+            tips: "단순히 추천 종목에 주목하기보다 매크로 연사들이 제시하는 시장의 유동성 변화, 국채 금리 및 통화 정책 시나리오별 업종 선호 분석 논리를 메모하며 시청하십시오."
+        };
+    }
+    // Investing.com / 인베스팅
+    if (title.includes('investing') || title.includes('인베스팅') || url.includes('investing')) {
+        return {
+            difficulty: 2,
+            utility: 5,
+            reason: "글로벌 매크로 리서치의 필수 도구로서 미국/유럽/아시아 증시 지수 선물, 원자재(유가/금), 환율 및 전 세계 거시 경제 캘린더를 실시간으로 모니터링할 수 있습니다.",
+            tips: "경제 지표 달력 메뉴에서 예측치와 실제치 괴리율(Surprise/Shock)을 확인하고, 실시간 환율 및 미 10년물 국채 금리의 단기 등락 속도를 결합해 매크로 변동성에 대응하십시오."
+        };
+    }
+    // 한경 컨센서스
+    if (title.includes('한경') || title.includes('consensus') || url.includes('hankyung') || title.includes('증권사 보고서')) {
+        return {
+            difficulty: 4,
+            utility: 5,
+            reason: "국내 대형 증권사 리서치 센터의 기업 분석 보고서와 산업 보고서 PDF 원문을 로그인 없이 무료로 열람할 수 있는 정보 허브입니다.",
+            tips: "목표주가 변경 추이를 보기 위해 단순 리포트 수보다 개별 기업의 신규 리포트 발간 빈도가 증가하는 국면(소외주 관심 집중 시작 단계)을 파악하는 리스트로 활용하세요."
+        };
+    }
+    // FRED (미국 연준 거시 경제 데이터)
+    if (title.includes('fred') || url.includes('stlouisfed.org')) {
+        return {
+            difficulty: 4,
+            utility: 5,
+            reason: "세인트루이스 연방준비은행이 제공하는 전 세계 수십만 개의 장기 경제 시계열 데이터(미국 실업률, 장단기 금리차, M2 통화량 등)의 종착지입니다.",
+            tips: "10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity (T10Y2Y) 장단기 금리차 시계열을 주기적으로 플로팅하여 장기 경기 침체 징후를 감지하세요."
+        };
+    }
+    // KIND (한국거래소 기업공시채널)
+    if (title.includes('kind') || url.includes('kind.krx.co.kr')) {
+        return {
+            difficulty: 4,
+            utility: 4,
+            reason: "한국거래소 공식 공시 플랫폼으로, 상장법인의 기업설명회(IR) 일정, 자사주 매입/소각 계획, 신규 상장 공모 정보 등을 일목요연하게 파악할 수 있는 포털입니다.",
+            tips: "오늘의 공시 캘린더 및 IR 개최 일정표를 확인하여 보유 종목의 주주 IR 일정을 캘린더에 사전 등록하고, 주주 환원 공시의 발표 시차를 확인하십시오."
+        };
+    }
+    // Yahoo Finance / 야후 파이낸스
+    if (title.includes('yahoo') || url.includes('finance.yahoo')) {
+        return {
+            difficulty: 3,
+            utility: 5,
+            reason: "글로벌 개별 주식의 주가 차트, 재무 요약(Income Statement), EPS 어닝 기록 및 실시간 해외 금융 뉴스를 완벽하게 수렴해 보여주는 글로벌 1위 금융 정보 채널입니다.",
+            tips: "Historical Data 탭에서 과거 5년간의 일일 종가 및 배당락 내역을 CSV 파일로 직접 다운로드받아 자신만의 자산 배분 백테스트 기초 자료로 가공해 활용해 보십시오."
+        };
+    }
+
+    // Generic fallbacks based on site properties
+    const isPremium = item.isPremium;
+    const isYoutube = item.type === 'youtube';
+    return {
+        difficulty: isPremium ? 4 : 3,
+        utility: isPremium ? 5 : 4,
+        reason: `'${item.title}'은(는) 투자 연구를 위해 선별된 핵심 금융 정보 리소스입니다. 신속하고 신뢰할 수 있는 투자 데이터를 바탕으로 의사결정을 내릴 수 있도록 설계되었습니다.`,
+        tips: isYoutube ? 
+            "유튜브 콘텐츠 시청 시, 자극적인 썸네일에 휘둘리지 말고 핵심 수치 증빙과 과거 예측 일치율을 메모하며 교차 검증하는 투자 습관을 들이십시오." :
+            "웹사이트 분석 시, 모바일/PC 즐겨찾기를 MoneyLink의 큐레이션 통합 뷰어와 연동하여 하루 1회 고정된 시간에 루틴 형태로 신속히 순회하는 방식을 추천합니다."
+    };
+}
+
+window.deleteCuration = async function(id) {
+    if (!confirm('이 개인 큐레이션 루틴을 삭제하시겠습니까?')) return;
+    
+    state.curations = state.curations.filter(c => c.id !== id);
+    renderCurations();
+    await syncData();
+};

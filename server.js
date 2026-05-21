@@ -19,6 +19,7 @@ const Category = require('./models/Category');
 const Item = require('./models/Item');
 const Post = require('./models/Post');
 const Shortcut = require('./models/Shortcut');
+const Curation = require('./models/Curation');
 
 const app = express();
 // ✅ 파비콘 프록시: 외부 404 에러 로그가 콘솔에 남지 않도록 서버에서 중계
@@ -150,6 +151,70 @@ if (!cached) {
     cached = global.mongoose = { conn: null, promise: null };
 }
 
+async function seedRecommendedCurations() {
+    try {
+        const count = await Curation.countDocuments({ curationType: 'recommended' });
+        if (count > 0) return; // Already seeded
+
+        console.log('🌱 Seeding recommended curations...');
+        const items = await Item.find({}).lean();
+        
+        // Helper to find items by keyword in title or url
+        const findIds = (keywords) => {
+            return items
+                .filter(item => keywords.some(kw => 
+                    item.title.toLowerCase().includes(kw.toLowerCase()) || 
+                    item.url.toLowerCase().includes(kw.toLowerCase())
+                ))
+                .map(item => item.id);
+        };
+
+        const defaultCurations = [
+            {
+                id: 10001,
+                title: '매일 아침 10분 시장 체크 루틴',
+                description: '미국 야간 증시의 종가 확인부터 뉴스 분석, 그리고 국내 개장 직전 주요 리서치를 선별하는 10분 속성 데일리 아침 루틴입니다.',
+                itemIds: findIds(['investing', 'yahoo', '한경', '삼프로']),
+                tags: ['#아침루틴', '#데일리', '#미국주식'],
+                curationType: 'recommended',
+                userId: 'admin'
+            },
+            {
+                id: 10002,
+                title: '실적 발표 시즌 필수 분석 코스',
+                description: '기업의 어닝 시즌(Earnings Season)이 돌아왔을 때 꼭 짚어봐야 하는 분기 보고서 전자공시(DART) 분석과 컨센서스 추이 추적용 루틴입니다.',
+                itemIds: findIds(['dart', 'fnguide', 'kind', 'deepsearch']),
+                tags: ['#실적발표', '#재무제표', '#가치투자'],
+                curationType: 'recommended',
+                userId: 'admin'
+            },
+            {
+                id: 10003,
+                title: 'FOMC 및 글로벌 매크로 분석 루틴',
+                description: '미국의 연방공개시장위원회(FOMC) 금리 결정일이나 주요 물가지표(CPI) 발표 직후, 글로벌 거시경제 지표와 채권 금리를 분석하는 탑다운 리서치 세트입니다.',
+                itemIds: findIds(['fred', 'investing', 'fedwatch', '블룸버그']),
+                tags: ['#FOMC', '#거시경제', '#채권'],
+                curationType: 'recommended',
+                userId: 'admin'
+            },
+            {
+                id: 10004,
+                title: '폭락장 대응 & 자산 배분 방어 루틴',
+                description: '시장이 급격한 변동성을 겪으며 급락할 때 공포 지수(VIX) 및 달러 인덱스, 주요 원자재 가격 추이를 체크하며 리스크를 관리하는 긴급 방어 루틴입니다.',
+                itemIds: findIds(['vix', 'gold', '달러', 'investing']),
+                tags: ['#폭락장', '#리스크관리', '#자산배분'],
+                curationType: 'recommended',
+                userId: 'admin'
+            }
+        ];
+
+        await Curation.insertMany(defaultCurations);
+        console.log('✅ Recommended curations seeded successfully!');
+    } catch (err) {
+        console.error('❌ Failed to seed recommended curations:', err.message);
+    }
+}
+
 async function connectToDatabase() {
     if (cached.conn) {
         return cached.conn;
@@ -166,6 +231,7 @@ async function connectToDatabase() {
         console.log('🔄 Establishing new MongoDB connection (Serverless Cache)...');
         cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
             console.log('✅ Connected to MongoDB Successfully');
+            seedRecommendedCurations(); // Seed recommended curations
             return mongoose;
         });
     }
@@ -199,12 +265,13 @@ app.get('/api/data', async (req, res) => {
     res.setHeader('Expires', '0');
 
     try {
-        const [usersDB, categories, items, posts, shortcuts] = await Promise.all([
+        const [usersDB, categories, items, posts, shortcuts, curations] = await Promise.all([
             User.find({}).lean(),
             Category.find({}).lean(),
             Item.find({}).lean(),
             Post.find({}).lean(),
-            Shortcut.find({}).lean()
+            Shortcut.find({}).lean(),
+            Curation.find({}).lean()
         ]);
 
         const fullData = {
@@ -215,7 +282,8 @@ app.get('/api/data', async (req, res) => {
             boardData: posts.filter(p => p.postType === 'board'),
             communityData: posts.filter(p => p.postType === 'community'),
             feedbackData: posts.filter(p => p.postType === 'feedback'),
-            shortcuts
+            shortcuts,
+            curations
         };
 
         res.json(fullData);
@@ -228,7 +296,7 @@ app.get('/api/data', async (req, res) => {
 // API: Save All Data (Sync)
 app.post('/api/data', async (req, res) => {
     try {
-        const { usersDB, categories, items, newsData, boardData, communityData, feedbackData, shortcuts } = req.body;
+        const { usersDB, categories, items, newsData, boardData, communityData, feedbackData, shortcuts, curations } = req.body;
 
         // ✅ 보호 로직: 전송받은 데이터가 비어있으면 DB를 삭제하지 않음
         if (!items || items.length === 0) {
@@ -263,6 +331,13 @@ app.post('/api/data', async (req, res) => {
         if (shortcuts && shortcuts.length > 0) {
             await Shortcut.deleteMany({});
             await Shortcut.insertMany(shortcuts);
+        }
+
+        if (curations) {
+            await Curation.deleteMany({});
+            if (curations.length > 0) {
+                await Curation.insertMany(curations);
+            }
         }
 
         console.log('Database synced successfully to MongoDB');

@@ -94,6 +94,7 @@
                 <div class="sidebar-nav-list" style="margin-bottom: 2rem;">
                     <button class="nav-btn" data-view="bookmarks"><i class="fa-solid fa-house"></i> 즐겨찾기</button>
                     <button class="nav-btn" data-view="shortcuts"><img src="/logo.png" class="menu-icon-img"> 바로가기</button>
+                    <button class="nav-btn" data-view="curations"><i class="fa-solid fa-compass"></i> 🧭 큐레이션</button>
                     <button class="nav-btn" data-view="community-board"><i class="fa-solid fa-comments"></i> 게시판</button>
                     <button class="nav-btn" data-view="board"><i class="fa-solid fa-star"></i> 인사이트</button>
                     <button class="nav-btn" data-view="feedback-board"><i class="fa-solid fa-lightbulb"></i> 건의&추천</button>
@@ -157,6 +158,7 @@
                         <ul class="top-menu">
                             <li><a href="#" class="active" data-view="bookmarks">즐겨찾기</a></li>
                             <li><a href="#" data-view="shortcuts">바로가기</a></li>
+                            <li><a href="#" data-view="curations">🧭 큐레이션</a></li>
                             <li><a href="#" data-view="community-board">게시판</a></li>
                             <li><a href="#" data-view="board">인사이트</a></li>
                             <li><a href="#" data-view="feedback-board">건의&추천</a></li>
@@ -298,6 +300,26 @@
                     
                     <!-- 북마크 그리드 섹션 -->
                     <section id="bookmarksSection" class="bookmarks-section">
+                        <div class="bookmarks-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-light); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fa-solid fa-star" style="color: var(--premium-gold);"></i> 실시간 금융 즐겨찾기
+                            </h2>
+                            <button id="startCurationModeBtn" class="premium-gold-btn" title="나만의 큐레이션 만들기">
+                                <i class="fa-solid fa-compass"></i> 나만의 큐레이션 만들기
+                            </button>
+                        </div>
+
+                        <!-- Curation Mode Control Panel (Hidden by default) -->
+                        <div id="curationModePanel" class="curation-mode-panel" style="display: none; margin-bottom: 1.5rem;">
+                            <div class="curation-panel-content">
+                                <span class="curation-panel-text"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--premium-gold);"></i> <strong>나만의 큐레이션 만들기 모드 활성화 중</strong> | 추가하고 싶은 즐겨찾기 카드를 모두 선택한 후 [저장] 단추를 누르세요.</span>
+                                <div class="curation-panel-actions">
+                                    <button id="curationSaveBtn" class="premium-action-btn small-btn"><i class="fa-solid fa-circle-check"></i> 선택 완료 & 저장</button>
+                                    <button id="curationCancelBtn" class="premium-cancel-btn small-btn"><i class="fa-solid fa-times"></i> 취소</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Main Category Quick Filter (Visible on Mobile) -->
                         <div id="main-category-filter-container" class="main-filter-group" data-filter-type="category" style="margin-bottom: 1.5rem;">
                         </div>
@@ -308,6 +330,68 @@
                         
                         <div id="cardGrid" class="grid" role="list">
                             <!-- Cards will be generated here -->
+                        </div>
+                    </section>
+
+                    <!-- 큐레이션 허브 섹션 -->
+                    <section id="curationSection" class="curation-section" style="display: none;">
+                        <div class="curation-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                            <div>
+                                <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--text-light); margin: 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-compass" style="color: var(--premium-gold);"></i> 🧭 금융 큐레이션 허브</h2>
+                                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">정보 피로도는 줄이고, 투자 효율은 극대화하는 맞춤형 투자 루틴 플레이어</p>
+                            </div>
+                        </div>
+
+                        <!-- 추천 vs 개인 큐레이션 이원화 탭 -->
+                        <div class="curation-tabs-container" style="margin-bottom: 2rem;">
+                            <div class="curation-tabs" role="tablist">
+                                <button class="curation-tab-btn active" data-curation-tab="recommended" role="tab" aria-selected="true">
+                                    <i class="fa-solid fa-circle-nodes"></i> 추천 큐레이션
+                                </button>
+                                <button class="curation-tab-btn" data-curation-tab="personal" role="tab" aria-selected="false">
+                                    <i class="fa-solid fa-user-gear"></i> 나의 개인 큐레이션
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 큐레이션 카드 그리드 -->
+                        <div id="curationGrid" class="curation-grid">
+                            <!-- Curation cards will be loaded here dynamically -->
+                        </div>
+                    </section>
+
+                    <!-- 큐레이션 상세 정보 풀스크린 페이지 (에디토리얼 루틴 플레이어) -->
+                    <section id="curationDetailSection" class="curation-detail-section" style="display: none;">
+                        <div class="curation-detail-back-bar" style="margin-bottom: 1.5rem;">
+                            <button id="curationDetailBackBtn" class="back-action-btn">
+                                <i class="fa-solid fa-arrow-left"></i> 큐레이션 허브로 돌아가기
+                            </button>
+                        </div>
+
+                        <div class="curation-detail-hero" style="margin-bottom: 2.5rem; background: var(--bg-surface); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+                            <div class="curation-detail-meta" style="flex: 1; min-width: 300px;">
+                                <span id="curationDetailBadge" class="curation-badge" style="background: var(--premium-gold); color: #000; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">RECOMMENDED</span>
+                                <h1 id="curationDetailTitle" class="curation-detail-title" style="font-size: 2rem; font-weight: 800; color: var(--text-light); margin: 0.75rem 0 0.5rem 0;">매일 아침 10분 시장 체크 루틴</h1>
+                                <p id="curationDetailDesc" class="curation-detail-desc" style="font-size: 1rem; color: var(--text-muted); line-height: 1.5; margin: 0 0 1rem 0;">미국 야간 증시의 종가 확인부터 뉴스 분석, 그리고 국내 개장 직전 주요 리서치를 선별하는 10분 속성 데일리 아침 루틴입니다.</p>
+                                <div id="curationDetailTags" class="curation-detail-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <!-- Tags will go here -->
+                                </div>
+                            </div>
+                            <div class="curation-detail-hero-actions">
+                                <button id="curationOpenAllBtn" class="premium-large-gold-btn" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, var(--premium-gold), #D4AF37); color: #000; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;">
+                                    <i class="fa-solid fa-square-arrow-up-right"></i> 전체 사이트 일괄 열기 (Routine Play)
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="curation-detail-content-heading" style="margin-bottom: 1.5rem;">
+                            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-light); margin: 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-list-check" style="color: var(--premium-gold);"></i> 루틴 구성 사이트 분석 & 가이드라인</h3>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">각 사이트를 방문해야 하는 이유와 주요 체크 리포트 분석 가이드를 확인하세요.</p>
+                        </div>
+
+                        <!-- 에디토리얼 카드 덱 -->
+                        <div id="curationDetailDeck" class="curation-detail-deck">
+                            <!-- Cards will be populated here -->
                         </div>
                     </section>
 
@@ -805,6 +889,44 @@
                 <h3>5. 개인정보 보호 문의</h3>
                 <p>개인정보 관련 문의는 고객센터 혹은 관리자 메일을 통해 투명하게 응대하고 있습니다.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- 나만의 큐레이션 만들기 모달 -->
+    <div id="curationCreateModal" class="modal" style="display: none; align-items: center; justify-content: center; z-index: 2000; background: rgba(0, 0, 0, 0.75);">
+        <div class="modal-content premium-modal" style="max-width: 600px; width: 90%;">
+            <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-light); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-compass" style="color: var(--premium-gold);"></i> 나만의 투자 큐레이션 조립
+                </h3>
+                <button id="closeCurationCreateModal" class="close-btn" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <form id="curationCreateForm" style="margin-top: 1.5rem;">
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label for="curationTitleInput" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.5rem;">큐레이션 이름 <span style="color: #FF6B6B;">*</span></label>
+                    <input type="text" id="curationTitleInput" placeholder="예: 나의 야간 미국주식 체크 팩" required maxlength="40" style="width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-surface); color: var(--text-light); font-family: inherit;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label for="curationDescInput" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.5rem;">큐레이션 상세 설명 <span style="color: #FF6B6B;">*</span></label>
+                    <textarea id="curationDescInput" placeholder="이 큐레이션을 실행할 때의 구체적인 순서나 체크 항목을 적어주세요." required maxlength="200" style="width: 100%; min-height: 100px; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-surface); color: var(--text-light); font-family: inherit; font-size: 0.9rem; resize: vertical;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="curationTagsInput" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.5rem;">분류 태그 (쉼표로 구분)</label>
+                    <input type="text" id="curationTagsInput" placeholder="예: 미국주식, 단타, 아침체크 (자동으로 #이 추가됩니다)" style="width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-surface); color: var(--text-light); font-family: inherit;">
+                </div>
+                <div class="selected-items-preview-box" style="margin-bottom: 1.5rem; background: rgba(255, 255, 255, 0.03); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem;">포함되는 사이트 (<span id="curationSelectedCount" style="color: var(--premium-gold); font-weight: 800;">0</span>개)</label>
+                    <div id="curationSelectedItemsGrid" class="selected-items-mini-grid" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <!-- Favicons will be listed here -->
+                    </div>
+                </div>
+                <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+                    <button type="button" id="cancelCurationFormBtn" class="action-btn circle-btn" style="padding: 0.75rem 1.25rem; border-radius: 6px; background: rgba(255, 255, 255, 0.05); color: var(--text-light); border: 1px solid var(--border-color); cursor: pointer; display: inline-flex; align-items: center; font-size: 0.9rem;">취소</button>
+                    <button type="submit" class="action-btn plus-btn" style="padding: 0.75rem 1.25rem; border-radius: 6px; background: linear-gradient(135deg, var(--premium-gold), #D4AF37); color: #000; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+                        <i class="fa-solid fa-compass"></i> 나만의 큐레이션 생성
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -116,5 +116,30 @@ export const DOM = {
     get termsModal() { return document.getElementById('termsModal'); },
     get privacyModal() { return document.getElementById('privacyModal'); },
     get closeTermsModal() { return document.getElementById('closeTermsModal'); },
-    get closePrivacyModal() { return document.getElementById('closePrivacyModal'); }
+    get closePrivacyModal() { return document.getElementById('closePrivacyModal'); },
+    
+    // Curation Getters
+    get startCurationModeBtn() { return document.getElementById('startCurationModeBtn'); },
+    get curationModePanel() { return document.getElementById('curationModePanel'); },
+    get curationSaveBtn() { return document.getElementById('curationSaveBtn'); },
+    get curationCancelBtn() { return document.getElementById('curationCancelBtn'); },
+    get curationSection() { return document.getElementById('curationSection'); },
+    get curationGrid() { return document.getElementById('curationGrid'); },
+    get curationDetailSection() { return document.getElementById('curationDetailSection'); },
+    get curationDetailBackBtn() { return document.getElementById('curationDetailBackBtn'); },
+    get curationDetailBadge() { return document.getElementById('curationDetailBadge'); },
+    get curationDetailTitle() { return document.getElementById('curationDetailTitle'); },
+    get curationDetailDesc() { return document.getElementById('curationDetailDesc'); },
+    get curationDetailTags() { return document.getElementById('curationDetailTags'); },
+    get curationOpenAllBtn() { return document.getElementById('curationOpenAllBtn'); },
+    get curationDetailDeck() { return document.getElementById('curationDetailDeck'); },
+    get curationCreateModal() { return document.getElementById('curationCreateModal'); },
+    get closeCurationCreateModal() { return document.getElementById('closeCurationCreateModal'); },
+    get curationCreateForm() { return document.getElementById('curationCreateForm'); },
+    get curationTitleInput() { return document.getElementById('curationTitleInput'); },
+    get curationDescInput() { return document.getElementById('curationDescInput'); },
+    get curationTagsInput() { return document.getElementById('curationTagsInput'); },
+    get curationSelectedCount() { return document.getElementById('curationSelectedCount'); },
+    get curationSelectedItemsGrid() { return document.getElementById('curationSelectedItemsGrid'); },
+    get cancelCurationFormBtn() { return document.getElementById('cancelCurationFormBtn'); }
 };
