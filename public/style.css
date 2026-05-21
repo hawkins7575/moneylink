@@ -3147,4 +3147,129 @@ body.admin-mode .add-btn.admin-only {
     }
 }
 
+/* ==========================================================================
+   PREMIUM MICRO-INTERACTIONS & PHYSICS ANIMATIONS
+   ========================================================================== */
+
+/* 1. Category & Resource Filter Sliding Indicator */
+.sidebar-category-list,
+.sidebar-type-list,
+.main-filter-group {
+    position: relative;
+    z-index: 1;
+}
+
+.filter-btn {
+    position: relative;
+    z-index: 2;
+}
+
+/* Reset original active background/borders/shadows to let the sliding indicator shine through */
+.sidebar-category-list .filter-btn.active,
+.sidebar-type-list .filter-btn.active,
+.main-filter-group .filter-btn.active {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Make sure active text is still white and readable */
+.sidebar-category-list .filter-btn.active,
+.sidebar-type-list .filter-btn.active,
+.main-filter-group .filter-btn.active {
+    color: #ffffff !important;
+}
+
+.sidebar-category-list .filter-btn.active i,
+.sidebar-type-list .filter-btn.active i,
+.main-filter-group .filter-btn.active i {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+.sliding-indicator {
+    position: absolute;
+    background: var(--primary);
+    box-shadow: 0 6px 20px rgba(0, 6, 102, 0.18);
+    transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 2. Star Pop and Golden Particle Burst */
+@keyframes starPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); }
+}
+
+.star-pop-anim {
+    display: inline-block;
+    animation: starPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.star-particle {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #FFB300;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 0 8px #FFD54F, 0 0 15px #FFB300;
+    transform: translate(-50%, -50%);
+    animation: particleBurst 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes particleBurst {
+    0% {
+        transform: translate(-50%, -50%) translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* 3. Reaction Emoji 3D Bounce and Floating Emoji */
+@keyframes emojiBounce {
+    0% { transform: scale(1); }
+    20% { transform: scale(1.4) rotate(-15deg); }
+    40% { transform: scale(1.4) rotate(15deg); }
+    60% { transform: scale(1.2) rotate(-10deg); }
+    80% { transform: scale(1.1) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+.emoji-bounce {
+    display: inline-block;
+    animation: emojiBounce 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.floating-emoji {
+    position: fixed;
+    font-size: 1.8rem;
+    pointer-events: none;
+    z-index: 9999;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+    animation: floatUp 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translate(-50%, -50%) translateY(0) scale(0.6);
+        opacity: 0;
+    }
+    15% {
+        transform: translate(-50%, -50%) translateY(-25px) scale(1.3);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) translateY(-100px) translateX(var(--tx)) scale(0.8);
+        opacity: 0;
+    }
+}
+
+
 

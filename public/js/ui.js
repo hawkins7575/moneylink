@@ -32,10 +32,18 @@ window.toggleMyBookmark = async function(id, event) {
     
     if (!state.currentUser.myBookmarks) state.currentUser.myBookmarks = [];
     const idx = state.currentUser.myBookmarks.indexOf(id);
+    
+    let added = false;
     if (idx > -1) {
         state.currentUser.myBookmarks.splice(idx, 1);
     } else {
         state.currentUser.myBookmarks.push(id);
+        added = true;
+    }
+    
+    // Trigger golden particle burst only when added!
+    if (added && event && event.currentTarget) {
+        createStarBurst(event.currentTarget);
     }
     
     const userInDb = state.usersDB.find(u => u.username === state.currentUser.username);
@@ -44,6 +52,20 @@ window.toggleMyBookmark = async function(id, event) {
     
     renderCards();
     syncData();
+    
+    // Star popup animation: after re-rendering, we want the star to pop!
+    if (added) {
+        setTimeout(() => {
+            const newCard = document.querySelector(`[onclick*="toggleMyBookmark(${id}"]`);
+            if (newCard) {
+                const icon = newCard.querySelector('i');
+                if (icon) {
+                    icon.classList.add('star-pop-anim');
+                    setTimeout(() => icon.classList.remove('star-pop-anim'), 400);
+                }
+            }
+        }, 50);
+    }
 };
 
 window.toggleMyShortcut = async function(id, event) {
@@ -310,6 +332,107 @@ window.deleteShortcut = async (id) => {
     });
 };
 
+// ================= PREMIUM MICRO-INTERACTIONS ================= //
+export function updateSlidingIndicator(container) {
+    if (!container) return;
+    
+    // requestAnimationFrame to ensure DOM is updated and rendered
+    requestAnimationFrame(() => {
+        const activeBtn = container.querySelector('.filter-btn.active');
+        let indicator = container.querySelector('.sliding-indicator');
+        
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.className = 'sliding-indicator';
+            container.appendChild(indicator);
+        }
+        
+        if (activeBtn) {
+            // Update position and size based on activeBtn relative to container
+            indicator.style.left = `${activeBtn.offsetLeft}px`;
+            indicator.style.top = `${activeBtn.offsetTop}px`;
+            indicator.style.width = `${activeBtn.offsetWidth}px`;
+            indicator.style.height = `${activeBtn.offsetHeight}px`;
+            indicator.style.opacity = '1';
+            
+            // Inherit border radius
+            const borderRadius = window.getComputedStyle(activeBtn).borderRadius;
+            indicator.style.borderRadius = borderRadius;
+        } else {
+            indicator.style.opacity = '0';
+        }
+    });
+}
+
+export function createStarBurst(element) {
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    const count = 8;
+    
+    for (let i = 0; i < count; i++) {
+        const particle = document.createElement('span');
+        particle.className = 'star-particle';
+        
+        // Position exactly in the center of the clicked button
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        
+        // Calculate angle and distance for burst
+        const angle = (i * (360 / count)) * Math.PI / 180;
+        const distance = 40 + Math.random() * 20; // 40px to 60px expansion
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+        
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+        
+        document.body.appendChild(particle);
+        
+        // Cleanup after animation finishes
+        setTimeout(() => {
+            particle.remove();
+        }, 800);
+    }
+}
+
+export function createFloatingEmoji(element, emojiChar) {
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    
+    const floating = document.createElement('span');
+    floating.className = 'floating-emoji';
+    floating.textContent = emojiChar;
+    
+    // Position near the button center
+    const x = rect.left + rect.width / 2;
+    const y = rect.top;
+    
+    floating.style.left = `${x}px`;
+    floating.style.top = `${y}px`;
+    
+    // Random translation along X-axis
+    const tx = (Math.random() - 0.5) * 60; // -30px to 30px
+    floating.style.setProperty('--tx', `${tx}px`);
+    
+    document.body.appendChild(floating);
+    
+    // Cleanup
+    setTimeout(() => {
+        floating.remove();
+    }, 1200);
+}
+
+// Window resize sync for sliding indicators
+window.addEventListener('resize', () => {
+    if (DOM.catContainer) updateSlidingIndicator(DOM.catContainer);
+    const mainCatContainer = document.getElementById('main-category-filter-container');
+    if (mainCatContainer) updateSlidingIndicator(mainCatContainer);
+    const typeContainer = document.querySelector('.sidebar-type-list');
+    if (typeContainer) updateSlidingIndicator(typeContainer);
+});
+
 // ================= RENDERERS ================= //
 const categoryIcons = {
     'all': 'fa-solid fa-layer-group',
@@ -366,6 +489,10 @@ export function renderCategoryFilters() {
 
     if (DOM.currentCategoryTitle) DOM.currentCategoryTitle.style.display = 'none';
     renderSubCategoryFilters();
+
+    // Update sliding indicators
+    if (DOM.catContainer) updateSlidingIndicator(DOM.catContainer);
+    if (mainCatContainer) updateSlidingIndicator(mainCatContainer);
 }
 
 export function renderSubCategoryFilters() {
@@ -876,11 +1003,31 @@ export async function openBoardModal(post) {
     DOM.likePostBtn.onclick = () => {
         post.likes = (post.likes || 0) + 1;
         DOM.postLikeCount.textContent = post.likes;
+        
+        // Emoji bounce & float
+        const emojiSpan = DOM.likePostBtn.querySelector('span:first-child');
+        if (emojiSpan) {
+            emojiSpan.classList.remove('emoji-bounce');
+            void emojiSpan.offsetWidth; // force reflow
+            emojiSpan.classList.add('emoji-bounce');
+        }
+        createFloatingEmoji(DOM.likePostBtn, '👍');
+        
         syncData();
     };
     DOM.dislikePostBtn.onclick = () => {
         post.dislikes = (post.dislikes || 0) + 1;
         DOM.postDislikeCount.textContent = post.dislikes;
+        
+        // Emoji bounce & float
+        const emojiSpan = DOM.dislikePostBtn.querySelector('span:first-child');
+        if (emojiSpan) {
+            emojiSpan.classList.remove('emoji-bounce');
+            void emojiSpan.offsetWidth; // force reflow
+            emojiSpan.classList.add('emoji-bounce');
+        }
+        createFloatingEmoji(DOM.dislikePostBtn, '👎');
+        
         syncData();
     };
 
@@ -1152,8 +1299,17 @@ export function setupUIEvents() {
                 DOM.typeButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 renderCards();
+                // Update sliding indicator for the type buttons list
+                const typeContainer = document.querySelector('.sidebar-type-list');
+                if (typeContainer) updateSlidingIndicator(typeContainer);
             });
         });
+        
+        // Initial setup for type indicator
+        setTimeout(() => {
+            const typeContainer = document.querySelector('.sidebar-type-list');
+            if (typeContainer) updateSlidingIndicator(typeContainer);
+        }, 300);
     }
 
     if (DOM.addNewsBtn) {
