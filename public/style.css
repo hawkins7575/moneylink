@@ -2993,11 +2993,11 @@ body.admin-mode .add-btn.admin-only {
     margin-bottom: 2rem;
     padding: 0.85rem 1.5rem;
     border-radius: 20px;
-    background: linear-gradient(135deg, rgba(238, 242, 255, 0.5) 0%, rgba(224, 231, 255, 0.2) 100%);
+    background: linear-gradient(135deg, #00083D 0%, #001254 100%);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: none;
-    box-shadow: 0 4px 20px 0 rgba(0, 8, 61, 0.015);
+    box-shadow: 0 8px 30px rgba(0, 8, 61, 0.15);
     box-sizing: border-box;
 }
 
@@ -3015,10 +3015,8 @@ body.admin-mode .add-btn.admin-only {
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
-    background: var(--primary);
-    padding: 0.45rem 1rem;
-    border-radius: 100px;
-    box-shadow: 0 4px 12px rgba(0, 8, 61, 0.12);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    padding-right: 1.25rem;
 }
 
 .ticker-live-dot {
@@ -3026,15 +3024,15 @@ body.admin-mode .add-btn.admin-only {
     height: 7px;
     border-radius: 50%;
     background-color: #34d399;
-    box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.9);
     animation: pulse-live-dot 2s infinite;
 }
 
 .ticker-title {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 900;
-    letter-spacing: 0.08em;
-    color: #ffffff;
+    letter-spacing: 0.1em;
+    color: var(--premium-gold); /* Premium Gold */
     font-family: 'NanumSquareNeo', sans-serif;
     line-height: 1;
 }
@@ -3054,7 +3052,7 @@ body.admin-mode .add-btn.admin-only {
 
 .ticker-loading {
     font-size: 0.8rem;
-    color: var(--on-surface-variant);
+    color: rgba(255, 255, 255, 0.6);
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -3067,36 +3065,36 @@ body.admin-mode .add-btn.admin-only {
     flex-shrink: 0;
     padding: 0.45rem 0.9rem;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(55, 48, 163, 0.03);
-    box-shadow: 0 2px 8px rgba(0, 8, 61, 0.02);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     cursor: pointer;
 }
 
 .ticker-item:hover {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 8, 61, 0.06);
-    border-color: rgba(55, 48, 163, 0.08);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .ticker-item-name {
     font-size: 0.78rem;
     font-weight: 800;
-    color: var(--primary);
+    color: rgba(255, 255, 255, 0.9);
     transition: color 0.25s;
 }
 
 .ticker-item:hover .ticker-item-name {
-    color: var(--on-secondary-container);
+    color: #ffffff;
 }
 
 .ticker-item-price {
     font-size: 0.85rem;
     font-family: 'Fira Code', 'Courier New', Courier, monospace;
     font-weight: 800;
-    color: var(--on-surface);
+    color: #ffffff;
 }
 
 .ticker-item-change {
@@ -3107,23 +3105,23 @@ body.admin-mode .add-btn.admin-only {
     gap: 0.15rem;
     padding: 0.25rem 0.55rem;
     border-radius: 8px;
-    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.03);
+    box-shadow: inset 0 -1px 0 rgba(255,255,255,0.05);
 }
 
-/* 변동 컬러 (상승: 에메랄드 그린 소프트 백그라운드 배지, 하락: 로즈 레드 소프트 백그라운드 배지) */
+/* 변동 컬러 (상승: 네온 민트 그린 소프트 백그라운드 배지, 하락: 네온 로즈 레드 소프트 백그라운드 배지) */
 .ticker-item.up .ticker-item-change {
-    background: rgba(16, 185, 129, 0.08);
-    color: #10b981 !important;
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399 !important;
 }
 
 .ticker-item.down .ticker-item-change {
-    background: rgba(239, 68, 68, 0.08);
-    color: #ef4444 !important;
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171 !important;
 }
 
 .ticker-item.flat .ticker-item-change {
-    background: var(--surface-container-high);
-    color: var(--on-surface-variant) !important;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6) !important;
 }
 
 @keyframes pulse-live-dot {
@@ -3154,7 +3152,9 @@ body.admin-mode .add-btn.admin-only {
     }
     
     .ticker-header {
-        padding: 0.35rem 0.75rem;
+        padding: 0;
+        padding-right: 0.75rem;
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
     }
     
     .ticker-items {
