@@ -25,19 +25,22 @@
     <meta name="description" content="MoneyLink에서 복잡한 재무제표를 한눈에 파악하고 경제 흐름을 읽으세요. 나만의 맞춤형 금융 즐겨찾기 목록과 실시간 투자 인사이트를 제공하는 가장 똑똑한 금융 서비스입니다.">
     <meta name="keywords" content="MoneyLink, 머니링크, 금융즐겨찾기, 경제포털, 주식분석, 암호화폐정보, 나만의금융비서, 재무제표시각화">
     <meta name="author" content="MoneyLink Team">
-    <link rel="canonical" href="https://mymoney-curation.com/"> <!-- 실제 서비스 도메인 -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://moneylink-portal.com/"> <!-- 실제 서비스 도메인 -->
 
     <!-- 소셜 미디어 공유 (Open Graph) -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="MoneyLink | 스마트 금융 즐겨찾기 및 실시간 경제 인사이트">
     <meta property="og:description" content="자주 찾는 금융 사이트와 최신 경제 뉴스를 한눈에. MoneyLink와 함께 나만의 금융 지도를 그려보세요.">
-    <meta property="og:url" content="https://mymoney-curation.com/">
+    <meta property="og:image" content="https://moneylink-portal.com/logo.png">
+    <meta property="og:url" content="https://moneylink-portal.com/">
     <meta property="og:site_name" content="MoneyLink">
     
     <!-- 트위터 카드 -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MoneyLink | 개인화 금융 포털">
     <meta name="twitter:description" content="자주 찾는 금융 사이트와 실시간 경제 흐름을 관리하는 가장 똑똑한 방법.">
+    <meta name="twitter:image" content="https://moneylink-portal.com/logo.png">
 
     <!-- 구조화 데이터 (JSON-LD) -->
     <script type="application/ld+json">
@@ -45,15 +48,23 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "MoneyLink",
-      "url": "https://mymoney-curation.com/",
+      "url": "https://moneylink-portal.com/",
       "description": "개인 맞춤형 금융 즐겨찾기 및 실시간 투자 인사이트 포털 서비스",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://mymoney-curation.com/?q={search_term_string}",
+        "target": "https://moneylink-portal.com/?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     }
     </script>
+
+    <!-- DNS Preconnect & Preload (초고속 로딩을 위한 DNS 지연 최적화) -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://hangeul.pstatic.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://hangeul.pstatic.net">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/style.css">
@@ -168,6 +179,19 @@
 
             <main class="content-scroll-area">
                 <div class="page-content">
+                    <!-- 실시간 금융 지표 티커 (Live Finance Ticker Widget) -->
+                    <div id="live-ticker-container" class="live-ticker-container">
+                        <div class="ticker-wrapper">
+                            <div class="ticker-header">
+                                <span class="ticker-live-dot"></span>
+                                <span class="ticker-title">LIVE MARKETS</span>
+                            </div>
+                            <div id="ticker-items" class="ticker-items">
+                                <div class="ticker-loading"><i class="fa-solid fa-circle-notch fa-spin"></i> 금융 지표를 불러오는 중입니다...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- 사이트 사용법 섹션 -->
                     <section id="guideSection" class="guide-section" style="display: none;">
                         <div class="guide-hero">
@@ -182,7 +206,7 @@
                             <!-- Step 1 -->
                             <div class="guide-showcase-row">
                                 <div class="guide-showcase-img-wrap">
-                                    <img src="/guide_dashboard.png" alt="스마트 금융 즐겨찾기 대시보드" class="guide-showcase-img">
+                                    <img src="/guide_dashboard.png" alt="스마트 금융 즐겨찾기 대시보드" class="guide-showcase-img" loading="lazy" decoding="async">
                                 </div>
                                 <div class="guide-showcase-content">
                                     <span class="guide-showcase-badge">CORE SERVICE</span>
@@ -198,7 +222,7 @@
                             <!-- Step 2 -->
                             <div class="guide-showcase-row reverse">
                                 <div class="guide-showcase-img-wrap">
-                                    <img src="/guide_sync.png" alt="실시간 데이터 동기화" class="guide-showcase-img">
+                                    <img src="/guide_sync.png" alt="실시간 데이터 동기화" class="guide-showcase-img" loading="lazy" decoding="async">
                                 </div>
                                 <div class="guide-showcase-content">
                                     <span class="guide-showcase-badge">PERSONALIZATION</span>
@@ -214,7 +238,7 @@
                             <!-- Step 3 -->
                             <div class="guide-showcase-row">
                                 <div class="guide-showcase-img-wrap">
-                                    <img src="/guide_community.png" alt="인사이트 및 투자자 커뮤니티" class="guide-showcase-img">
+                                    <img src="/guide_community.png" alt="인사이트 및 투자자 커뮤니티" class="guide-showcase-img" loading="lazy" decoding="async">
                                 </div>
                                 <div class="guide-showcase-content">
                                     <span class="guide-showcase-badge">COMMUNITY</span>

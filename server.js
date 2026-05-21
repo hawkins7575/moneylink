@@ -57,8 +57,91 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
-// ✅ 정적 파일 서빙 (CSS, JS, 이미지 등)
-app.use(express.static(path.join(__dirname, 'public')));
+// ✅ 실시간 금융 지표 API (Yahoo Finance 연동 & 60초 인메모리 캐싱)
+let tickerCache = null;
+let lastTickerFetchTime = 0;
+const TICKER_CACHE_DURATION = 60000; // 60초 캐시 유지
+
+app.get('/api/ticker', async (req, res) => {
+    const now = Date.now();
+    
+    // 캐시가 유효하면 즉시 캐시 데이터 반환
+    if (tickerCache && (now - lastTickerFetchTime < TICKER_CACHE_DURATION)) {
+        return res.json(tickerCache);
+    }
+    
+    const symbols = {
+        KOSPI: '^KS11',
+        SP500: '^GSPC',
+        NASDAQ: '^IXIC',
+        USD_KRW: 'USDKRW=X',
+        BTC_USD: 'BTC-USD'
+    };
+    
+    const tickerData = {};
+    const promises = Object.entries(symbols).map(async ([key, symbol]) => {
+        try {
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+            const response = await axios.get(url, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                },
+                timeout: 5000
+            });
+            
+            const result = response.data?.chart?.result?.[0];
+            if (!result) throw new Error('No chart data found');
+            
+            const meta = result.meta;
+            const currentPrice = meta.regularMarketPrice;
+            const prevClose = meta.chartPreviousClose || meta.previousClose || currentPrice;
+            const change = currentPrice - prevClose;
+            const changePercent = prevClose ? (change / prevClose) * 100 : 0;
+            
+            tickerData[key] = {
+                name: key === 'SP500' ? 'S&P 500' : key === 'USD_KRW' ? '원/달러 환율' : key === 'BTC_USD' ? '비트코인' : key,
+                symbol: symbol,
+                price: parseFloat(currentPrice.toFixed(key === 'BTC_USD' ? 0 : 2)),
+                change: parseFloat(change.toFixed(2)),
+                changePercent: parseFloat(changePercent.toFixed(2))
+            };
+        } catch (error) {
+            console.error(`Error fetching ticker for ${key} (${symbol}):`, error.message);
+            if (tickerCache && tickerCache[key]) {
+                tickerData[key] = tickerCache[key];
+            } else {
+                tickerData[key] = {
+                    name: key === 'SP500' ? 'S&P 500' : key === 'USD_KRW' ? '원/달러 환율' : key === 'BTC_USD' ? '비트코인' : key,
+                    symbol: symbol,
+                    price: 0,
+                    change: 0,
+                    changePercent: 0,
+                    error: true
+                };
+            }
+        }
+    });
+    
+    await Promise.all(promises);
+    
+    tickerCache = tickerData;
+    lastTickerFetchTime = now;
+    
+    res.json(tickerData);
+});
+
+// ✅ 정적 파일 서빙 (CSS, JS, 이미지 등) 및 초고속 로딩을 위한 브라우저 정적 캐싱 설정 (30일)
+app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: '30d',
+    immutable: true,
+    setHeaders: (res, filePath) => {
+        if (path.extname(filePath) === '.html') {
+            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        } else {
+            res.setHeader('Cache-Control', 'public, max-age=2592000, immutable'); // 30일 캐싱
+        }
+    }
+}));
 
 // MongoDB Connection caching for Serverless (Official Global Pattern)
 let cached = global.mongoose;

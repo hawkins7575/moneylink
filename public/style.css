@@ -2985,4 +2985,166 @@ body.admin-mode .add-btn.admin-only {
     }
 }
 
+/* ==========================================
+   Live Finance Ticker CSS (글래스모피즘 & 애니메이션)
+   ========================================== */
+.live-ticker-container {
+    width: 100%;
+    margin-bottom: 2rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 16px;
+    background: rgba(0, 8, 61, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+.ticker-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1.25rem;
+    width: 100%;
+    overflow: hidden;
+}
+
+.ticker-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    padding-right: 1.25rem;
+}
+
+.ticker-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #00e676;
+    box-shadow: 0 0 8px #00e676;
+    animation: pulse-live-dot 2s infinite;
+}
+
+.ticker-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'NanumSquareNeo', sans-serif;
+}
+
+.ticker-items {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    overflow-x: auto;
+    flex-grow: 1;
+    scrollbar-width: none; /* Firefox */
+}
+
+.ticker-items::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.ticker-loading {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    padding: 0.35rem 0.65rem;
+    border-radius: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.ticker-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+.ticker-item-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.25s;
+}
+
+.ticker-item:hover .ticker-item-name {
+    color: #ffffff;
+}
+
+.ticker-item-price {
+    font-size: 0.85rem;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.ticker-item-change {
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+}
+
+/* 변동 컬러 (상승: 민트, 하락: 레드) */
+.ticker-item.up .ticker-item-change {
+    color: #00e676; /* Neon Mint */
+}
+
+.ticker-item.down .ticker-item-change {
+    color: #ff5252; /* Neon Red */
+}
+
+.ticker-item.flat .ticker-item-change {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes pulse-live-dot {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7);
+    }
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 6px rgba(0, 230, 118, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 230, 118, 0);
+    }
+}
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+    .live-ticker-container {
+        padding: 0.6rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .ticker-wrapper {
+        gap: 0.75rem;
+    }
+    
+    .ticker-header {
+        padding-right: 0.75rem;
+    }
+    
+    .ticker-items {
+        gap: 1.25rem;
+    }
+}
+
 

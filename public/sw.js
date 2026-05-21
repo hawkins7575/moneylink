@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mymoney-v2';
+const CACHE_NAME = 'moneylink-v3';
 const ASSETS = [
   '/',
   '/index.html',
@@ -11,6 +11,10 @@ const ASSETS = [
   '/js/api.js',
   '/js/auth.js',
   '/favicon.png',
+  '/logo.png',
+  '/guide_dashboard.png',
+  '/guide_sync.png',
+  '/guide_community.png',
   '/manifest.json'
 ];
 

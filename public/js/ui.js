@@ -1403,3 +1403,48 @@ export function switchView(view, title) {
     // 뷰 전환에 따른 권한별 버튼(추가 버튼 등) 가시성 즉각 반영
     updateAuthUI();
 }
+
+// ✅ 실시간 금융 지표 위젯 렌더링 함수
+export async function renderTicker() {
+    const tickerItemsEl = document.getElementById('ticker-items');
+    if (!tickerItemsEl) return;
+
+    try {
+        const res = await fetch('/api/ticker');
+        const data = await res.json();
+
+        if (!data || Object.keys(data).length === 0) {
+            tickerItemsEl.innerHTML = '<div class="ticker-loading"><i class="fa-solid fa-triangle-exclamation"></i> 일시적으로 데이터를 불러올 수 없습니다.</div>';
+            return;
+        }
+
+        let html = '';
+        Object.entries(data).forEach(([key, item]) => {
+            const isUp = item.change > 0;
+            const isDown = item.change < 0;
+            const statusClass = isUp ? 'up' : isDown ? 'down' : 'flat';
+            const icon = isUp ? '▲' : isDown ? '▼' : '-';
+            const sign = isUp ? '+' : '';
+            const priceFormatted = item.price.toLocaleString(undefined, {
+                minimumFractionDigits: key === 'BTC_USD' ? 0 : 2,
+                maximumFractionDigits: key === 'BTC_USD' ? 0 : 2
+            });
+
+            html += `
+                <div class="ticker-item ${statusClass}" title="${item.name} (${item.symbol}) - 야후 파이낸스 실시간 시세">
+                    <span class="ticker-item-name">${item.name}</span>
+                    <span class="ticker-item-price">${priceFormatted}</span>
+                    <span class="ticker-item-change">
+                        <span>${icon}</span>
+                        <span>${sign}${item.changePercent}%</span>
+                    </span>
+                </div>
+            `;
+        });
+
+        tickerItemsEl.innerHTML = html;
+    } catch (err) {
+        console.error('Error rendering ticker:', err);
+        tickerItemsEl.innerHTML = '<div class="ticker-loading"><i class="fa-solid fa-triangle-exclamation"></i> 지표 로딩 실패</div>';
+    }
+}
