@@ -40,6 +40,7 @@ export function updateAuthUI() {
 
         if (state.currentUser.role === 'admin') {
             if (DOM.adminSettingsDropdown) DOM.adminSettingsDropdown.style.display = 'block';
+            if (DOM.adminAddRecommendedCurationBtn) DOM.adminAddRecommendedCurationBtn.style.display = 'flex';
             if (DOM.addNewsBtn) DOM.addNewsBtn.style.display = 'flex';
             
             const activeMenu = document.querySelector('.top-menu a.active') || document.querySelector('.nav-btn.active');
@@ -47,6 +48,7 @@ export function updateAuthUI() {
             if (DOM.addBoardBtn) DOM.addBoardBtn.style.display = isBoardView ? 'flex' : 'none';
         } else {
             if (DOM.adminSettingsDropdown) DOM.adminSettingsDropdown.style.display = 'none';
+            if (DOM.adminAddRecommendedCurationBtn) DOM.adminAddRecommendedCurationBtn.style.display = 'none';
             if (DOM.addNewsBtn) DOM.addNewsBtn.style.display = 'none';
             if (DOM.addBoardBtn) DOM.addBoardBtn.style.display = 'none';
         }
@@ -73,6 +75,7 @@ export function updateAuthUI() {
         }
 
         if (DOM.adminSettingsDropdown) DOM.adminSettingsDropdown.style.display = 'none';
+        if (DOM.adminAddRecommendedCurationBtn) DOM.adminAddRecommendedCurationBtn.style.display = 'none';
         if (DOM.addBoardBtn) DOM.addBoardBtn.style.display = 'none';
         if (DOM.addNewsBtn) DOM.addNewsBtn.style.display = 'none';
     }

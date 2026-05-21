@@ -4048,3 +4048,89 @@ body.admin-mode .add-btn.admin-only {
     margin: 0.35rem 0.5rem;
 }
 
+/* ==============================================
+   관리자 추천 큐레이션 추가 버튼 (헤더)
+   ============================================== */
+.admin-add-curation-btn {
+    display: none; /* 기본 숨김, JS로 관리자 로그인 시 활성화 */
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(180, 140, 0, 0.1));
+    border: 1px solid rgba(255, 215, 0, 0.45);
+    border-radius: 9999px;
+    color: var(--premium-gold, #FFD700);
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.admin-add-curation-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.28), rgba(180, 140, 0, 0.2));
+    border-color: rgba(255, 215, 0, 0.7);
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+/* ==============================================
+   큐레이션 카드 관리자 버튼 (수정/삭제)
+   ============================================== */
+.curation-card {
+    position: relative;
+}
+
+.curation-card-admin-btns {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 0.35rem;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.curation-card:hover .curation-card-admin-btns {
+    opacity: 1;
+}
+
+.curation-admin-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    transition: all 0.15s ease;
+    backdrop-filter: blur(8px);
+}
+
+.curation-admin-btn.edit-btn {
+    background: rgba(255, 215, 0, 0.15);
+    color: var(--premium-gold, #FFD700);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.curation-admin-btn.edit-btn:hover {
+    background: rgba(255, 215, 0, 0.35);
+    border-color: rgba(255, 215, 0, 0.7);
+    transform: scale(1.1);
+}
+
+.curation-admin-btn.delete-btn {
+    background: rgba(255, 75, 75, 0.1);
+    color: #FF4B4B;
+    border: 1px solid rgba(255, 75, 75, 0.25);
+}
+
+.curation-admin-btn.delete-btn:hover {
+    background: rgba(255, 75, 75, 0.28);
+    border-color: rgba(255, 75, 75, 0.6);
+    transform: scale(1.1);
+}

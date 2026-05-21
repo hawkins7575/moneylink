@@ -7,6 +7,8 @@ import { updateAuthUI } from './auth.js';
 let curationSelectionMode = false;
 let selectedCurationItemIds = [];
 let activeCurationTab = 'recommended';
+let editingCurationId = null;       // null = 신규, number = 수정 대상 ID
+let curationEditType = 'personal';  // 'personal' | 'recommended'
 
 // ✅ 레터 아바타 생성 함수
 export function getLetterAvatarHTML(title) {
@@ -1696,11 +1698,24 @@ function setupCurationEvents() {
         DOM.startCurationModeBtn.onclick = () => {
             if (!state.currentUser) {
                 alert('나만의 큐레이션을 만들려면 로그인이 필요합니다.');
-                // Trigger auth modal opening directly if global helper exists
                 const loginBtn = document.getElementById('loginBtn');
                 if (loginBtn) loginBtn.click();
                 return;
             }
+            editingCurationId = null;
+            curationEditType = 'personal';
+            selectedCurationItemIds = [];
+            toggleCurationSelectionMode(true);
+        };
+    }
+
+    // 1-b. 관리자: 추천 큐레이션 추가 버튼
+    if (DOM.adminAddRecommendedCurationBtn) {
+        DOM.adminAddRecommendedCurationBtn.onclick = () => {
+            editingCurationId = null;
+            curationEditType = 'recommended';
+            selectedCurationItemIds = [];
+            updateCurationModalUI();
             toggleCurationSelectionMode(true);
         };
     }
@@ -1712,6 +1727,7 @@ function setupCurationEvents() {
                 alert('큐레이션에 추가할 즐겨찾기 카드를 최소 1개 이상 선택해 주세요.');
                 return;
             }
+            updateCurationModalUI();
             openCurationCreateModal();
         };
     }
@@ -1814,7 +1830,7 @@ function setupCurationEvents() {
     }
 }
 
-function openCurationCreateModal() {
+function openCurationCreateModal(skipClear = false) {
     if (!DOM.curationCreateModal) return;
     DOM.curationCreateModal.style.display = 'flex';
     
@@ -1863,17 +1879,69 @@ function openCurationCreateModal() {
         });
     }
     
-    // 입력 필드 초기화
-    if (DOM.curationTitleInput) DOM.curationTitleInput.value = '';
-    if (DOM.curationDescInput) DOM.curationDescInput.value = '';
-    if (DOM.curationTagsInput) DOM.curationTagsInput.value = '';
+    // 입력 필드 초기화 (수정 모드일 때는 건너뜀)
+    if (!skipClear) {
+        if (DOM.curationTitleInput) DOM.curationTitleInput.value = '';
+        if (DOM.curationDescInput) DOM.curationDescInput.value = '';
+        if (DOM.curationTagsInput) DOM.curationTagsInput.value = '';
+    }
 }
 
 function closeCurationModal() {
     if (DOM.curationCreateModal) {
         DOM.curationCreateModal.style.display = 'none';
     }
+    editingCurationId = null;
 }
+
+// 모달 UI 동적 업데이트 (타이틀·버튼 텍스트)
+function updateCurationModalUI() {
+    const isEdit = editingCurationId !== null;
+    const isRecommended = curationEditType === 'recommended';
+
+    if (DOM.curationModalTitle) {
+        const icon = '<i class="fa-solid fa-compass" style="color: var(--premium-gold);"></i>';
+        if (isRecommended && isEdit) {
+            DOM.curationModalTitle.innerHTML = `${icon} 추천 큐레이션 수정`;
+        } else if (isRecommended) {
+            DOM.curationModalTitle.innerHTML = `${icon} 추천 큐레이션 추가`;
+        } else if (isEdit) {
+            DOM.curationModalTitle.innerHTML = `${icon} 나의 큐레이션 수정`;
+        } else {
+            DOM.curationModalTitle.innerHTML = `${icon} 나만의 투자 큐레이션 조립`;
+        }
+    }
+
+    if (DOM.curationFormSubmitBtn) {
+        const icon = '<i class="fa-solid fa-compass"></i> ';
+        if (isEdit) {
+            DOM.curationFormSubmitBtn.innerHTML = icon + '수정 완료';
+        } else if (isRecommended) {
+            DOM.curationFormSubmitBtn.innerHTML = icon + '추천 큐레이션 추가';
+        } else {
+            DOM.curationFormSubmitBtn.innerHTML = icon + '큐레이션 생성';
+        }
+    }
+}
+
+// 큐레이션 수정 글로벌 함수
+window.editCuration = function(id) {
+    const curation = state.curations.find(c => c.id === id);
+    if (!curation) return;
+
+    editingCurationId = id;
+    curationEditType = curation.curationType;
+    selectedCurationItemIds = [...curation.itemIds];
+
+    updateCurationModalUI();
+
+    // 폼 필드에 기존 데이터 채우기
+    if (DOM.curationTitleInput) DOM.curationTitleInput.value = curation.title;
+    if (DOM.curationDescInput) DOM.curationDescInput.value = curation.description;
+    if (DOM.curationTagsInput) DOM.curationTagsInput.value = curation.tags.map(t => t.replace(/^#/, '')).join(', ');
+
+    openCurationCreateModal(true); // true = 수정 모드 (필드 초기화 스킵)
+};
 
 function toggleCurationSelectionMode(active) {
     curationSelectionMode = active;
@@ -1973,23 +2041,30 @@ export function renderCurations() {
         card.className = 'curation-card';
         card.style.animationDelay = `${Math.min(idx * 0.05, 0.3)}s`;
         
-        // 카드 클릭 시 상세 페이지로 이동
-        card.onclick = () => showCurationDetails(c);
-        
+        // 컨텍스트 저장 위해 card.onclick은 innerHTML 설정 후 다시
         const collageHtml = generateCurationCollage(c.itemIds);
         const tagsHtml = c.tags.map(t => `<span class="curation-card-tag">${t}</span>`).join('');
         
-        let deleteBtnHtml = '';
-        if (c.curationType === 'personal') {
-            deleteBtnHtml = `
-                <button class="curation-delete-btn" onclick="event.stopPropagation(); window.deleteCuration(${c.id});" title="삭제" style="position: absolute; top: 12px; right: 12px; background: rgba(255, 75, 75, 0.1); border: 1px solid rgba(255, 75, 75, 0.2); border-radius: 4px; color: #FF4B4B; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;">
-                    <i class="fa-solid fa-trash" style="font-size: 0.8rem;"></i>
-                </button>
+        const isAdmin = state.currentUser && state.currentUser.role === 'admin';
+        const isOwner = c.curationType === 'personal' && state.currentUser && c.userId === state.currentUser.username;
+        const canManage = isAdmin || isOwner;
+
+        let actionBtnsHtml = '';
+        if (canManage) {
+            actionBtnsHtml = `
+                <div class="curation-card-admin-btns" onclick="event.stopPropagation();">
+                    <button class="curation-admin-btn edit-btn" onclick="event.stopPropagation(); window.editCuration(${c.id});" title="수정">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="curation-admin-btn delete-btn" onclick="event.stopPropagation(); window.deleteCuration(${c.id});" title="삭제">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
             `;
         }
         
         card.innerHTML = `
-            ${deleteBtnHtml}
+            ${actionBtnsHtml}
             ${collageHtml}
             <div class="curation-card-content">
                 <div class="curation-card-badge ${c.curationType}">
@@ -2008,6 +2083,7 @@ export function renderCurations() {
             </div>
         `;
         
+        card.addEventListener('click', () => showCurationDetails(c));
         DOM.curationGrid.appendChild(card);
     });
 }
@@ -2302,7 +2378,11 @@ function getCurationSiteEditorialInfo(item) {
 }
 
 window.deleteCuration = async function(id) {
-    if (!confirm('이 개인 큐레이션 루틴을 삭제하시겠습니까?')) return;
+    const curation = state.curations.find(c => c.id === id);
+    if (!curation) return;
+
+    const typeName = curation.curationType === 'recommended' ? '추천 큐레이션' : '개인 큐레이션';
+    if (!confirm(`이 ${typeName} 루틴을 삭제하시겠습니까?\n\n"${curation.title}"\n\n삭제 후 복구할 수 없습니다.`)) return;
     
     state.curations = state.curations.filter(c => c.id !== id);
     renderCurations();

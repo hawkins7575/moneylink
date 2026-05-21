@@ -149,5 +149,9 @@ export const DOM = {
     get curationTagsInput() { return document.getElementById('curationTagsInput'); },
     get curationSelectedCount() { return document.getElementById('curationSelectedCount'); },
     get curationSelectedItemsGrid() { return document.getElementById('curationSelectedItemsGrid'); },
-    get cancelCurationFormBtn() { return document.getElementById('cancelCurationFormBtn'); }
+    get cancelCurationFormBtn() { return document.getElementById('cancelCurationFormBtn'); },
+    // 관리자 추천 큐레이션 CRUD 컨트롤
+    get adminAddRecommendedCurationBtn() { return document.getElementById('adminAddRecommendedCurationBtn'); },
+    get curationModalTitle() { return document.getElementById('curationModalTitle'); },
+    get curationFormSubmitBtn() { return document.getElementById('curationFormSubmitBtn'); }
 };

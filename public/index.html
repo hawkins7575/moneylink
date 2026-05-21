@@ -358,6 +358,10 @@
                                 <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--text-light); margin: 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-compass" style="color: var(--premium-gold);"></i> 🧭 금융 큐레이션 허브</h2>
                                 <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">정보 피로도는 줄이고, 투자 효율은 극대화하는 맞춤형 투자 루틴 플레이어</p>
                             </div>
+                            <!-- 관리자 전용: 추천 큐레이션 추가 버튼 -->
+                            <button id="adminAddRecommendedCurationBtn" class="admin-add-curation-btn" style="display: none;">
+                                <i class="fa-solid fa-circle-plus"></i> 추천 큐레이션 추가
+                            </button>
                         </div>
 
                         <!-- 추천 vs 개인 큐레이션 이원화 탭 -->
@@ -914,7 +918,7 @@
     <div id="curationCreateModal" class="modal" style="display: none; align-items: center; justify-content: center; z-index: 2000; background: rgba(0, 0, 0, 0.75);">
         <div class="modal-content premium-modal" style="max-width: 600px; width: 90%;">
             <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-light); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                <h3 id="curationModalTitle" style="font-size: 1.2rem; font-weight: 800; color: var(--text-light); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                     <i class="fa-solid fa-compass" style="color: var(--premium-gold);"></i> 나만의 투자 큐레이션 조립
                 </h3>
                 <button id="closeCurationCreateModal" class="close-btn" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
@@ -940,8 +944,8 @@
                 </div>
                 <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
                     <button type="button" id="cancelCurationFormBtn" class="action-btn circle-btn" style="padding: 0.75rem 1.25rem; border-radius: 6px; background: rgba(255, 255, 255, 0.05); color: var(--text-light); border: 1px solid var(--border-color); cursor: pointer; display: inline-flex; align-items: center; font-size: 0.9rem;">취소</button>
-                    <button type="submit" class="action-btn plus-btn" style="padding: 0.75rem 1.25rem; border-radius: 6px; background: linear-gradient(135deg, var(--premium-gold), #D4AF37); color: #000; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
-                        <i class="fa-solid fa-compass"></i> 나만의 큐레이션 생성
+                    <button type="submit" id="curationFormSubmitBtn" class="action-btn plus-btn" style="padding: 0.75rem 1.25rem; border-radius: 6px; background: linear-gradient(135deg, var(--premium-gold), #D4AF37); color: #000; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+                        <i class="fa-solid fa-compass"></i> 큐레이션 생성
                     </button>
                 </div>
             </form>
