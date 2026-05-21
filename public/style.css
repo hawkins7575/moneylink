@@ -3938,6 +3938,113 @@ body.admin-mode .add-btn.admin-only {
     }
 }
 
+/* =============================================
+   ⚙️ 통합 관리자 설정 드롭다운 메뉴
+   ============================================= */
+.admin-settings-dropdown {
+    position: relative;
+}
 
+.admin-settings-trigger {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(180, 140, 0, 0.08)) !important;
+    border: 1px solid rgba(255, 215, 0, 0.35) !important;
+    color: var(--premium-gold, #FFD700) !important;
+    box-shadow: 0 2px 12px rgba(255, 215, 0, 0.08) !important;
+    transition: all 0.2s ease !important;
+    gap: 0.4rem !important;
+}
 
+.admin-settings-trigger:hover,
+.admin-settings-trigger.active {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.22), rgba(180, 140, 0, 0.15)) !important;
+    border-color: rgba(255, 215, 0, 0.6) !important;
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2) !important;
+    transform: translateY(-1px) !important;
+}
+
+.admin-settings-trigger .fa-chevron-down {
+    transition: transform 0.2s ease;
+}
+
+.admin-settings-trigger.active .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.admin-settings-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 196px;
+    background: rgba(10, 15, 30, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 14px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 215, 0, 0.08);
+    padding: 0.5rem;
+    z-index: 9999;
+    animation: adminMenuSlideIn 0.18s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    transform-origin: top right;
+}
+
+@keyframes adminMenuSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.94) translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.admin-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    background: transparent;
+    border: none;
+    border-radius: 9px;
+    color: rgba(255, 255, 255, 0.85);
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+}
+
+.admin-menu-item i {
+    width: 18px;
+    font-size: 0.9rem;
+    color: rgba(255, 215, 0, 0.7);
+    transition: color 0.15s ease;
+}
+
+.admin-menu-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+}
+
+.admin-menu-item:hover i {
+    color: var(--premium-gold, #FFD700);
+}
+
+.admin-menu-item.curation-item:hover {
+    background: rgba(255, 215, 0, 0.08);
+    color: var(--premium-gold, #FFD700);
+}
+
+.admin-menu-item.curation-item:hover i {
+    color: var(--premium-gold, #FFD700);
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5));
+}
+
+.admin-menu-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.07);
+    margin: 0.35rem 0.5rem;
+}
 

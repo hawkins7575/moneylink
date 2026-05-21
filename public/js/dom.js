@@ -7,8 +7,16 @@ export const DOM = {
     get logoutBtn() { return document.getElementById('logoutBtn'); },
     get userNameDisplay() { return document.getElementById('userNameDisplay'); },
     get userProfile() { return document.getElementById('userProfile'); },
-    get addBtn() { return document.getElementById('addBtn'); },
-    get manageCategoryBtn() { return document.getElementById('manageCategoryBtn'); },
+    // 설정 드롭다운 (통합 관리자 메뉴)
+    get adminSettingsDropdown() { return document.getElementById('adminSettingsDropdown'); },
+    get adminSettingsBtn() { return document.getElementById('adminSettingsBtn'); },
+    get adminSettingsMenu() { return document.getElementById('adminSettingsMenu'); },
+    get menuCategoryBtn() { return document.getElementById('menuCategoryBtn'); },
+    get menuAddSiteBtn() { return document.getElementById('menuAddSiteBtn'); },
+    get menuCurationBtn() { return document.getElementById('menuCurationBtn'); },
+    // 구버전율 호환 엉니어스 (실제 DOM에는 없음 — 의존 코드 방어용)
+    get addBtn() { return null; },
+    get manageCategoryBtn() { return null; },
     get authContainerHeader() { return document.getElementById('authContainerHeader'); },
     get authContainerSidebar() { return document.getElementById('authContainerSidebar'); },
     get currentCategoryTitle() { return document.getElementById('currentCategoryTitle'); },

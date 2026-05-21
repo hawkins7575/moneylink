@@ -1,4 +1,4 @@
-﻿import { state } from './state.js';
+import { state } from './state.js';
 import { DOM } from './dom.js';
 import { syncData } from './api.js';
 import { renderCards, renderShortcuts } from './ui.js';
@@ -39,16 +39,14 @@ export function updateAuthUI() {
         }
 
         if (state.currentUser.role === 'admin') {
-            if (DOM.addBtn) DOM.addBtn.style.display = 'inline-flex';
-            if (DOM.manageCategoryBtn) DOM.manageCategoryBtn.style.display = 'flex';
+            if (DOM.adminSettingsDropdown) DOM.adminSettingsDropdown.style.display = 'block';
             if (DOM.addNewsBtn) DOM.addNewsBtn.style.display = 'flex';
             
             const activeMenu = document.querySelector('.top-menu a.active') || document.querySelector('.nav-btn.active');
             const isBoardView = activeMenu && activeMenu.getAttribute('data-view') === 'board';
             if (DOM.addBoardBtn) DOM.addBoardBtn.style.display = isBoardView ? 'flex' : 'none';
         } else {
-            if (DOM.addBtn) DOM.addBtn.style.display = 'none';
-            if (DOM.manageCategoryBtn) DOM.manageCategoryBtn.style.display = 'none';
+            if (DOM.adminSettingsDropdown) DOM.adminSettingsDropdown.style.display = 'none';
             if (DOM.addNewsBtn) DOM.addNewsBtn.style.display = 'none';
             if (DOM.addBoardBtn) DOM.addBoardBtn.style.display = 'none';
         }
@@ -74,9 +72,8 @@ export function updateAuthUI() {
             }
         }
 
-        if (DOM.addBtn) DOM.addBtn.style.display = 'none';
+        if (DOM.adminSettingsDropdown) DOM.adminSettingsDropdown.style.display = 'none';
         if (DOM.addBoardBtn) DOM.addBoardBtn.style.display = 'none';
-        if (DOM.manageCategoryBtn) DOM.manageCategoryBtn.style.display = 'none';
         if (DOM.addNewsBtn) DOM.addNewsBtn.style.display = 'none';
     }
 }

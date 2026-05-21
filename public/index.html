@@ -140,13 +140,31 @@
                         </div>
                         
                         <div class="header-action-side" style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="header-actions-mobile-hidden" style="display: flex; gap: 0.5rem;">
-                                <button id="manageCategoryBtn" class="action-btn circle-btn" title="카테고리 관리" style="display: none;">
-                                    <i class="fa-solid fa-gear"></i>
-                                </button>
-                                <button id="addBtn" class="action-btn plus-btn" style="display: none;">
-                                    <i class="fa-solid fa-plus"></i> <span class="btn-text">추가</span>
-                                </button>
+                            <div class="header-actions-mobile-hidden" style="display: flex; gap: 0.5rem; position: relative;">
+                                <!-- 관리자 설정 드롭다운 -->
+                                <div id="adminSettingsDropdown" class="admin-settings-dropdown" style="display: none;">
+                                    <button id="adminSettingsBtn" class="action-btn circle-btn admin-settings-trigger" title="관리자 설정">
+                                        <i class="fa-solid fa-gear"></i>
+                                        <span class="btn-text">설정</span>
+                                        <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem; margin-left: 0.15rem;"></i>
+                                    </button>
+                                    <div id="adminSettingsMenu" class="admin-settings-menu" style="display: none;">
+                                        <button id="menuCategoryBtn" class="admin-menu-item">
+                                            <i class="fa-solid fa-folder-gear"></i>
+                                            <span>카테고리 편집</span>
+                                        </button>
+                                        <button id="menuAddSiteBtn" class="admin-menu-item">
+                                            <i class="fa-solid fa-plus-circle"></i>
+                                            <span>사이트 추가</span>
+                                        </button>
+                                        <div class="admin-menu-divider"></div>
+                                        <button id="menuCurationBtn" class="admin-menu-item curation-item">
+                                            <i class="fa-solid fa-compass"></i>
+                                            <span>큐레이션 편집</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- 게시판 작성 버튼 (유지) -->
                                 <button id="addBoardBtn" class="action-btn plus-btn" style="display: none; background: linear-gradient(135deg, #FF6B6B, #EE5253);">
                                     <i class="fa-solid fa-pen-to-square"></i> <span class="btn-text">작성</span>
                                 </button>

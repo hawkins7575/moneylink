@@ -1196,15 +1196,6 @@ export function renderFeedbackBoard() {
 export function exportRenderShortcuts() { renderShortcuts(); }
 
 export function setupUIEvents() {
-    if (DOM.addBtn) {
-        DOM.addBtn.addEventListener('click', () => {
-            DOM.itemForm.reset(); document.getElementById('itemId').value = '';
-            if (state.categories.length > 0) DOM.formCategory.value = state.categories[0].id;
-            updateFormSubCategories();
-            DOM.modalTitle.textContent = '새 항목 추가'; DOM.modal.classList.add('active');
-        });
-    }
-
     if (DOM.closeBtn) DOM.closeBtn.addEventListener('click', closeModal);
 
     if (DOM.itemForm) {
@@ -1220,7 +1211,6 @@ export function setupUIEvents() {
                 isPremium: DOM.isPremiumInput ? DOM.isPremiumInput.checked : false
             };
             if (DOM.formType) itemData.type = DOM.formType.value;
-
             if (id) window.updateItem(parseInt(id), itemData);
             else window.addItem(itemData);
         });
@@ -1230,9 +1220,66 @@ export function setupUIEvents() {
         DOM.formCategory.addEventListener('change', updateFormSubCategories);
     }
 
-    if(DOM.manageCategoryBtn) {
-        DOM.manageCategoryBtn.addEventListener('click', () => { renderCategoryManager(); DOM.categoryModal.classList.add('active'); });
+    // =============================================
+    // ⚙️ 통합 관리자 설정 드롭다운 이벤트
+    // =============================================
+    if (DOM.adminSettingsBtn) {
+        DOM.adminSettingsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const menu = DOM.adminSettingsMenu;
+            if (!menu) return;
+            const isOpen = menu.style.display === 'block';
+            menu.style.display = isOpen ? 'none' : 'block';
+            DOM.adminSettingsBtn.classList.toggle('active', !isOpen);
+        });
     }
+
+    // 메뉴 외부 클릭 시 자동 닫기
+    document.addEventListener('click', (e) => {
+        const menu = DOM.adminSettingsMenu;
+        const btn = DOM.adminSettingsBtn;
+        if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.style.display = 'none';
+            btn.classList.remove('active');
+        }
+    });
+
+    // 메뉴 항목 1: 카테고리 편집
+    if (DOM.menuCategoryBtn) {
+        DOM.menuCategoryBtn.addEventListener('click', () => {
+            if (DOM.adminSettingsMenu) DOM.adminSettingsMenu.style.display = 'none';
+            if (DOM.adminSettingsBtn) DOM.adminSettingsBtn.classList.remove('active');
+            renderCategoryManager();
+            DOM.categoryModal.classList.add('active');
+        });
+    }
+
+    // 메뉴 항목 2: 사이트 추가
+    if (DOM.menuAddSiteBtn) {
+        DOM.menuAddSiteBtn.addEventListener('click', () => {
+            if (DOM.adminSettingsMenu) DOM.adminSettingsMenu.style.display = 'none';
+            if (DOM.adminSettingsBtn) DOM.adminSettingsBtn.classList.remove('active');
+            DOM.itemForm.reset();
+            document.getElementById('itemId').value = '';
+            if (state.categories.length > 0) DOM.formCategory.value = state.categories[0].id;
+            updateFormSubCategories();
+            DOM.modalTitle.textContent = '새 항목 추가';
+            DOM.modal.classList.add('active');
+        });
+    }
+
+    // 메뉴 항목 3: 큐레이션 편집 (큐레이션 탭으로 이동)
+    if (DOM.menuCurationBtn) {
+        DOM.menuCurationBtn.addEventListener('click', () => {
+            if (DOM.adminSettingsMenu) DOM.adminSettingsMenu.style.display = 'none';
+            if (DOM.adminSettingsBtn) DOM.adminSettingsBtn.classList.remove('active');
+            switchView('curations', '관리자 큐레이션');
+            // 추청 큐레이션 탭 자동 선택
+            const recTab = document.querySelector('.curation-tab-btn[data-curation-tab="recommended"]');
+            if (recTab) recTab.click();
+        });
+    }
+
     if (DOM.closeCategoryModal) DOM.closeCategoryModal.addEventListener('click', () => closeAllModals());
 
     if (DOM.addCategorySubmitBtn) {
