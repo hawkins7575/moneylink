@@ -673,6 +673,40 @@
                                style="width: 100%; height: 52px; padding: 0 1rem 0 2.8rem; border-radius: 14px; border: 1.5px solid var(--surface-container-high); background: var(--surface-container-low); font-size: 0.95rem; font-weight: 500; transition: all 0.3s ease;">
                     </div>
                 </div>
+
+                <!-- 이메일 입력 그룹 (회원가입 시에만 표시됨) -->
+                <div id="emailGroup" class="form-group" style="margin: 0; display: none;">
+                    <label for="email" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--on-surface-variant); margin-bottom: 0.6rem; margin-left: 0.2rem;">이메일 (Email)</label>
+                    <div style="display: flex; gap: 0.5rem; position: relative;">
+                        <div style="position: relative; flex: 1;">
+                            <i class="fa-solid fa-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--on-surface-variant); opacity: 0.5; font-size: 0.9rem;"></i>
+                            <input type="email" id="email" placeholder="이메일 주소를 입력하세요" 
+                                   style="width: 100%; height: 52px; padding: 0 1rem 0 2.8rem; border-radius: 14px; border: 1.5px solid var(--surface-container-high); background: var(--surface-container-low); font-size: 0.95rem; font-weight: 500; transition: all 0.3s ease;">
+                        </div>
+                        <button type="button" id="emailVerifyBtn" 
+                                style="height: 52px; padding: 0 1.25rem; border-radius: 14px; background: var(--primary); color: white; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; box-shadow: 0 4px 10px rgba(0, 8, 61, 0.1);">
+                            인증번호 전송
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 이메일 인증코드 입력 그룹 (인증 요청 시에만 표시됨) -->
+                <div id="emailCodeGroup" class="form-group" style="margin: 0; display: none;">
+                    <label for="emailCode" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--on-surface-variant); margin-bottom: 0.6rem; margin-left: 0.2rem;">이메일 인증코드</label>
+                    <div style="display: flex; gap: 0.5rem; position: relative;">
+                        <div style="position: relative; flex: 1;">
+                            <i class="fa-solid fa-key" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--on-surface-variant); opacity: 0.5; font-size: 0.9rem;"></i>
+                            <input type="text" id="emailCode" placeholder="인증번호 6자리" maxlength="6"
+                                   style="width: 100%; height: 52px; padding: 0 1rem 0 2.8rem; border-radius: 14px; border: 1.5px solid var(--surface-container-high); background: var(--surface-container-low); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.2em; transition: all 0.3s ease;">
+                        </div>
+                        <button type="button" id="emailVerifyConfirmBtn" 
+                                style="height: 52px; padding: 0 1.25rem; border-radius: 14px; background: #2E7D32; color: white; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; box-shadow: 0 4px 10px rgba(46, 125, 50, 0.1);">
+                            인증 확인
+                        </button>
+                    </div>
+                    <div id="emailTimer" style="font-size: 0.75rem; font-weight: 600; color: #D32F2F; margin-top: 0.4rem; margin-left: 0.2rem; display: none;">남은 시간: 03:00</div>
+                    <div id="emailSuccessMsg" style="font-size: 0.75rem; font-weight: 600; color: #2E7D32; margin-top: 0.4rem; margin-left: 0.2rem; display: none;">✓ 이메일 인증이 완료되었습니다.</div>
+                </div>
                 
                 <div class="auth-footer" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
                     <button type="submit" id="authSubmitBtn" class="submit-btn" 
