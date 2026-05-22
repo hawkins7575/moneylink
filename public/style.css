@@ -3879,6 +3879,42 @@ body.admin-mode .add-btn.admin-only {
     background: #0d121f !important;
     border: 1px solid rgba(255, 215, 0, 0.15) !important;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6) !important;
+    color: #e8eaf0;
+}
+
+/* 프리미엄 모달 내부 폰트 색상 보정 (진한 배경에서 읽혀야 함) */
+.premium-modal label {
+    color: #c8cce0 !important;
+}
+
+.premium-modal h3 {
+    color: #ffffff !important;
+}
+
+.premium-modal p,
+.premium-modal span {
+    color: #a0a8c0;
+}
+
+.premium-modal input,
+.premium-modal textarea,
+.premium-modal select {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #e8eaf0 !important;
+    border-radius: 8px;
+}
+
+.premium-modal input::placeholder,
+.premium-modal textarea::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.premium-modal input:focus,
+.premium-modal textarea:focus {
+    border-color: rgba(255, 215, 0, 0.5) !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08) !important;
 }
 
 .selected-items-mini-grid .mini-fav-item {
@@ -3946,19 +3982,19 @@ body.admin-mode .add-btn.admin-only {
 }
 
 .admin-settings-trigger {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(180, 140, 0, 0.08)) !important;
-    border: 1px solid rgba(255, 215, 0, 0.35) !important;
-    color: var(--premium-gold, #FFD700) !important;
-    box-shadow: 0 2px 12px rgba(255, 215, 0, 0.08) !important;
+    background: linear-gradient(135deg, var(--primary, #00083D), #001a70) !important;
+    border: 1px solid rgba(255, 215, 0, 0.5) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 12px rgba(0, 6, 80, 0.2) !important;
     transition: all 0.2s ease !important;
     gap: 0.4rem !important;
 }
 
 .admin-settings-trigger:hover,
 .admin-settings-trigger.active {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.22), rgba(180, 140, 0, 0.15)) !important;
-    border-color: rgba(255, 215, 0, 0.6) !important;
-    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2) !important;
+    background: linear-gradient(135deg, #001a70, #002da8) !important;
+    border-color: rgba(255, 215, 0, 0.8) !important;
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.25) !important;
     transform: translateY(-1px) !important;
 }
 
@@ -4056,10 +4092,10 @@ body.admin-mode .add-btn.admin-only {
     align-items: center;
     gap: 0.5rem;
     padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(180, 140, 0, 0.1));
-    border: 1px solid rgba(255, 215, 0, 0.45);
+    background: linear-gradient(135deg, var(--primary, #00083D), #001a70);
+    border: 1px solid rgba(255, 215, 0, 0.5);
     border-radius: 9999px;
-    color: var(--premium-gold, #FFD700);
+    color: #ffffff;
     font-family: 'Pretendard Variable', Pretendard, sans-serif;
     font-size: 0.85rem;
     font-weight: 700;
@@ -4069,10 +4105,10 @@ body.admin-mode .add-btn.admin-only {
 }
 
 .admin-add-curation-btn:hover {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.28), rgba(180, 140, 0, 0.2));
-    border-color: rgba(255, 215, 0, 0.7);
-    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, #001a70, #002da8);
+    border-color: rgba(255, 215, 0, 0.9);
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+    transform: translateY(-2px);
 }
 
 /* ==============================================
