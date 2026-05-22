@@ -11,23 +11,26 @@ let editingCurationId = null;       // null = 신규, number = 수정 대상 ID
 let curationEditType = 'personal';  // 'personal' | 'recommended'
 
 // ✅ 레터 아바타 생성 함수
-export function getLetterAvatarHTML(title) {
-    if (!title || typeof title !== 'string') return '<div class="letter-avatar" style="background: var(--av-1)">?</div>';
+export function getLetterAvatarHTML(title, size = 24) {
+    if (!title || typeof title !== 'string') {
+        const fontSize = Math.round(size * 0.45);
+        return `<div class="letter-avatar" style="width: ${size}px; height: ${size}px; font-size: ${fontSize}px; background: var(--av-1); display: flex; align-items: center; justify-content: center; border-radius: 6px; color: white; font-weight: 800; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">?</div>`;
+    }
     const cleanTitle = title.trim();
     const firstLetter = cleanTitle.charAt(0).toUpperCase();
     const charCodeSum = Array.from(cleanTitle).reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const colorIndex = (charCodeSum % 6) + 1;
-    return `<div class="letter-avatar" style="background: var(--av-${colorIndex})">${firstLetter}</div>`;
+    const fontSize = Math.round(size * 0.45);
+    return `<div class="letter-avatar" style="width: ${size}px; height: ${size}px; font-size: ${fontSize}px; background: var(--av-${colorIndex}); display: flex; align-items: center; justify-content: center; border-radius: 6px; color: white; font-weight: 800; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">${firstLetter}</div>`;
 }
+window.getLetterAvatarHTML = getLetterAvatarHTML;
 
-// ✅ [추가] 글로벌 아이콘 에러 핸들러: 데이터 속성(data-title)을 읽어와서 레터 아바타를 생성
+// ✅ [추가] 글로벌 아이콘 에러 핸들러: 데이터 속성(data-title)을 읽어와서 레터 아바타를 생성 (outerHTML을 사용하여 원본 요소만 치환)
 window.handleIconError = function(imgElement) {
     if (!imgElement) return;
     const title = imgElement.dataset.title || '';
-    const parent = imgElement.parentElement;
-    if (parent) {
-        parent.innerHTML = getLetterAvatarHTML(title);
-    }
+    const size = parseInt(imgElement.dataset.size || imgElement.style.width || '24', 10) || 24;
+    imgElement.outerHTML = getLetterAvatarHTML(title, size);
 };
 
 window.toggleMyBookmark = async function(id, event) {
@@ -732,10 +735,11 @@ export function renderCards() {
                             ${faviconUrl ? 
                                 `<img src="${faviconUrl}" 
                                      data-title="${item.title.replace(/"/g, '&quot;')}"
+                                     data-size="24"
                                      alt="${item.title.replace(/"/g, '&quot;')}" 
                                      style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;"
                                      onerror="handleIconError(this)">`
-                                : getLetterAvatarHTML(item.title)
+                                : getLetterAvatarHTML(item.title, 24)
                             }
                         </div>
                         <h3 class="card-title">${item.title}</h3>
@@ -1868,8 +1872,12 @@ function openCurationCreateModal(skipClear = false) {
             `;
             
             const iconHtml = faviconUrl ? 
-                `<img src="${faviconUrl}" onerror="this.outerHTML='<i class=&quot;fa-solid fa-globe&quot;></i>'" style="width: 14px; height: 14px; object-fit: contain;">` :
-                `<i class="fa-solid fa-globe" style="font-size: 0.8rem;"></i>`;
+                `<img src="${faviconUrl}" 
+                      data-title="${item.title.replace(/"/g, '&quot;')}" 
+                      data-size="14"
+                      onerror="window.handleIconError(this)" 
+                      style="width: 14px; height: 14px; object-fit: contain;">` :
+                getLetterAvatarHTML(item.title, 14);
                 
             miniCard.innerHTML = `
                 ${iconHtml}
@@ -2108,8 +2116,12 @@ function generateCurationCollage(itemIds) {
             } catch (e) {}
             
             const iconHtml = faviconUrl ? 
-                `<img src="${faviconUrl}" onerror="this.outerHTML='<i class=&quot;fa-solid fa-globe&quot; style=&quot;color: var(--premium-gold);&quot;></i>'" style="width: 20px; height: 20px; border-radius: 4px; object-fit: contain;">` :
-                `<i class="fa-solid fa-globe" style="color: var(--premium-gold);"></i>`;
+                `<img src="${faviconUrl}" 
+                      data-title="${item.title.replace(/"/g, '&quot;')}" 
+                      data-size="20"
+                      onerror="window.handleIconError(this)" 
+                      style="width: 20px; height: 20px; border-radius: 4px; object-fit: contain;">` :
+                getLetterAvatarHTML(item.title, 20);
 
             html += `
                 <div class="curation-stacked-icon" title="${item.title.replace(/"/g, '&quot;')}">
@@ -2216,8 +2228,12 @@ function showCurationDetails(curation) {
             });
             
             const iconHtml = faviconUrl ? 
-                `<img src="${faviconUrl}" onerror="this.outerHTML='<i class=&quot;fa-solid fa-globe&quot; style=&quot;color: var(--premium-gold);&quot;></i>'" style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;">` :
-                `<i class="fa-solid fa-globe" style="font-size: 1.25rem; color: var(--premium-gold);"></i>`;
+                `<img src="${faviconUrl}" 
+                      data-title="${item.title.replace(/"/g, '&quot;')}" 
+                      data-size="24"
+                      onerror="window.handleIconError(this)" 
+                      style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;">` :
+                getLetterAvatarHTML(item.title, 24);
                 
             let extraEditorialHtml = '';
             if (curation.curationType === 'recommended') {
