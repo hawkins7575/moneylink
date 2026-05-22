@@ -3438,17 +3438,19 @@ body.admin-mode .add-btn.admin-only {
 .card.selection-mode-active {
     cursor: pointer;
     transition: all 0.2s ease;
+    border: 2px solid rgba(212, 175, 55, 0.15) !important;
 }
 
 .card.selection-mode-active:hover {
     transform: translateY(-2px) scale(1.02);
-    border-color: var(--premium-gold);
+    border-color: rgba(212, 175, 55, 0.5) !important;
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.1);
 }
 
 .card.selection-mode-active.selected {
-    border-color: var(--premium-gold);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);
-    background: rgba(255, 215, 0, 0.03);
+    border: 2px solid var(--premium-gold) !important;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3) !important;
+    background: rgba(212, 175, 55, 0.09) !important;
 }
 
 /* Curation Grid & Cards styling */
