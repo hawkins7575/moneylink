@@ -2212,16 +2212,9 @@ function showCurationDetails(curation) {
                 `<img src="${faviconUrl}" onerror="this.outerHTML='<i class=&quot;fa-solid fa-globe&quot; style=&quot;color: var(--premium-gold);&quot;></i>'" style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;">` :
                 `<i class="fa-solid fa-globe" style="font-size: 1.25rem; color: var(--premium-gold);"></i>`;
                 
-            detailCard.innerHTML = `
-                <div class="curation-detail-card-header">
-                    <div class="curation-detail-favicon">
-                        ${iconHtml}
-                    </div>
-                    <h4 class="curation-detail-card-title">${item.title}</h4>
-                </div>
-                <div class="curation-detail-card-body">
-                    <p class="curation-detail-card-desc">${item.description || '지정된 설명이 없습니다.'}</p>
-                    
+            let extraEditorialHtml = '';
+            if (curation.curationType === 'recommended') {
+                extraEditorialHtml = `
                     <div class="curation-detail-reason-box">
                         <div class="curation-reason-header"><i class="fa-solid fa-lightbulb"></i> 분석 이유</div>
                         <div class="curation-reason-content">${info.reason}</div>
@@ -2231,8 +2224,12 @@ function showCurationDetails(curation) {
                         <div style="font-weight: 800; color: var(--premium-gold); margin-bottom: 0.25rem;"><i class="fa-solid fa-user-tie"></i> 활용 팁</div>
                         <div>${info.tips}</div>
                     </div>
-                </div>
-                <div class="curation-detail-card-footer">
+                `;
+            }
+
+            let metricsHtml = '';
+            if (curation.curationType === 'recommended') {
+                metricsHtml = `
                     <div class="curation-metrics">
                         <div class="curation-metric-item">
                             <span>난이도</span>
@@ -2243,7 +2240,22 @@ function showCurationDetails(curation) {
                             <div class="curation-metric-stars">${utilityStars}</div>
                         </div>
                     </div>
-                    
+                `;
+            }
+
+            detailCard.innerHTML = `
+                <div class="curation-detail-card-header">
+                    <div class="curation-detail-favicon">
+                        ${iconHtml}
+                    </div>
+                    <h4 class="curation-detail-card-title">${item.title}</h4>
+                </div>
+                <div class="curation-detail-card-body">
+                    <p class="curation-detail-card-desc">${item.description || '지정된 설명이 없습니다.'}</p>
+                    ${extraEditorialHtml}
+                </div>
+                <div class="curation-detail-card-footer">
+                    ${metricsHtml}
                     <a href="${item.url}" target="_blank" class="curation-detail-visit-btn">
                         사이트 이동 <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem;"></i>
                     </a>
