@@ -519,83 +519,50 @@
                 
                 <footer class="main-footer">
                     <div class="footer-container">
-                        <!-- Top Part: Brand Info and Grid Navigation -->
-                        <div class="footer-grid">
-                            <!-- Column 1: Brand Info -->
-                            <div class="footer-col brand-col">
-                                <div class="footer-logo">
-                                    <span class="logo-icon"><img src="/logo.png" class="footer-logo-img" alt="MoneyLink Logo"></span>
-                                    <span class="logo-text">MoneyLink</span>
-                                </div>
-                                <p class="brand-desc">
-                                    MoneyLink는 국내외 주식, 암호화폐, 경제 뉴스, 글로벌 투자 지표 및 신뢰할 수 있는 투자 리서치 채널을 원클릭으로 조립하고 구독하는 프리미엄 금융 정보 큐레이션 포털입니다.
-                                </p>
-                                <div class="social-links">
-                                    <a href="#" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
-                                    <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-                                    <a href="#" title="Telegram"><i class="fa-brands fa-telegram"></i></a>
-                                </div>
-                            </div>
-                            
-                            <!-- Column 2: Service Menu -->
-                            <div class="footer-col">
-                                <h4 class="footer-col-title">서비스 메뉴</h4>
-                                <ul class="footer-ul-links">
-                                    <li><a href="#" data-view="curations"><i class="fa-solid fa-compass icon-gold"></i> 투자 큐레이션</a></li>
-                                    <li><a href="#" data-view="guide"><i class="fa-solid fa-book"></i> 사용법 안내</a></li>
-                                    <li><a href="#" data-view="bookmarks"><i class="fa-solid fa-house"></i> 대시보드 홈</a></li>
-                                    <li><a href="#" data-view="shortcuts"><i class="fa-solid fa-link"></i> 빠른 바로가기</a></li>
-                                </ul>
-                            </div>
-                            
-                            <!-- Column 3: Board & Insights -->
-                            <div class="footer-col">
-                                <h4 class="footer-col-title">인사이트 & 소통</h4>
-                                <ul class="footer-ul-links">
-                                    <li><a href="#" data-view="community-board"><i class="fa-solid fa-comments"></i> 열린 토론방</a></li>
-                                    <li><a href="#" data-view="board"><i class="fa-solid fa-lightbulb"></i> 투자 인사이트</a></li>
-                                    <li><a href="#" data-view="feedback-board"><i class="fa-solid fa-circle-question"></i> 건의 및 제안</a></li>
-                                </ul>
-                            </div>
-                            
-                            <!-- Column 4: Legal & SEO Support -->
-                            <div class="footer-col">
-                                <h4 class="footer-col-title">고객지원 & 법적고지</h4>
-                                <ul class="footer-ul-links">
-                                    <li><a href="#" id="termsLink"><i class="fa-solid fa-scale-balanced"></i> 이용약관</a></li>
-                                    <li><a href="#" id="privacyLink" class="privacy-highlight"><i class="fa-solid fa-user-shield"></i> 개인정보처리방침</a></li>
-                                    <li><a href="/sitemap.xml" target="_blank" rel="noopener"><i class="fa-solid fa-sitemap"></i> sitemap.xml (사이트맵)</a></li>
-                                    <li><a href="/robots.txt" target="_blank" rel="noopener"><i class="fa-solid fa-robot"></i> robots.txt (검색수집 설정)</a></li>
-                                </ul>
-                            </div>
+                        <!-- Row 1: Simple Horizontal Links with pipe separators -->
+                        <div class="simple-footer-links">
+                            <a href="#" data-view="curations">🧭 투자 큐레이션</a>
+                            <a href="#" data-view="guide">사용법 안내</a>
+                            <a href="#" data-view="bookmarks">대시보드 홈</a>
+                            <a href="#" data-view="community-board">열린 토론방</a>
+                            <a href="#" data-view="board">투자 인사이트</a>
+                            <a href="#" id="termsLink">서비스 이용약관</a>
+                            <a href="#" id="privacyLink" class="privacy-highlight">개인정보처리방침</a>
                         </div>
                         
-                        <!-- Divider Line -->
-                        <div class="footer-divider"></div>
-                        
-                        <!-- Middle Part: Operator Details -->
-                        <div class="footer-operator-details">
-                            <div class="operator-row">
-                                <span><strong>상호명</strong> 머니링크 (MoneyLink)</span>
-                                <span><strong>대표자</strong> 김대우</span>
-                                <span><strong>사업자등록번호</strong> 120-88-12345</span>
-                                <span><strong>통신판매업신고번호</strong> 제 2026-서울강남-0482호</span>
-                            </div>
-                            <div class="operator-row">
-                                <span><strong>주소</strong> 서울특별시 강남구 테헤란로 152, 금융타워 14층 (역삼동)</span>
-                                <span><strong>고객지원 이메일</strong> <a href="mailto:support@moneylink-portal.com">support@moneylink-portal.com</a></span>
-                                <span><strong>대표전화</strong> 02-588-1234</span>
-                            </div>
-                            <div class="operator-disclaimer">
-                                <i class="fa-solid fa-triangle-exclamation disclaimer-icon"></i>
-                                면책고지: MoneyLink 포털에서 제공하는 모든 큐레이션 정보 및 게시판 내용은 개별 투자 참고용이며 최종 투자 결정과 그 결과에 대한 모든 법적 책임은 정보 이용자 본인에게 귀속됩니다.
-                            </div>
+                        <!-- Row 2: Operator details in a single horizontal wrapped line -->
+                        <div class="simple-footer-operator">
+                            <span>(주)머니링크</span>
+                            <span>대표자: 김대우</span>
+                            <span>사업자등록번호: 120-88-12345</span>
+                            <span>통신판매업 신고: 제 2026-서울강남-0482호</span>
+                            <span>주소: 서울특별시 강남구 테헤란로 152, 금융타워 14층 (역삼동)</span>
+                            <span>전화번호: 02-588-1234</span>
+                            <span>고객지원: <a href="mailto:support@moneylink-portal.com">support@moneylink-portal.com</a></span>
                         </div>
                         
-                        <!-- Bottom Part: Copyright -->
-                        <div class="footer-bottom">
+                        <!-- Row 3: App Store, Google Play, Coffee buttons matching the image -->
+                        <div class="simple-footer-actions">
+                            <a href="#" class="simple-icon-btn coffee-btn" title="Buy me a coffee">
+                                <i class="fa-solid fa-mug-hot"></i>
+                            </a>
+                            <a href="#" class="simple-store-btn">
+                                <i class="fa-brands fa-google-play store-icon google-color"></i>
+                                <span class="store-text">Google Play</span>
+                            </a>
+                            <a href="#" class="simple-store-btn">
+                                <i class="fa-brands fa-apple store-icon apple-color"></i>
+                                <span class="store-text">App Store</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Row 4: Subtle disclaimer and copyright -->
+                        <div class="simple-footer-disclaimer">
+                            면책고지: MoneyLink 포털에서 제공하는 모든 큐레이션 정보 및 게시판 내용은 개별 투자 참고용이며 최종 투자 결정과 그 결과에 대한 모든 법적 책임은 정보 이용자 본인에게 귀속됩니다.
+                        </div>
+                        
+                        <div class="simple-footer-bottom">
                             <span class="copyright">&copy; 2026 MONEYLINK PORTAL. All rights reserved.</span>
-                            <span class="trust-badge"><i class="fa-solid fa-shield-halved"></i> SECURE SSL ENCRYPTED</span>
                         </div>
                     </div>
                 </footer>
