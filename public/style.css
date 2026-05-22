@@ -3713,6 +3713,10 @@ body.admin-mode .add-btn.admin-only {
     justify-content: space-between;
 }
 
+.curation-detail-card.personal {
+    min-height: 240px;
+}
+
 .curation-detail-card:hover {
     border-color: var(--premium-gold-border);
     box-shadow: 0 12px 30px rgba(212, 175, 55, 0.08);

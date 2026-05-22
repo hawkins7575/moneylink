@@ -2205,8 +2205,15 @@ function showCurationDetails(curation) {
             ).join('');
             
             const detailCard = document.createElement('div');
-            detailCard.className = 'curation-detail-card';
+            detailCard.className = `curation-detail-card ${curation.curationType}`;
             detailCard.style.animationDelay = `${Math.min(idx * 0.05, 0.3)}s`;
+            detailCard.style.cursor = 'pointer';
+            detailCard.addEventListener('click', (e) => {
+                // If the user clicked inside the card but not directly on the link button, open the URL anyway
+                if (!e.target.closest('.curation-detail-visit-btn')) {
+                    window.open(item.url, '_blank');
+                }
+            });
             
             const iconHtml = faviconUrl ? 
                 `<img src="${faviconUrl}" onerror="this.outerHTML='<i class=&quot;fa-solid fa-globe&quot; style=&quot;color: var(--premium-gold);&quot;></i>'" style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;">` :
