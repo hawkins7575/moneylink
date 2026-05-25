@@ -16,8 +16,7 @@ import {
     openNewsModal,
     openBoardModal,
     closeAllModals,
-    switchView,
-    renderTicker
+    switchView
 } from './ui.js';
 
 function handleRouting() {
@@ -94,7 +93,6 @@ async function initApp() {
         renderFeedbackBoard();
         renderShortcuts();
         renderCurations();
-        renderTicker(); // 실시간 금융 지표 위젯 마운트
 
         // 초기 라우팅 처리
         if (!handleRouting()) {
@@ -118,11 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupUIEvents();
     initApp();
 
-    // 5분(300,000ms)마다 실시간 금융 지표 위젯 자동 갱신
-    setInterval(renderTicker, 300000);
-
     window.addEventListener('popstate', (event) => {
         handleRouting();
     });
 });
-
