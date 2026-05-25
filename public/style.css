@@ -3487,33 +3487,34 @@ body.admin-mode .add-btn.admin-only {
 }
 
 .curation-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
+    background: var(--surface-container-lowest);
+    border: var(--ghost-border);
     border-radius: 16px;
     overflow: hidden;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     height: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .curation-card:hover {
     transform: translateY(-6px);
-    border-color: var(--premium-gold);
-    box-shadow: 0 12px 30px rgba(255, 215, 0, 0.1);
+    border-color: var(--premium-gold-border);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.06), 0 4px 12px var(--premium-gold-shadow);
 }
 
 /* Dynamic Collage Cover generated dynamically */
 .curation-card-collage {
     height: 160px;
-    background: linear-gradient(135deg, #0e1628, #050a14);
+    background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--surface-container-high);
 }
 
 .curation-favicon-stack {
@@ -3530,9 +3531,9 @@ body.admin-mode .add-btn.admin-only {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: var(--bg-surface);
-    border: 3px solid #0a1120;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    background: #ffffff;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3573,36 +3574,39 @@ body.admin-mode .add-btn.admin-only {
 
 .curation-card-badge {
     align-self: flex-start;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 800;
     padding: 0.2rem 0.5rem;
-    border-radius: 4px;
+    border-radius: 6px;
     margin-bottom: 0.75rem;
     text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 .curation-card-badge.recommended {
-    background: var(--premium-gold);
-    color: #000;
+    background: var(--premium-gold-light);
+    color: var(--premium-gold);
+    border: 1px solid var(--premium-gold-border);
 }
 
 .curation-card-badge.personal {
-    background: rgba(2, 136, 209, 0.15);
-    color: #0288D1;
-    border: 1px solid rgba(2, 136, 209, 0.3);
+    background: rgba(59, 130, 246, 0.08);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .curation-card-title {
     font-size: 1.15rem;
-    font-weight: 800;
-    color: var(--text-light);
+    font-weight: 700;
+    color: var(--on-surface);
     margin: 0 0 0.5rem 0;
     line-height: 1.4;
+    letter-spacing: -0.02em;
 }
 
 .curation-card-desc {
     font-size: 0.85rem;
-    color: var(--text-muted);
+    color: var(--on-surface-variant);
     line-height: 1.5;
     margin: 0 0 1.25rem 0;
     display: -webkit-box;
@@ -3611,13 +3615,14 @@ body.admin-mode .add-btn.admin-only {
     overflow: hidden;
     text-overflow: ellipsis;
     flex-grow: 1;
+    opacity: 0.85;
 }
 
 .curation-card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--surface-container-high);
     padding-top: 1rem;
     margin-top: auto;
 }
@@ -3630,10 +3635,11 @@ body.admin-mode .add-btn.admin-only {
 
 .curation-card-tag {
     font-size: 0.75rem;
-    color: var(--primary);
-    background: rgba(2, 136, 209, 0.08);
+    color: var(--on-secondary-container);
+    background: var(--secondary-container);
     padding: 0.15rem 0.4rem;
     border-radius: 4px;
+    border: 1px solid rgba(55, 48, 163, 0.08);
 }
 
 .curation-card-count {
@@ -3727,13 +3733,14 @@ body.admin-mode .add-btn.admin-only {
 }
 
 .curation-detail-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
+    background: var(--surface-container-lowest);
+    border: var(--ghost-border);
     border-radius: 16px;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
     transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     min-height: 520px;
     justify-content: space-between;
@@ -3745,7 +3752,7 @@ body.admin-mode .add-btn.admin-only {
 
 .curation-detail-card:hover {
     border-color: var(--premium-gold-border);
-    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.08);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.06), 0 4px 12px var(--premium-gold-shadow);
     transform: translateY(-4px);
 }
 
@@ -3753,7 +3760,7 @@ body.admin-mode .add-btn.admin-only {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--surface-container-high);
     padding-bottom: 0.85rem;
 }
 
@@ -3761,12 +3768,13 @@ body.admin-mode .add-btn.admin-only {
     width: 42px;
     height: 42px;
     border-radius: 10px;
-    background: #0f172a;
+    background: var(--surface-container-low);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
     flex-shrink: 0;
+    border: 1px solid var(--surface-container-high);
 }
 
 .curation-detail-favicon img {
@@ -3782,8 +3790,8 @@ body.admin-mode .add-btn.admin-only {
 
 .curation-detail-card-title {
     font-size: 1.05rem;
-    font-weight: 800;
-    color: var(--text-light);
+    font-weight: 700;
+    color: var(--on-surface);
     margin: 0;
     line-height: 1.35;
     overflow: hidden;
@@ -3792,6 +3800,7 @@ body.admin-mode .add-btn.admin-only {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     flex-grow: 1;
+    letter-spacing: -0.02em;
 }
 
 .curation-detail-card-body {
@@ -3804,7 +3813,7 @@ body.admin-mode .add-btn.admin-only {
 
 .curation-detail-card-desc {
     font-size: 0.82rem;
-    color: var(--text-muted);
+    color: var(--on-surface-variant);
     line-height: 1.5;
     margin: 0 0 0.25rem 0;
     overflow: hidden;
@@ -3813,11 +3822,12 @@ body.admin-mode .add-btn.admin-only {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     min-height: 3.8em;
+    opacity: 0.85;
 }
 
 .curation-detail-reason-box {
-    background: rgba(255, 255, 255, 0.015);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: var(--surface-container-low);
+    border: var(--ghost-border);
     border-radius: 8px;
     padding: 0.75rem;
     font-size: 0.78rem;
@@ -3837,13 +3847,13 @@ body.admin-mode .add-btn.admin-only {
 }
 
 .curation-reason-content {
-    color: var(--text-light);
+    color: var(--on-surface-variant);
 }
 
 .curation-tip-item {
     font-size: 0.78rem;
     line-height: 1.45;
-    color: var(--text-light);
+    color: var(--on-surface-variant);
     border-left: 2px solid var(--premium-gold-border);
     padding-left: 0.65rem;
     margin-top: 0.25rem;
@@ -3851,7 +3861,7 @@ body.admin-mode .add-btn.admin-only {
 
 .curation-detail-card-footer {
     margin-top: 1rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--surface-container-high);
     padding-top: 1rem;
     display: flex;
     flex-direction: column;
@@ -3885,25 +3895,25 @@ body.admin-mode .add-btn.admin-only {
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    padding: 0.55rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-color);
+    padding: 0.6rem;
+    background: var(--surface-container-low);
+    border: 1px solid var(--surface-container-high);
     border-radius: 8px;
-    color: var(--text-light);
+    color: var(--primary);
     text-decoration: none;
     font-size: 0.8rem;
     font-weight: 700;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
     width: 100%;
 }
 
 .curation-detail-visit-btn:hover {
-    background: linear-gradient(135deg, var(--premium-gold), #B8860B);
-    border-color: var(--premium-gold);
-    color: #000000;
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 6px 16px rgba(0, 8, 61, 0.15);
 }
 
 /* Modal styling overrides for premium feel */
