@@ -166,5 +166,13 @@ const financialData = [
     { id: 117, title: "뉴욕주민", url: "https://www.youtube.com/results?search_query=뉴욕주민", category: "finance", type: "youtube", description: "구독자 약 45만명. 월 스트리트 현직 헤지펀드 트레이더의 날카로운 시장 뷰." },
     { id: 118, title: "와이스트릿 (Y Street)", url: "https://www.youtube.com/results?search_query=와이스트릿", category: "finance", type: "youtube", description: "구독자 약 40만명. 한국 주식 시장의 깊이 있는 산업 분석 리포트와 탐방기." },
     { id: 119, title: "돈깡의 투자스쿨", url: "https://www.youtube.com/results?search_query=돈깡의투자스쿨", category: "finance", type: "youtube", description: "구독자 약 39만명. 20대 젊은 전업투자자의 실전 멘탈 관리 및 차트 분석." },
-    { id: 120, title: "존리라이프스타일", url: "https://www.youtube.com/results?search_query=존리라이프스타일", category: "finance", type: "youtube", description: "구독자 약 65만명. 장기투자, 가치투자의 철학을 설파하는 금융 교육 채널." }
+    { id: 120, title: "존리라이프스타일", url: "https://www.youtube.com/results?search_query=존리라이프스타일", category: "finance", type: "youtube", description: "구독자 약 65만명. 장기투자, 가치투자의 철학을 설파하는 금융 교육 채널." },
+
+    // === 추가 주식/코인 추천 사이트 (New Stock & Coin Curation) ===
+    { id: 301, title: "TradingView (트레이딩뷰)", url: "https://kr.tradingview.com", category: "stock", type: "site", description: "전 세계 주식, 지수, 코인 등 최첨단 실시간 차트 분석 및 트레이딩 커뮤니티.", icon: "fa-solid fa-chart-area", isPremium: true },
+    { id: 302, title: "Finviz (핀비즈)", url: "https://finviz.com", category: "stock", type: "site", description: "미국 주식 시장의 실시간 시황 맵(S&P 500 Map) 및 강력한 주식 스크리너 제공.", icon: "fa-solid fa-table-cells" },
+    { id: 303, title: "한경 컨센서스", url: "http://consensus.hankyung.com", category: "stock", type: "site", description: "국내외 증권사들의 실시간 기업 리서치 리포트 및 산업 전망 무료 다운로드 센터.", icon: "fa-solid fa-file-pdf" },
+    { id: 304, title: "CoinGecko (코인게코)", url: "https://www.coingecko.com/ko", category: "coin", type: "site", description: "글로벌 수만 개 가상자산 시세, 개발 활성도 및 소셜 지표 종합 추적 사이트.", icon: "fa-solid fa-frog", isPremium: true },
+    { id: 305, title: "DefiLlama (디파이라마)", url: "https://defillama.com", category: "coin", type: "site", description: "탈중앙화 금융(DeFi)의 체인별 TVL(총 예치자산) 및 핵심 데이터 추적 플랫폼.", icon: "fa-solid fa-chart-column" },
+    { id: 306, title: "L2BEAT (엘투비트)", url: "https://l2beat.com", category: "coin", type: "site", description: "이더리움 레이어 2(Layer 2) 생태계의 예치량 및 상세 보안 지표 실시간 대시보드.", icon: "fa-solid fa-layer-group" }
 ];
