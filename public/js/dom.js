@@ -161,5 +161,24 @@ export const DOM = {
     // 관리자 추천 큐레이션 CRUD 컨트롤
     get adminAddRecommendedCurationBtn() { return document.getElementById('adminAddRecommendedCurationBtn'); },
     get curationModalTitle() { return document.getElementById('curationModalTitle'); },
-    get curationFormSubmitBtn() { return document.getElementById('curationFormSubmitBtn'); }
+    get curationFormSubmitBtn() { return document.getElementById('curationFormSubmitBtn'); },
+    
+    // Admin Dashboard Getters
+    get menuDashboardBtn() { return document.getElementById('menuDashboardBtn'); },
+    get adminDashboardModal() { return document.getElementById('adminDashboardModal'); },
+    get closeAdminDashboardModal() { return document.getElementById('closeAdminDashboardModal'); },
+    get closeAdminDashboardFooterBtn() { return document.getElementById('closeAdminDashboardFooterBtn'); },
+    get tabUsersBtn() { return document.getElementById('tabUsersBtn'); },
+    get tabTrafficBtn() { return document.getElementById('tabTrafficBtn'); },
+    get adminPanelUsers() { return document.getElementById('adminPanelUsers'); },
+    get adminPanelTraffic() { return document.getElementById('adminPanelTraffic'); },
+    get adminUserSearch() { return document.getElementById('adminUserSearch'); },
+    get adminUserTableBody() { return document.getElementById('adminUserTableBody'); },
+    get adminTrafficTableBody() { return document.getElementById('adminTrafficTableBody'); },
+    get metricUserCount() { return document.getElementById('metricUserCount'); },
+    get metricPageviews() { return document.getElementById('metricPageviews'); },
+    get metricApiRequests() { return document.getElementById('metricApiRequests'); },
+    get metricUptime() { return document.getElementById('metricUptime'); },
+    get sysMemory() { return document.getElementById('sysMemory'); },
+    get sysDbState() { return document.getElementById('sysDbState'); }
 };

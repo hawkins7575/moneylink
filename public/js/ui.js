@@ -128,10 +128,16 @@ export function closeAllModals(pushState = true) {
     const modals = [
         DOM.modal, DOM.categoryModal, DOM.authModal, DOM.newsModal, 
         DOM.newsReadModal, DOM.boardModal, DOM.boardReadModal, 
-        DOM.shortcutModal, DOM.confirmModal, DOM.termsModal, DOM.privacyModal
+        DOM.shortcutModal, DOM.confirmModal, DOM.termsModal, DOM.privacyModal,
+        DOM.adminDashboardModal
     ];
     modals.forEach(m => {
-        if (m) m.classList.remove('active');
+        if (m) {
+            m.classList.remove('active');
+            if (m.id === 'adminDashboardModal' || m.id === 'curationCreateModal') {
+                m.style.display = 'none';
+            }
+        }
     });
     if (pushState) {
         history.pushState({ type: 'home' }, '', '/');
@@ -1286,6 +1292,57 @@ export function setupUIEvents() {
         });
     }
 
+    // 메뉴 항목 4: 대시보드 모니터링 모달 열기
+    if (DOM.menuDashboardBtn) {
+        DOM.menuDashboardBtn.addEventListener('click', () => {
+            if (DOM.adminSettingsMenu) DOM.adminSettingsMenu.style.display = 'none';
+            if (DOM.adminSettingsBtn) DOM.adminSettingsBtn.classList.remove('active');
+            openAdminDashboard();
+        });
+    }
+
+    // 대시보드 모달 제어 이벤트
+    if (DOM.closeAdminDashboardModal) {
+        DOM.closeAdminDashboardModal.addEventListener('click', () => closeAllModals());
+    }
+    if (DOM.closeAdminDashboardFooterBtn) {
+        DOM.closeAdminDashboardFooterBtn.addEventListener('click', () => closeAllModals());
+    }
+
+    // 대시보드 탭 제어
+    if (DOM.tabUsersBtn && DOM.tabTrafficBtn) {
+        DOM.tabUsersBtn.addEventListener('click', () => {
+            DOM.tabUsersBtn.classList.add('active');
+            DOM.tabTrafficBtn.classList.remove('active');
+            DOM.tabUsersBtn.style.borderBottom = '3px solid var(--primary)';
+            DOM.tabTrafficBtn.style.borderBottom = '3px solid transparent';
+            DOM.tabUsersBtn.style.opacity = '1';
+            DOM.tabTrafficBtn.style.opacity = '0.7';
+            if (DOM.adminPanelUsers) DOM.adminPanelUsers.style.display = 'block';
+            if (DOM.adminPanelTraffic) DOM.adminPanelTraffic.style.display = 'none';
+        });
+
+        DOM.tabTrafficBtn.addEventListener('click', () => {
+            DOM.tabTrafficBtn.classList.add('active');
+            DOM.tabUsersBtn.classList.remove('active');
+            DOM.tabTrafficBtn.style.borderBottom = '3px solid var(--primary)';
+            DOM.tabUsersBtn.style.borderBottom = '3px solid transparent';
+            DOM.tabTrafficBtn.style.opacity = '1';
+            DOM.tabUsersBtn.style.opacity = '0.7';
+            if (DOM.adminPanelTraffic) DOM.adminPanelTraffic.style.display = 'grid';
+            if (DOM.adminPanelUsers) DOM.adminPanelUsers.style.display = 'none';
+        });
+    }
+
+    // 가입자 명부 실시간 검색 이벤트
+    if (DOM.adminUserSearch) {
+        DOM.adminUserSearch.addEventListener('input', (e) => {
+            if (adminMetricsCached && adminMetricsCached.users) {
+                renderDashboardUsers(adminMetricsCached.users, e.target.value);
+            }
+        });
+    }
+
     if (DOM.closeCategoryModal) DOM.closeCategoryModal.addEventListener('click', () => closeAllModals());
 
     if (DOM.addCategorySubmitBtn) {
@@ -1301,7 +1358,7 @@ export function setupUIEvents() {
         });
     }
 
-    [DOM.modal, DOM.categoryModal, DOM.authModal, DOM.newsModal, DOM.newsReadModal, DOM.boardModal, DOM.boardReadModal, DOM.shortcutModal, DOM.termsModal, DOM.privacyModal, DOM.confirmModal].forEach(m => {
+    [DOM.modal, DOM.categoryModal, DOM.authModal, DOM.newsModal, DOM.newsReadModal, DOM.boardModal, DOM.boardReadModal, DOM.shortcutModal, DOM.termsModal, DOM.privacyModal, DOM.confirmModal, DOM.adminDashboardModal].forEach(m => {
         if(m) m.addEventListener('click', (e) => { if (e.target === m) closeAllModals(); });
     });
 
@@ -2423,3 +2480,146 @@ window.deleteCuration = async function(id) {
     renderCurations();
     await syncData();
 };
+
+// ==========================================================================
+// ⚙️ 관리자 모니터링 상황판 (Dashboard) 렌더러 및 이벤트 핸들러
+// ==========================================================================
+let adminMetricsCached = null;
+
+export async function openAdminDashboard() {
+    try {
+        const response = await fetch('/api/admin/metrics?t=' + Date.now());
+        if (!response.ok) {
+            throw new Error('API 응답에 실패했습니다. 상태 코드: ' + response.status);
+        }
+        
+        const data = await response.json();
+        adminMetricsCached = data;
+        
+        // 데이터 대시보드 렌더링
+        renderAdminDashboard(data);
+        
+        // 모달 켜기
+        if (DOM.adminDashboardModal) {
+            closeAllModals(false); // 다른 모달을 닫고
+            DOM.adminDashboardModal.classList.add('active');
+            DOM.adminDashboardModal.style.display = 'flex';
+        }
+    } catch (err) {
+        console.error('관리자 대시보드 통계 조회 실패:', err);
+        alert('관리자 통계 데이터를 가져오는데 실패했습니다: ' + err.message);
+    }
+}
+
+function renderAdminDashboard(data) {
+    const { users, traffic, system } = data;
+    
+    // 1. 요약 메트릭스 카드 주입
+    if (DOM.metricUserCount) DOM.metricUserCount.textContent = `${users.length}명`;
+    if (DOM.metricPageviews) DOM.metricPageviews.textContent = `${traffic.totalPageviews.toLocaleString()}회`;
+    if (DOM.metricApiRequests) DOM.metricApiRequests.textContent = `${traffic.totalApiRequests.toLocaleString()}회`;
+    if (DOM.metricUptime) DOM.metricUptime.textContent = formatUptime(system.uptime);
+    
+    // 2. 가입자 명부 렌더링
+    renderDashboardUsers(users);
+    
+    // 3. 시스템 리소스 진단 렌더링
+    if (DOM.sysMemory) DOM.sysMemory.textContent = formatBytes(system.memoryUsage);
+    if (DOM.sysDbState) {
+        const stateLabels = { 0: 'DISCONNECTED', 1: 'ONLINE (Connected)', 2: 'CONNECTING', 3: 'DISCONNECTING' };
+        DOM.sysDbState.textContent = stateLabels[system.dbState] || 'UNKNOWN';
+        DOM.sysDbState.style.color = system.dbState === 1 ? '#2ecc71' : '#e74c3c';
+    }
+    
+    // 4. 인기 페이지 경로 렌더링
+    renderDashboardTraffic(traffic.pathHits);
+}
+
+// 가입자 목록 표 동적 생성
+function renderDashboardUsers(users, filterText = '') {
+    if (!DOM.adminUserTableBody) return;
+    
+    const query = filterText.toLowerCase().trim();
+    const filtered = users.filter(u => 
+        u.username.toLowerCase().includes(query) || 
+        (u.email && u.email.toLowerCase().includes(query))
+    );
+    
+    if (filtered.length === 0) {
+        DOM.adminUserTableBody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 1.5rem; color: var(--on-surface-variant); opacity: 0.6;">
+                    가입자 검색 결과가 존재하지 않습니다.
+                </td>
+            </tr>`;
+        return;
+    }
+    
+    DOM.adminUserTableBody.innerHTML = filtered.map(u => {
+        const joinedDate = u.createdAt ? new Date(u.createdAt).toLocaleString('ko-KR') : '알 수 없음';
+        const roleBadge = u.role === 'admin' ? 
+            `<span style="background: var(--premium-gold-light); color: var(--premium-gold); border: 1px solid var(--premium-gold); padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 800; font-size: 0.7rem;"><i class="fa-solid fa-crown"></i> 관리자</span>` : 
+            `<span style="background: rgba(0, 8, 61, 0.05); color: var(--primary); padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.7rem;">일반회원</span>`;
+            
+        return `
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--primary);">${u.username}</td>
+                <td style="padding: 0.75rem 1rem; font-family: monospace;">${u.email || '-'}</td>
+                <td style="padding: 0.75rem 1rem;">${roleBadge}</td>
+                <td style="padding: 0.75rem 1rem; color: var(--on-surface-variant); opacity: 0.8;">${joinedDate}</td>
+            </tr>`;
+    }).join('');
+}
+
+// 인기 경로 렌더링
+function renderDashboardTraffic(pathHits) {
+    if (!DOM.adminTrafficTableBody) return;
+    
+    const sorted = Object.entries(pathHits || {})
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 15);
+        
+    if (sorted.length === 0) {
+        DOM.adminTrafficTableBody.innerHTML = `
+            <tr>
+                <td colspan="2" style="text-align: center; padding: 1rem; color: var(--on-surface-variant); opacity: 0.6;">
+                    수집된 트래픽 통계가 아직 없습니다.
+                </td>
+            </tr>`;
+        return;
+    }
+    
+    DOM.adminTrafficTableBody.innerHTML = sorted.map(([path, hits]) => {
+        return `
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 0.4rem 0.5rem; font-family: monospace; word-break: break-all; color: var(--primary);">${path}</td>
+                <td style="padding: 0.4rem 0.5rem; text-align: right; font-weight: 800; color: var(--primary);">${hits.toLocaleString()}회</td>
+            </tr>`;
+    }).join('');
+}
+
+// 초 단위 가동 시간을 일/시간/분/초로 포맷팅
+function formatUptime(seconds) {
+    const d = Math.floor(seconds / (3600*24));
+    const h = Math.floor(seconds % (3600*24) / 3600);
+    const m = Math.floor(seconds % 3600 / 60);
+    const s = Math.floor(seconds % 60);
+    
+    const parts = [];
+    if (d > 0) parts.push(`${d}일`);
+    if (h > 0 || d > 0) parts.push(`${h}시간`);
+    if (m > 0 || h > 0 || d > 0) parts.push(`${m}분`);
+    parts.push(`${s}초`);
+    
+    return parts.join(' ');
+}
+
+// 바이트 단위 리소스를 MB/GB로 포맷팅
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = 2;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}

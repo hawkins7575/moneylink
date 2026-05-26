@@ -158,6 +158,10 @@
                                             <span>사이트 추가</span>
                                         </button>
                                         <div class="admin-menu-divider"></div>
+                                        <button id="menuDashboardBtn" class="admin-menu-item">
+                                            <i class="fa-solid fa-chart-line"></i>
+                                            <span>대시보드 모니터링</span>
+                                        </button>
                                         <button id="menuCurationBtn" class="admin-menu-item curation-item">
                                             <i class="fa-solid fa-compass"></i>
                                             <span>큐레이션 편집</span>
@@ -985,6 +989,154 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- 관리자 대시보드 모달 (가입자 & 트래픽 모니터링) -->
+    <div id="adminDashboardModal" class="modal" style="display: none; align-items: center; justify-content: center; z-index: 2000; background: rgba(0, 0, 0, 0.75);">
+        <div class="modal-content premium-modal" style="max-width: 900px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; background: #ffffff; color: var(--on-surface-variant); border-radius: 16px;">
+            <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
+                <h3 style="font-size: 1.3rem; font-weight: 900; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 0.5rem; letter-spacing: -0.03em;">
+                    <i class="fa-solid fa-chart-pie" style="color: var(--premium-gold);"></i> MoneyLink 관리자 모니터링 상황판
+                </h3>
+                <button id="closeAdminDashboardModal" class="close-btn" style="background: none; border: none; color: var(--on-surface-variant); font-size: 1.75rem; cursor: pointer; line-height: 1; padding: 0;">&times;</button>
+            </div>
+            
+            <div style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+                <!-- 1. 핵심 성과 메트릭스 카드 그리드 -->
+                <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <!-- 가입자 수 -->
+                    <div class="metric-card shadow-hover-premium" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+                        <div style="background: rgba(212, 175, 55, 0.1); color: var(--premium-gold); width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; font-weight: 700; color: var(--on-surface-variant); opacity: 0.7;">총 가입자 수</div>
+                            <div id="metricUserCount" style="font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-top: 0.15rem;">0명</div>
+                        </div>
+                    </div>
+                    <!-- 누적 페이지뷰 -->
+                    <div class="metric-card shadow-hover-premium" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+                        <div style="background: rgba(0, 8, 61, 0.05); color: var(--primary); width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; font-weight: 700; color: var(--on-surface-variant); opacity: 0.7;">누적 페이지 뷰</div>
+                            <div id="metricPageviews" style="font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-top: 0.15rem;">0회</div>
+                        </div>
+                    </div>
+                    <!-- API 요청 수 -->
+                    <div class="metric-card shadow-hover-premium" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+                        <div style="background: rgba(0, 18, 84, 0.05); color: #001254; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i class="fa-solid fa-server"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; font-weight: 700; color: var(--on-surface-variant); opacity: 0.7;">누적 API 요청</div>
+                            <div id="metricApiRequests" style="font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-top: 0.15rem;">0회</div>
+                        </div>
+                    </div>
+                    <!-- 서버 업타임 -->
+                    <div class="metric-card shadow-hover-premium" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+                        <div style="background: rgba(46, 204, 113, 0.1); color: #2ecc71; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                            <i class="fa-solid fa-heartbeat"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; font-weight: 700; color: var(--on-surface-variant); opacity: 0.7;">서버 가동 시간</div>
+                            <div id="metricUptime" style="font-size: 1.05rem; font-weight: 900; color: var(--primary); margin-top: 0.35rem; line-height: 1.1;">0초</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 대시보드 탭 컨트롤 -->
+                <div style="display: flex; gap: 1rem; border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem;">
+                    <button id="tabUsersBtn" class="tab-btn active" style="padding: 0.75rem 1.25rem; font-weight: 800; background: none; border: none; color: var(--primary); border-bottom: 3px solid var(--primary); cursor: pointer; font-size: 0.95rem; font-family: inherit;">
+                        <i class="fa-solid fa-user-group"></i> 가입자 명부 및 현황
+                    </button>
+                    <button id="tabTrafficBtn" class="tab-btn" style="padding: 0.75rem 1.25rem; font-weight: 700; background: none; border: none; color: var(--on-surface-variant); opacity: 0.7; border-bottom: 3px solid transparent; cursor: pointer; font-size: 0.95rem; font-family: inherit;">
+                        <i class="fa-solid fa-chart-line"></i> 트래픽 및 시스템 로그
+                    </button>
+                </div>
+
+                <!-- 2-1. 가입자 정보 관리 영역 -->
+                <div id="adminPanelUsers" class="admin-panel-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem;">
+                        <div style="position: relative; flex: 1; max-width: 300px;">
+                            <input type="text" id="adminUserSearch" placeholder="아이디 또는 이메일 검색..." style="width: 100%; padding: 0.5rem 0.75rem 0.5rem 2rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.85rem; font-family: inherit;">
+                            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--on-surface-variant); opacity: 0.5;"></i>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--on-surface-variant); opacity: 0.8;">
+                            * 가입자 목록은 실시간 동기화 상태를 추적합니다.
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: 10px; background: #ffffff;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                            <thead>
+                                <tr style="background: rgba(0, 8, 61, 0.02); border-bottom: 1px solid var(--border-color); color: var(--primary); font-weight: 800;">
+                                    <th style="padding: 0.75rem 1rem;">아이디(Username)</th>
+                                    <th style="padding: 0.75rem 1rem;">이메일(Email)</th>
+                                    <th style="padding: 0.75rem 1rem;">권한(Role)</th>
+                                    <th style="padding: 0.75rem 1rem;">가입 일시</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUserTableBody">
+                                <!-- User records will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2-2. 트래픽/시스템 모니터링 영역 -->
+                <div id="adminPanelTraffic" class="admin-panel-section" style="display: none; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <!-- 서버 시스템 정보 카드 -->
+                    <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem;">
+                        <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--primary); margin: 0 0 1rem 0; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-microchip" style="color: var(--premium-gold);"></i> 실시간 리소스 진단
+                        </h4>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem;">
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.4rem;">
+                                <span style="font-weight: 700; color: var(--primary);">서버 RSS 메모리</span>
+                                <span id="sysMemory" style="font-family: monospace; font-weight: 700; color: var(--on-surface-variant);">0 MB</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.4rem;">
+                                <span style="font-weight: 700; color: var(--primary);">MongoDB 신호</span>
+                                <span id="sysDbState" style="font-weight: 800; color: #2ecc71;">ONLINE (Connected)</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.4rem;">
+                                <span style="font-weight: 700; color: var(--primary);">서버 환경 포트</span>
+                                <span style="font-family: monospace;">8086 (Development)</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-weight: 700; color: var(--primary);">인코딩 스펙</span>
+                                <span>UTF-8 (Korean standard)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 인기 경로 및 방문 분석 카드 -->
+                    <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem;">
+                        <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--primary); margin: 0 0 1rem 0; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-list-ol" style="color: var(--premium-gold);"></i> 페이지 방문 수집 랭킹
+                        </h4>
+                        <div style="overflow-y: auto; max-height: 160px;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--primary); font-weight: 700;">
+                                        <th style="padding: 0.4rem 0.5rem;">대상 경로 (Path)</th>
+                                        <th style="padding: 0.4rem 0.5rem; text-align: right;">접근수 (Hits)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTrafficTableBody">
+                                    <!-- Popular path records will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding: 1rem 1.5rem; display: flex; justify-content: flex-end; background: rgba(0,8,61,0.02);">
+                <button id="closeAdminDashboardFooterBtn" class="home-btn" style="border: none; padding: 0.5rem 1.25rem; font-weight: 700; cursor: pointer; border-radius: 8px;">상황판 닫기</button>
+            </div>
         </div>
     </div>
 

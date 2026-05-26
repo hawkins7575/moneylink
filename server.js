@@ -58,6 +58,62 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
+// ✅ 실시간 트래픽 모니터링 통계 수집 객체
+const trafficStats = {
+    totalPageviews: 0,
+    totalApiRequests: 0,
+    pathHits: {},
+    hourlyStats: []
+};
+
+// 트래픽 로깅 및 버킷화 함수
+function recordTraffic(pathname) {
+    if (!pathname) return;
+    
+    const isApi = pathname.startsWith('/api/');
+    if (isApi) {
+        trafficStats.totalApiRequests++;
+    } else if (pathname === '/' || pathname.startsWith('/insight/') || pathname.startsWith('/board/')) {
+        trafficStats.totalPageviews++;
+    }
+    
+    // 경로 간소화 및 정규화
+    let cleanedPath = pathname;
+    if (pathname.startsWith('/insight/')) {
+        cleanedPath = '/insight/:id';
+    } else if (pathname.startsWith('/board/')) {
+        cleanedPath = '/board/:id';
+    }
+    
+    trafficStats.pathHits[cleanedPath] = (trafficStats.pathHits[cleanedPath] || 0) + 1;
+    
+    // 최근 24시간 시간별 통계 기록
+    const hourKey = new Date().toISOString().substring(0, 13) + ':00'; // YYYY-MM-DDTHH:00
+    let hourBucket = trafficStats.hourlyStats.find(h => h.hour === hourKey);
+    if (!hourBucket) {
+        hourBucket = { hour: hourKey, pageviews: 0, apiRequests: 0 };
+        trafficStats.hourlyStats.push(hourBucket);
+        if (trafficStats.hourlyStats.length > 24) {
+            trafficStats.hourlyStats.shift();
+        }
+    }
+    if (isApi) {
+        hourBucket.apiRequests++;
+    } else if (pathname === '/' || pathname.startsWith('/insight/') || pathname.startsWith('/board/')) {
+        hourBucket.pageviews++;
+    }
+}
+
+// 트래픽 집계 미들웨어 등록
+app.use((req, res, next) => {
+    const ext = path.extname(req.path);
+    // 정적 애셋(.js, .css, 이미지 등)을 제외한 코어 진입 페이지와 API 트래픽 기록
+    if (!ext || ext === '.html' || req.path.startsWith('/api/')) {
+        recordTraffic(req.path);
+    }
+    next();
+});
+
 // ✅ 실시간 금융 지표 API (Yahoo Finance 연동 & 60초 인메모리 캐싱)
 let tickerCache = null;
 let lastTickerFetchTime = 0;
@@ -290,6 +346,29 @@ app.get('/api/data', async (req, res) => {
     } catch (err) {
         console.error('Error fetching data from MongoDB:', err);
         res.status(500).json({ error: 'Failed to fetch data' });
+    }
+});
+
+// API: Admin Metrics & Traffic Stats
+app.get('/api/admin/metrics', async (req, res) => {
+    try {
+        // 보안을 위해 패스워드를 생략하여 가입자 정보 목록 조회
+        const users = await User.find({}, '-password').lean();
+        
+        const system = {
+            uptime: process.uptime(), // 초 단위 구동 시간
+            memoryUsage: process.memoryUsage().rss, // RSS 메모리 바이트
+            dbState: mongoose.connection.readyState // MongoDB 연결 상태 (1 = Connected)
+        };
+        
+        res.json({
+            users,
+            traffic: trafficStats,
+            system
+        });
+    } catch (err) {
+        console.error('Error fetching admin metrics:', err);
+        res.status(500).json({ error: 'Failed to fetch admin metrics', details: err.message });
     }
 });
 

@@ -4212,3 +4212,49 @@ body.admin-mode .add-btn.admin-only {
     border-color: rgba(255, 75, 75, 0.6);
     transform: scale(1.1);
 }
+
+/* ==============================================
+   관리자 모니터링 상황판 (Dashboard) 스타일링
+   ============================================== */
+.tab-btn {
+    transition: all 0.25s ease;
+}
+
+.tab-btn:hover {
+    color: var(--primary) !important;
+    opacity: 1 !important;
+}
+
+.tab-btn.active {
+    color: var(--primary) !important;
+    border-bottom: 3px solid var(--primary) !important;
+    opacity: 1 !important;
+}
+
+.metric-card {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 8, 61, 0.08) !important;
+    border-color: var(--premium-gold) !important;
+}
+
+#adminUserTableBody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.15s ease;
+}
+
+#adminUserTableBody tr:hover {
+    background: rgba(0, 8, 61, 0.015);
+}
+
+.admin-panel-section {
+    animation: adminPanelFadeIn 0.3s ease;
+}
+
+@keyframes adminPanelFadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
