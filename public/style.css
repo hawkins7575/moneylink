@@ -4293,3 +4293,10 @@ body.admin-mode .add-btn.admin-only {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* 모바일 디바이스(768px 이하)에서 북마크 상단 헤더(실시간 금융 즐겨찾기 제목 및 나만의 큐레이션 만들기 버튼)를 숨겨 복잡성 최소화 */
+@media (max-width: 768px) {
+    .bookmarks-header-row {
+        display: none !important;
+    }
+}
