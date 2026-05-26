@@ -104,12 +104,45 @@ function recordTraffic(pathname) {
     }
 }
 
+// ✅ 당일 방문자 및 실시간 활성 사용자 추적 세트
+const todayVisitors = {
+    date: new Date().toDateString(),
+    ips: new Set()
+};
+const activeSessions = new Map(); // ip -> timestamp
+
 // 트래픽 집계 미들웨어 등록
 app.use((req, res, next) => {
     const ext = path.extname(req.path);
     // 정적 애셋(.js, .css, 이미지 등)을 제외한 코어 진입 페이지와 API 트래픽 기록
     if (!ext || ext === '.html' || req.path.startsWith('/api/')) {
         recordTraffic(req.path);
+        
+        try {
+            const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+            
+            // 날짜 변경 시 당일 방문자 수 리셋
+            const todayStr = new Date().toDateString();
+            if (todayVisitors.date !== todayStr) {
+                todayVisitors.date = todayStr;
+                todayVisitors.ips.clear();
+            }
+            
+            todayVisitors.ips.add(ip);
+            
+            // 활성 세션 업데이트
+            const now = Date.now();
+            activeSessions.set(ip, now);
+            
+            // 15분 경과한 세션 제거
+            for (const [key, value] of activeSessions.entries()) {
+                if (now - value > 15 * 60 * 1000) {
+                    activeSessions.delete(key);
+                }
+            }
+        } catch (e) {
+            // 방어용 가드
+        }
     }
     next();
 });
@@ -355,16 +388,36 @@ app.get('/api/admin/metrics', async (req, res) => {
         // 보안을 위해 패스워드를 생략하여 가입자 정보 목록 조회
         const users = await User.find({}, '-password').lean();
         
+        // 추가 통계 데이터 조회 (총 즐겨찾기 수, 총 큐레이션 수, 총 게시글 수)
+        const [totalBookmarks, totalCurations, totalPosts] = await Promise.all([
+            Item.countDocuments({}).exec(),
+            Curation.countDocuments({}).exec(),
+            Post.countDocuments({}).exec()
+        ]);
+
         const system = {
             uptime: process.uptime(), // 초 단위 구동 시간
             memoryUsage: process.memoryUsage().rss, // RSS 메모리 바이트
-            dbState: mongoose.connection.readyState // MongoDB 연결 상태 (1 = Connected)
+            dbState: mongoose.connection.readyState, // MongoDB 연결 상태 (1 = Connected)
+            nodeVersion: process.version,
+            platform: process.platform
+        };
+
+        const traffic = {
+            ...trafficStats,
+            todayVisitors: todayVisitors.ips.size,
+            activeUsers: Math.max(1, activeSessions.size) // 어드민 본인 최소 1명 보장
         };
         
         res.json({
             users,
-            traffic: trafficStats,
-            system
+            traffic,
+            system,
+            stats: {
+                totalBookmarks,
+                totalCurations,
+                totalPosts
+            }
         });
     } catch (err) {
         console.error('Error fetching admin metrics:', err);

@@ -2512,24 +2512,30 @@ export async function openAdminDashboard() {
 }
 
 function renderAdminDashboard(data) {
-    const { users, traffic, system } = data;
+    const { users, traffic, system, stats } = data;
     
     // 1. 요약 메트릭스 카드 주입
-    if (DOM.metricUserCount) DOM.metricUserCount.textContent = `${users.length}명`;
+    if (DOM.metricActiveUsers) DOM.metricActiveUsers.textContent = `${traffic.activeUsers}명`;
+    if (DOM.metricTodayVisitors) DOM.metricTodayVisitors.textContent = `${traffic.todayVisitors}명`;
     if (DOM.metricPageviews) DOM.metricPageviews.textContent = `${traffic.totalPageviews.toLocaleString()}회`;
-    if (DOM.metricApiRequests) DOM.metricApiRequests.textContent = `${traffic.totalApiRequests.toLocaleString()}회`;
-    if (DOM.metricUptime) DOM.metricUptime.textContent = formatUptime(system.uptime);
+    if (DOM.metricUserCount) DOM.metricUserCount.textContent = `${users.length}명`;
+    if (DOM.metricTotalBookmarks) DOM.metricTotalBookmarks.textContent = `${stats.totalBookmarks}개`;
+    if (DOM.metricTotalCurations) DOM.metricTotalCurations.textContent = `${stats.totalCurations}개`;
     
     // 2. 가입자 명부 렌더링
     renderDashboardUsers(users);
     
     // 3. 시스템 리소스 진단 렌더링
+    if (DOM.metricUptime) DOM.metricUptime.textContent = formatUptime(system.uptime);
     if (DOM.sysMemory) DOM.sysMemory.textContent = formatBytes(system.memoryUsage);
     if (DOM.sysDbState) {
         const stateLabels = { 0: 'DISCONNECTED', 1: 'ONLINE (Connected)', 2: 'CONNECTING', 3: 'DISCONNECTING' };
         DOM.sysDbState.textContent = stateLabels[system.dbState] || 'UNKNOWN';
         DOM.sysDbState.style.color = system.dbState === 1 ? '#2ecc71' : '#e74c3c';
     }
+    if (DOM.sysTotalPosts) DOM.sysTotalPosts.textContent = `${stats.totalPosts}개`;
+    if (DOM.sysNodeVersion) DOM.sysNodeVersion.textContent = system.nodeVersion || '-';
+    if (DOM.sysPlatform) DOM.sysPlatform.textContent = system.platform || '-';
     
     // 4. 인기 페이지 경로 렌더링
     renderDashboardTraffic(traffic.pathHits);

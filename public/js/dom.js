@@ -180,5 +180,14 @@ export const DOM = {
     get metricApiRequests() { return document.getElementById('metricApiRequests'); },
     get metricUptime() { return document.getElementById('metricUptime'); },
     get sysMemory() { return document.getElementById('sysMemory'); },
-    get sysDbState() { return document.getElementById('sysDbState'); }
+    get sysDbState() { return document.getElementById('sysDbState'); },
+    
+    // New Dashboard Getters
+    get metricActiveUsers() { return document.getElementById('metricActiveUsers'); },
+    get metricTodayVisitors() { return document.getElementById('metricTodayVisitors'); },
+    get metricTotalBookmarks() { return document.getElementById('metricTotalBookmarks'); },
+    get metricTotalCurations() { return document.getElementById('metricTotalCurations'); },
+    get sysTotalPosts() { return document.getElementById('sysTotalPosts'); },
+    get sysNodeVersion() { return document.getElementById('sysNodeVersion'); },
+    get sysPlatform() { return document.getElementById('sysPlatform'); }
 };
