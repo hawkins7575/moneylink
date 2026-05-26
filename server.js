@@ -621,6 +621,10 @@ app.get(['/insight/:id', '/board/:id'], async (req, res) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-1493954029378412">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1493954029378412"
+         crossorigin="anonymous"></script>
     <title>${post.title} - MoneyLink</title>
     <meta name="description" content="${seoDesc}">
     <meta name="robots" content="index, follow">
