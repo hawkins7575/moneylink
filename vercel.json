@@ -22,6 +22,14 @@
       "destination": "/public/data.js"
     },
     {
+      "source": "/ads.txt",
+      "destination": "/public/ads.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/public/robots.txt"
+    },
+    {
       "source": "/((?!api/|.*\\.).*)",
       "destination": "/server.js"
     }
