@@ -834,7 +834,7 @@ export function openNewsModal(news) {
     DOM.readNewsContent.innerHTML = displayContent;
     DOM.newsReadModal.classList.add('active');
     
-    history.pushState({ type: 'news', id: news.id }, '', `/?view=news&id=${news.id}`);
+    history.pushState({ type: 'news', id: news.id }, '', `/insight/${news.id}`);
     updateJSONLD('news', news);
 }
 
@@ -1070,7 +1070,7 @@ export async function openBoardModal(post) {
         DOM.commentAuthor.value = state.currentUser ? state.currentUser.username : '';
     }
     
-    history.pushState({ type: 'board', id: post.id }, '', `/?view=board&id=${post.id}`);
+    history.pushState({ type: 'board', id: post.id }, '', `/board/${post.id}`);
     updateJSONLD('board', post);
 }
 

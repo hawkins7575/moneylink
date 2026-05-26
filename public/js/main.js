@@ -20,26 +20,39 @@ import {
 } from './ui.js';
 
 function handleRouting() {
-    const params = new URLSearchParams(window.location.search);
-    const view = params.get('view');
-    const id = params.get('id');
+    const path = window.location.pathname;
+    let view = null;
+    let id = null;
+
+    const insightMatch = path.match(/^\/insight\/(\d+)/);
+    const boardMatch = path.match(/^\/board\/(\d+)/);
+
+    if (insightMatch) {
+        view = 'news';
+        id = insightMatch[1];
+    } else if (boardMatch) {
+        view = 'board';
+        id = boardMatch[1];
+    } else {
+        const params = new URLSearchParams(window.location.search);
+        view = params.get('view');
+        id = params.get('id');
+    }
 
     if (!view || !id) {
         closeAllModals(false);
         return false;
     }
 
+    const numericId = parseInt(id, 10);
+
     if (view === 'news') {
-        const news = state.newsData.find(n => n.id === parseInt(id));
+        const news = state.newsData.find(n => n.id === numericId);
         if (news) { openNewsModal(news); return true; }
-    } else if (view === 'board') {
-        const post = state.boardData.find(b => b.id === parseInt(id));
-        if (post) { openBoardModal(post); return true; }
-    } else if (view === 'community-board') {
-        const post = state.communityData.find(b => b.id === parseInt(id));
-        if (post) { openBoardModal(post); return true; }
-    } else if (view === 'feedback-board') {
-        const post = state.feedbackData.find(b => b.id === parseInt(id));
+    } else if (view === 'board' || view === 'community-board' || view === 'feedback-board') {
+        const post = state.boardData.find(b => b.id === numericId) ||
+                     state.communityData.find(b => b.id === numericId) ||
+                     state.feedbackData.find(b => b.id === numericId);
         if (post) { openBoardModal(post); return true; }
     }
     return false;

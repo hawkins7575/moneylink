@@ -379,6 +379,333 @@ app.get('/api/fetch-meta', async (req, res) => {
     }
 });
 
+// ✅ SEO 동적 사이트맵(sitemap.xml) 엔드포인트
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        const host = req.get('host');
+        const protocol = req.protocol;
+        const baseUrl = `${protocol}://${host}`;
+
+        const posts = await Post.find({}).exec();
+
+        let urls = '';
+        
+        // 메인 홈 추가
+        urls += `
+    <url>
+        <loc>${baseUrl}/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>`;
+
+        // 각 블로그 및 게시판 포스트 추가
+        posts.forEach(p => {
+            const routeType = p.postType === 'news' ? 'insight' : 'board';
+            urls += `
+    <url>
+        <loc>${baseUrl}/${routeType}/${p.id}</loc>
+        <lastmod>${new Date(p.updatedAt || p.timestamp).toISOString().split('T')[0]}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>`;
+        });
+
+        res.header('Content-Type', 'application/xml');
+        res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`);
+    } catch (err) {
+        console.error('Error generating sitemap:', err);
+        res.status(500).send('Error generating sitemap');
+    }
+});
+
+// HTML 태그 제거 및 공백 정돈 함수
+function stripHtml(html) {
+    if (!html) return '';
+    return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// ✅ 블로그 인사이트 및 게시판 개별 글 SSR 상세 페이지 엔드포인트
+app.get(['/insight/:id', '/board/:id'], async (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+        if (isNaN(id)) {
+            return res.redirect('/');
+        }
+
+        const post = await Post.findOne({ id }).exec();
+        if (!post) {
+            return res.redirect('/');
+        }
+
+        const host = req.get('host');
+        const protocol = req.protocol;
+        const baseUrl = `${protocol}://${host}`;
+
+        const routeType = req.path.startsWith('/insight/') ? 'insight' : 'board';
+        const routeLabel = routeType === 'insight' ? '블로그 인사이트' : '커뮤니티 게시판';
+
+        const rawContent = stripHtml(post.content);
+        const seoDesc = rawContent.slice(0, 160) + (rawContent.length > 160 ? '...' : '');
+        const dateFormatted = new Date(post.timestamp).toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        const html = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${post.title} - MoneyLink</title>
+    <meta name="description" content="${seoDesc}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="${baseUrl}/${routeType}/${post.id}">
+    <meta property="og:title" content="${post.title} - MoneyLink">
+    <meta property="og:description" content="${seoDesc}">
+    <meta property="og:image" content="${baseUrl}/logo.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="${post.title}">
+    <meta property="twitter:description" content="${seoDesc}">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --surface: #f9fafb;
+            --surface-card: #ffffff;
+            --primary: #00083D;
+            --primary-light: #001254;
+            --on-surface: #111827;
+            --on-surface-variant: #4b5563;
+            --premium-gold: #D4AF37;
+            --premium-gold-light: rgba(212, 175, 55, 0.08);
+            --border-color: rgba(0, 0, 0, 0.06);
+        }
+        body {
+            background-color: var(--surface);
+            color: var(--on-surface-variant);
+            font-family: 'Pretendard', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+            letter-spacing: -0.025em;
+        }
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+        }
+        .home-btn {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 8, 61, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .home-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            box-sizing: border-box;
+        }
+        .post-card {
+            background: var(--surface-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .breadcrumbs {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--premium-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--on-surface);
+            line-height: 1.3;
+            margin: 0 0 1.5rem 0;
+            letter-spacing: -0.04em;
+        }
+        .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            font-size: 0.85rem;
+            color: var(--on-surface-variant);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .post-content {
+            font-size: 1.05rem;
+            color: var(--on-surface);
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+        .post-content img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .cta-banner {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            border: 1px solid rgba(0, 8, 61, 0.05);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .cta-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0 0 0.5rem 0;
+        }
+        .cta-desc {
+            font-size: 0.9rem;
+            color: var(--on-surface-variant);
+            margin: 0 0 1.5rem 0;
+            line-height: 1.5;
+        }
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.75rem 1.75rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 6px 16px rgba(0, 8, 61, 0.15);
+        }
+        .cta-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 8, 61, 0.2);
+        }
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            font-size: 0.8rem;
+            color: var(--on-surface-variant);
+            opacity: 0.6;
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            background: #ffffff;
+        }
+        @media (max-width: 640px) {
+            .post-card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">MoneyLink</a>
+            <a href="/" class="home-btn"><i class="fa-solid fa-house"></i> 홈으로 이동</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <article class="post-card">
+            <div class="breadcrumbs">MONEYLINK INSIGHT &gt; ${routeLabel}</div>
+            <h1>${post.title}</h1>
+            
+            <div class="meta-info">
+                <div class="meta-item"><i class="fa-solid fa-user"></i> <span>작성자: ${post.author}</span></div>
+                <div class="meta-item"><i class="fa-solid fa-calendar"></i> <span>날짜: ${dateFormatted}</span></div>
+                <div class="meta-item"><i class="fa-solid fa-eye"></i> <span>조회수: ${post.views}</span></div>
+                <div class="meta-item"><i class="fa-solid fa-thumbs-up"></i> <span>추천: ${post.likes}</span></div>
+            </div>
+
+            <div class="post-content">
+                ${post.content}
+            </div>
+
+            <div class="cta-banner">
+                <div class="cta-title">💡 투자 공부를 넘어, 나만의 매일 거래 루틴을 설계하세요</div>
+                <div class="cta-desc">MoneyLink 금융 포털에서는 국내외 최고의 금융 사이트들을 모아 나만의 맞춤형 즐겨찾기 루틴(Routine)을 생성하고, 매일 원클릭으로 순회할 수 있는 워크스페이스를 제공합니다.</div>
+                <a href="/" class="cta-btn">머니링크 대시보드 바로가기 <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </article>
+    </div>
+
+    <footer>
+        <p>© 2026 MoneyLink Curation Portal. All rights reserved.</p>
+    </footer>
+</body>
+</html>`;
+        
+        res.send(html);
+    } catch (err) {
+        console.error('Error serving SSR page:', err);
+        res.redirect('/');
+    }
+});
+
 // SPA Fallback - index.html (API 경로 제외)
 app.get('*', (req, res) => {
     if (!req.path.startsWith('/api/')) {
