@@ -421,10 +421,36 @@ ${urls}
     }
 });
 
-// HTML 태그 제거 및 공백 정돈 함수
+// HTML 태그 제거 및 공백/엔티티 정돈 함수
 function stripHtml(html) {
     if (!html) return '';
-    return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    return html
+        .replace(/<[^>]*>/g, '') // HTML 태그 제거
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&amp;/gi, '&')
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;/gi, "'")
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+// 본문 내 첫 번째 이미지 URL 추출 함수 (SEO 최적화용)
+function extractFirstImage(html, baseUrl) {
+    if (!html) return `${baseUrl}/logo.png`;
+    const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (match && match[1]) {
+        let src = match[1];
+        if (src.startsWith('http://') || src.startsWith('https://')) {
+            return src;
+        }
+        if (src.startsWith('/')) {
+            return `${baseUrl}${src}`;
+        }
+        return `${baseUrl}/${src}`;
+    }
+    return `${baseUrl}/logo.png`;
 }
 
 // ✅ 블로그 인사이트 및 게시판 개별 글 SSR 상세 페이지 엔드포인트
@@ -454,6 +480,9 @@ app.get(['/insight/:id', '/board/:id'], async (req, res) => {
             month: 'long',
             day: 'numeric'
         });
+        const ogImage = extractFirstImage(post.content, baseUrl);
+        const isoDate = new Date(post.timestamp).toISOString();
+        const isoUpdateDate = new Date(post.updatedAt || post.timestamp).toISOString();
 
         const html = `<!DOCTYPE html>
 <html lang="ko">
@@ -462,18 +491,50 @@ app.get(['/insight/:id', '/board/:id'], async (req, res) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${post.title} - MoneyLink</title>
     <meta name="description" content="${seoDesc}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="${baseUrl}/${routeType}/${post.id}">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article">
     <meta property="og:url" content="${baseUrl}/${routeType}/${post.id}">
     <meta property="og:title" content="${post.title} - MoneyLink">
     <meta property="og:description" content="${seoDesc}">
-    <meta property="og:image" content="${baseUrl}/logo.png">
+    <meta property="og:image" content="${ogImage}">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="${post.title}">
+    <meta property="twitter:title" content="${post.title} - MoneyLink">
     <meta property="twitter:description" content="${seoDesc}">
+    <meta property="twitter:image" content="${ogImage}">
+
+    <!-- Google Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "${post.title.replace(/"/g, '\\"')}",
+      "description": "${seoDesc.replace(/"/g, '\\"')}",
+      "image": "${ogImage}",
+      "datePublished": "${isoDate}",
+      "dateModified": "${isoUpdateDate}",
+      "author": {
+        "@type": "Person",
+        "name": "${post.author || '관리자'}"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "MoneyLink",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "${baseUrl}/logo.png"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "${baseUrl}/${routeType}/${post.id}"
+      }
+    }
+    </script>
 
     <!-- Fonts & Icons -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" />
