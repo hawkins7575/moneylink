@@ -83,3 +83,22 @@
 2.  **환경 변수 설정:** `.env` 파일에 `MONGODB_URI` 입력
 3.  **서버 실행:** `npm start`
 4.  **접속:** `http://localhost:8086`
+
+---
+
+## 7. 구글 애드센스 및 SEO 자산 보호 가이드 (AdSense & SEO Asset Protection)
+
+> [!IMPORTANT]
+> **본 프로젝트는 구글 애드센스 광고 승인 및 사이트 검색 노출 최적화(SEO)가 활성화되어 있습니다. 향후 사이트 리뉴얼, 업데이트 또는 기능 추가 시 아래 파일들의 코드와 메타 데이터를 절대 임의로 삭제하거나 수정해서는 안 됩니다.**
+
+### 1) index.html 헤더 보호 (`public/index.html`)
+- **구글 애드센스 연동 코드**: 헤더 내 `<meta name="google-adsense-account" content="ca-pub-1493954029378412">` 및 애드센스 스크립트(`adsbygoogle.js`)를 반드시 보존해야 합니다.
+- **기타 SEO 요소**: Canonical 태그 및 JSON-LD 구조화 데이터 스키마를 항상 유지해야 합니다.
+
+### 2) server.js 동적 SSR 헤더 보호 (`server.js`)
+- **동적 게시글 헤더 SSR**: `/insight/:id` 및 `/board/:id` 라우트에서 호출하는 HTML 렌더러(`<head>` 템플릿 부분) 내부에 삽입된 애드센스 메타 태그 및 광고 스크립트가 누락되지 않도록 코드 수정을 방어해야 합니다.
+
+### 3) ads.txt 및 robots.txt 보호
+- **public/ads.txt**: 구글 퍼블리셔 인증 코드(`google.com, pub-1493954029378412, DIRECT, f08c47fec0942fa0`)가 훼손되지 않아야 합니다.
+- **vercel.json**: `/ads.txt` 및 `/robots.txt`에 대한 Vercel static rewrites 규칙을 삭제하지 마십시오.
+
