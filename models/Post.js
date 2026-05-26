@@ -5,7 +5,7 @@ const postSchema = new mongoose.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true }, // HTML content
     timestamp: { type: Number, required: true },
-    postType: { type: String, enum: ['news', 'board', 'community'], required: true },
+    postType: { type: String, enum: ['news', 'board', 'community', 'feedback'], required: true },
     author: { type: String, default: '익명' },
     email: { type: String, default: '' },
     views: { type: Number, default: 0 },
