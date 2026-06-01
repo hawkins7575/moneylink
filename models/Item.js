@@ -7,7 +7,7 @@ const itemSchema = new mongoose.Schema({
     category: { type: String, required: true },
     subCategory: { type: mongoose.Schema.Types.Mixed }, // Can be string or array
     description: { type: String, default: '' },
-    type: { type: String, enum: ['website', 'youtube', 'site'], default: 'website' },
+    type: { type: String, enum: ['website', 'youtube', 'site', 'influencer'], default: 'website' },
     userId: { type: String, default: 'admin' },
     isPremium: { type: Boolean, default: false },
     icon: { type: String, default: '' }

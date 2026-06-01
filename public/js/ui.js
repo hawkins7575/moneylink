@@ -619,11 +619,14 @@ export function renderCards() {
             if (!isAMy && isBMy) return 1;
         }
 
-        const isAWeb = a.type !== 'youtube';
-        const isBWeb = b.type !== 'youtube';
-        
-        if (isAWeb && !isBWeb) return -1;
-        if (!isAWeb && isBWeb) return 1;
+        const typeOrder = {
+            'website': 1,
+            'youtube': 2,
+            'influencer': 3
+        };
+        const orderA = typeOrder[a.type] || 99;
+        const orderB = typeOrder[b.type] || 99;
+        if (orderA !== orderB) return orderA - orderB;
         
         if (a.isPremium && !b.isPremium) return -1;
         if (!a.isPremium && b.isPremium) return 1;
@@ -716,8 +719,15 @@ export function renderCards() {
                 ownerBadge = `<span class="badge" style="background:#e3f2fd; color:#0d47a1;"><i class="fa-solid fa-user"></i> 나의 즐겨찾기</span>`;
             }
 
-            const typeIcon = item.type === 'youtube' ? '<i class="fa-brands fa-youtube" style="color:#ff0000"></i>' : '<i class="fa-solid fa-globe"></i>';
-            const typeLabel = item.type === 'youtube' ? 'YouTube' : 'Website';
+            let typeIcon = '<i class="fa-solid fa-globe"></i>';
+            let typeLabel = 'Website';
+            if (item.type === 'youtube') {
+                typeIcon = '<i class="fa-brands fa-youtube" style="color:#ff0000"></i>';
+                typeLabel = 'YouTube';
+            } else if (item.type === 'influencer') {
+                typeIcon = '<i class="fa-solid fa-users" style="color:#3b82f6"></i>';
+                typeLabel = '인플루언서';
+            }
             const typeBadge = `<span class="badge" style="background:#f5f5f5; color:var(--on-surface-variant);"><span style="margin-right:0.25rem;">${typeIcon}</span> ${typeLabel}</span>`;
             const premiumBadge = item.isPremium ? `<div class="premium-badge" title="우수사이트"><i class="fa-solid fa-crown"></i></div>` : '';
 

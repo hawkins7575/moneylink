@@ -177,7 +177,7 @@ const financialData = [
     { id: 306, title: "L2BEAT (엘투비트)", url: "https://l2beat.com", category: "coin", type: "site", description: "이더리움 레이어 2(Layer 2) 생태계의 예치량 및 상세 보안 지표 실시간 대시보드.", icon: "fa-solid fa-layer-group" },
 
     // === 소셜/인플루언서 (SNS/Influencer) ===
-    { id: 401, title: "유명 투자자 X", url: "https://x.com/elonmusk", category: "sns", subCategory: "x", type: "site", description: "글로벌 비즈니스 리더 및 실시간 기술/시장 분석 트윗.", icon: "fa-brands fa-x-twitter" },
-    { id: 402, title: "경제/재테크 쓰레드", url: "https://www.threads.net", category: "sns", subCategory: "threads", type: "site", description: "MZ세대 투자 트렌드 및 유용한 경제 인사이트 한 줄 요약.", icon: "fa-brands fa-threads" },
-    { id: 403, title: "인플루언서 인스타그램", url: "https://www.instagram.com", category: "sns", subCategory: "instagram", type: "site", description: "시각적이고 깔끔하게 정리된 데일리 핵심 경제 지표 카드뉴스.", icon: "fa-brands fa-instagram" }
+    { id: 401, title: "유명 투자자 X", url: "https://x.com/elonmusk", category: "stock", subCategory: "general", type: "influencer", description: "글로벌 비즈니스 리더 및 실시간 기술/시장 분석 트윗.", icon: "fa-brands fa-x-twitter" },
+    { id: 402, title: "경제/재테크 쓰레드", url: "https://www.threads.net", category: "stock", subCategory: "general", type: "influencer", description: "MZ세대 투자 트렌드 및 유용한 경제 인사이트 한 줄 요약.", icon: "fa-brands fa-threads" },
+    { id: 403, title: "인플루언서 인스타그램", url: "https://www.instagram.com", category: "stock", subCategory: "general", type: "influencer", description: "시각적이고 깔끔하게 정리된 데일리 핵심 경제 지표 카드뉴스.", icon: "fa-brands fa-instagram" }
 ];
