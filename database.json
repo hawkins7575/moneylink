@@ -99,12 +99,69 @@
       "subCategories": []
     },
     {
+      "id": "sns",
+      "name": "소셜/인플루언서",
+      "subCategories": [
+        {
+          "id": "x",
+          "name": "X (트위터)"
+        },
+        {
+          "id": "threads",
+          "name": "쓰레드"
+        },
+        {
+          "id": "instagram",
+          "name": "인스타그램"
+        }
+      ]
+    },
+    {
       "id": "etc",
       "name": "미분류",
       "subCategories": []
     }
   ],
   "items": [
+    {
+      "title": "유명 투자자 X",
+      "url": "https://x.com/elonmusk",
+      "category": "sns",
+      "subCategory": [
+        "x"
+      ],
+      "description": "글로벌 비즈니스 리더 및 실시간 기술/시장 분석 트윗.",
+      "type": "website",
+      "icon": "fa-brands fa-x-twitter",
+      "id": 401,
+      "userId": "admin"
+    },
+    {
+      "title": "경제/재테크 쓰레드",
+      "url": "https://www.threads.net",
+      "category": "sns",
+      "subCategory": [
+        "threads"
+      ],
+      "description": "MZ세대 투자 트렌드 및 유용한 경제 인사이트 한 줄 요약.",
+      "type": "website",
+      "icon": "fa-brands fa-threads",
+      "id": 402,
+      "userId": "admin"
+    },
+    {
+      "title": "인플루언서 인스타그램",
+      "url": "https://www.instagram.com",
+      "category": "sns",
+      "subCategory": [
+        "instagram"
+      ],
+      "description": "시각적이고 깔끔하게 정리된 데일리 핵심 경제 지표 카드뉴스.",
+      "type": "website",
+      "icon": "fa-brands fa-instagram",
+      "id": 403,
+      "userId": "admin"
+    },
     {
       "title": "와우넷",
       "url": "https://www.wownet.co.kr/",

@@ -174,5 +174,10 @@ const financialData = [
     { id: 303, title: "한경 컨센서스", url: "http://consensus.hankyung.com", category: "stock", type: "site", description: "국내외 증권사들의 실시간 기업 리서치 리포트 및 산업 전망 무료 다운로드 센터.", icon: "fa-solid fa-file-pdf" },
     { id: 304, title: "CoinGecko (코인게코)", url: "https://www.coingecko.com/ko", category: "coin", type: "site", description: "글로벌 수만 개 가상자산 시세, 개발 활성도 및 소셜 지표 종합 추적 사이트.", icon: "fa-solid fa-frog", isPremium: true },
     { id: 305, title: "DefiLlama (디파이라마)", url: "https://defillama.com", category: "coin", type: "site", description: "탈중앙화 금융(DeFi)의 체인별 TVL(총 예치자산) 및 핵심 데이터 추적 플랫폼.", icon: "fa-solid fa-chart-column" },
-    { id: 306, title: "L2BEAT (엘투비트)", url: "https://l2beat.com", category: "coin", type: "site", description: "이더리움 레이어 2(Layer 2) 생태계의 예치량 및 상세 보안 지표 실시간 대시보드.", icon: "fa-solid fa-layer-group" }
+    { id: 306, title: "L2BEAT (엘투비트)", url: "https://l2beat.com", category: "coin", type: "site", description: "이더리움 레이어 2(Layer 2) 생태계의 예치량 및 상세 보안 지표 실시간 대시보드.", icon: "fa-solid fa-layer-group" },
+
+    // === 소셜/인플루언서 (SNS/Influencer) ===
+    { id: 401, title: "유명 투자자 X", url: "https://x.com/elonmusk", category: "sns", subCategory: "x", type: "site", description: "글로벌 비즈니스 리더 및 실시간 기술/시장 분석 트윗.", icon: "fa-brands fa-x-twitter" },
+    { id: 402, title: "경제/재테크 쓰레드", url: "https://www.threads.net", category: "sns", subCategory: "threads", type: "site", description: "MZ세대 투자 트렌드 및 유용한 경제 인사이트 한 줄 요약.", icon: "fa-brands fa-threads" },
+    { id: 403, title: "인플루언서 인스타그램", url: "https://www.instagram.com", category: "sns", subCategory: "instagram", type: "site", description: "시각적이고 깔끔하게 정리된 데일리 핵심 경제 지표 카드뉴스.", icon: "fa-brands fa-instagram" }
 ];
